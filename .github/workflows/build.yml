@@ -1,0 +1,62 @@
+name: build
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  build_server:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: deno-app
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+  
+      - name: Set up Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: 'v1.38.0'
+  
+      - name: Compile Deno app
+        run: deno compile --allow-read --allow-write --allow-net --allow-env http_server.ts
+  
+      - name: Run Deno app
+        run: ./http_server
+  
+      - name: Copy binary to the current directory of the job
+        run: cp ./http_server ${{ github.workspace }}/electron_app
+
+  build_job:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [macos-latest-x86_64, macos-latest-arm64, ubuntu-latest, windows-latest]
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@master
+      with:
+        node-version: 20
+    - name: install dependencies
+      run: npm install
+      working-directory: electron-app
+
+    # - name: Add MacOS certs
+    #   if: matrix.os == 'macos-latest-x86_64' || matrix.os == 'macos-latest-arm64'
+    #   run: chmod +x add-osx-cert.sh && ./add-osx-cert.sh
+    #   working-directory: desktop
+    #   env:
+    #     CERTIFICATE_OSX_APPLICATION: ${{ secrets.CERTIFICATE_OSX_APPLICATION }}
+    #     CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
+    - name: build
+      env:
+        CI: false
+      run: npm run make
+      working-directory: electron-app
