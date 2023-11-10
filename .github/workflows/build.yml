@@ -1,4 +1,4 @@
-name: build
+name: Build
 on:
   push:
     branches:
@@ -25,9 +25,6 @@ jobs:
   
       - name: Compile Deno app
         run: deno compile --allow-read --allow-write --allow-net --allow-env http_server.ts
-  
-      - name: Run Deno app
-        run: ./http_server
   
       - name: Copy binary to the current directory of the job
         run: cp ./http_server ${{ github.workspace }}/electron_app

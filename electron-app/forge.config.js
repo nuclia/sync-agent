@@ -2,7 +2,7 @@ module.exports = {
   packagerConfig: {
     asar: true,
     name: "Nuclia sync",
-    executableName: "nuclia-sync",
+    executableName: "nuclia-sync-agent",
   },
   rebuildConfig: {},
   makers: [
