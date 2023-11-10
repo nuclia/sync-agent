@@ -1,12 +1,13 @@
 module.exports = {
   packagerConfig: {
     asar: true,
+    name: "Nuclia sync",
+    executableName: "nuclia-sync",
   },
   rebuildConfig: {},
   makers: [
     {
       name: "@electron-forge/maker-squirrel",
-      config: {},
     },
     {
       name: "@electron-forge/maker-zip",
@@ -25,7 +26,7 @@ module.exports = {
       config: {},
     },
   ],
-  plugins: [
+  publishers: [
     {
       name: "@electron-forge/publisher-github",
       config: {
