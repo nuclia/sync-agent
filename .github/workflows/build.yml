@@ -54,6 +54,7 @@ jobs:
     #     CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
     - name: build
       env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         CI: false
       run: npm run make
       working-directory: electron-app
