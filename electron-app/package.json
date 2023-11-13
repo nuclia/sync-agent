@@ -29,8 +29,7 @@
     "@electron-forge/plugin-auto-unpack-natives": "^6.4.2",
     "@electron-forge/maker-dmg": "^6.4.2",
     "@electron-forge/publisher-github":"^6.4.2",
-    "electron": "27.0.4",
-    "appdmg":"0.6.6"
+    "electron": "27.0.4"
   },
   "config": {
     "forge": "./forge.config.js"
