@@ -1,6 +1,7 @@
 module.exports = {
   packagerConfig: {
     asar: true,
+    icon: "public/logo.png",
     name: "Nuclia sync",
     executableName: "nuclia-sync-agent",
   },
