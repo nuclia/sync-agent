@@ -97,3 +97,5 @@ http_server
 # Nuclia data test
 .nuclia
 .DS_Store
+
+build
