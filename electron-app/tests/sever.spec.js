@@ -104,4 +104,10 @@ describe("Server width folder", () => {
     expect(response.status).toBe(200);
     expect(Object.keys(response.body).length).toEqual(0);
   });
+
+  test("Get connectors", async () => {
+    const response = await request(testServer.app).get("/sources");
+    expect(response.status).toBe(200);
+    expect(Object.keys(response.body).length).toEqual(0);
+  });
 });

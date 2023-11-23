@@ -1,16 +1,7 @@
 import { Router } from "express";
-import { constants } from "fs";
 import fs from "fs/promises";
 import { v4 as uuidv4 } from "uuid";
-
-async function pathExists(path: string): Promise<boolean> {
-  try {
-    await fs.access(path, constants.F_OK);
-    return true;
-  } catch {
-    return false;
-  }
-}
+import { pathExists } from "../../fileSystemFn";
 
 export class SourceFileSystemRoutes {
   private readonly basePath: string;
@@ -23,13 +14,10 @@ export class SourceFileSystemRoutes {
     const router = Router();
 
     router.use("/", async (_req, res, next) => {
-      console.log("Middlware source");
       if (!(await pathExists(`${this.basePath}/sources.json`))) {
-        console.log(" Not exists Middlware source");
         res.status(404).send({ error: "Nuclia folder not found" });
         return;
       }
-      console.log(" Go next Not exists Middlware source");
       next();
     });
 
