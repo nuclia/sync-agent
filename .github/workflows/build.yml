@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
 
     steps:
     - uses: actions/checkout@v3
@@ -21,6 +21,12 @@ jobs:
         node-version: 20
     - name: install dependencies
       run: npm install
+      working-directory: electron-app
+
+    - name: test
+      env:
+        CI: false
+      run: npm run test
       working-directory: electron-app
 
     - name: build

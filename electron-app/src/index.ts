@@ -1,9 +1,16 @@
 import { Menu, Tray, app, nativeImage } from "electron";
+import os from "os";
 import path from "path";
-import { startToListen, stopToListen } from "./server";
+import { EVENTS } from "./events/events";
+import { beforeStartServer } from "./fileSystemServerFn";
+import { AppFileSystemRoutes } from "./presentation/routes";
+import { Server, eventEmitter } from "./server";
 
 let contextMenu: Electron.Menu;
 let tray = null;
+const basePath = `${os.homedir()}/.nuclia`;
+const appRoutes = new AppFileSystemRoutes(basePath);
+const server = new Server({ port: 8000, routes: appRoutes.getRoutes() });
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {
@@ -19,7 +26,7 @@ const updateTrayAfterStopServer = () => {
   contextMenu.items[1].visible = false;
 };
 
-const createWindow = () => {
+const createWindow = async () => {
   const icon = nativeImage.createFromPath(
     path.join(__dirname, "../public/logo.png")
   );
@@ -29,7 +36,7 @@ const createWindow = () => {
     {
       label: "Start App",
       click: () => {
-        startToListen(updateTrayAfterStartServer);
+        server.start();
       },
       icon: nativeImage.createFromPath(
         path.join(__dirname, "../public/play.png")
@@ -38,7 +45,7 @@ const createWindow = () => {
     {
       label: "Stop App",
       click: () => {
-        stopToListen(updateTrayAfterStopServer);
+        server.close();
       },
       visible: false,
       icon: nativeImage.createFromPath(
@@ -54,10 +61,14 @@ const createWindow = () => {
   ]);
   tray.setToolTip("Nuclia sync");
   tray.setContextMenu(contextMenu);
-  startToListen(updateTrayAfterStartServer);
+  await beforeStartServer(basePath);
+  server.start();
 };
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", createWindow);
+
+eventEmitter.subscribe(EVENTS.START_LISTENING, updateTrayAfterStartServer);
+eventEmitter.subscribe(EVENTS.STOP_LISTENING, updateTrayAfterStopServer);
