@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router } from 'express';
 
 export class ConnectorsRoutes {
   constructor() {}
@@ -6,7 +6,7 @@ export class ConnectorsRoutes {
   getRoutes(): Router {
     const router = Router();
 
-    router.get("/", async (_req, res) => {
+    router.get('/', async (_req, res) => {
       res.status(200).send([]);
     });
 

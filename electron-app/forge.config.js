@@ -1,39 +1,39 @@
 module.exports = {
   packagerConfig: {
     asar: true,
-    icon: "public/logo.png",
-    name: "Nuclia sync",
-    executableName: "nuclia-sync-agent",
+    icon: 'public/logo.png',
+    name: 'Nuclia sync',
+    executableName: 'nuclia-sync-agent',
   },
   rebuildConfig: {},
   makers: [
     {
-      name: "@electron-forge/maker-squirrel",
+      name: '@electron-forge/maker-squirrel',
     },
     {
-      name: "@electron-forge/maker-zip",
-      platforms: ["darwin"],
+      name: '@electron-forge/maker-zip',
+      platforms: ['darwin'],
     },
     {
-      name: "@electron-forge/maker-deb",
+      name: '@electron-forge/maker-deb',
       config: {},
     },
     {
-      name: "@electron-forge/maker-dmg",
+      name: '@electron-forge/maker-dmg',
       config: {},
     },
     {
-      name: "@electron-forge/maker-rpm",
+      name: '@electron-forge/maker-rpm',
       config: {},
     },
   ],
   publishers: [
     {
-      name: "@electron-forge/publisher-github",
+      name: '@electron-forge/publisher-github',
       config: {
         repository: {
-          owner: "nuclia",
-          name: "sync-agent",
+          owner: 'nuclia',
+          name: 'sync-agent',
         },
         draft: true,
       },

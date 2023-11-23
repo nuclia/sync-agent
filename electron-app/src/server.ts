@@ -1,7 +1,7 @@
-import compression from "compression";
-import express, { Router } from "express";
-import http from "http";
-import { EVENTS, EventEmitter } from "./events/events";
+import compression from 'compression';
+import express, { Router } from 'express';
+import http from 'http';
+import { EVENTS, EventEmitter } from './events/events';
 
 // appExpress.patch("/config/:paramKey", async (req, res) => {
 //   try {
@@ -54,15 +54,15 @@ export class Server {
     //* Routes
     this.app.use(this.routes);
 
-    this.app.get("/", async (_req, res) => {
-      res.status(200).send("Server is running");
+    this.app.get('/', async (_req, res) => {
+      res.status(200).send('Server is running');
     });
 
-    this.app.get("/status", async (_req, res) => {
-      res.status(200).send("Server is running");
+    this.app.get('/status', async (_req, res) => {
+      res.status(200).send('Server is running');
     });
 
-    this.app.post("/stop", async (_req, res) => {
+    this.app.post('/stop', async (_req, res) => {
       this.stopServer();
       res.status(200).send(null);
     });
@@ -78,7 +78,7 @@ export class Server {
   }
 
   private stopServer() {
-    console.log("Stop server");
+    console.log('Stop server');
     this.serverListener?.close();
     eventEmitter.emit(EVENTS.STOP_LISTENING);
   }

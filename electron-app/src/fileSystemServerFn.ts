@@ -1,4 +1,4 @@
-import { createDirectory, createFile, pathExists } from "./fileSystemFn";
+import { createDirectory, createFile, pathExists } from './fileSystemFn';
 
 const defaultConfig = {
   syncPeriod: 3600, // In seconds
