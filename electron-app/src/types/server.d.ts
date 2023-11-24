@@ -7,7 +7,7 @@ export type Connector = {
 export type NucliaOptions = {};
 export type Classification = {};
 
-export type Source = {
+export type Sync = {
   connector: Connector;
   destination: NucliaOptions;
   folders: string[];

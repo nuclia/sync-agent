@@ -21,13 +21,13 @@ describe('Server without folder', () => {
     expect(response.status).toBe(200);
   });
 
-  test('Get sources without folder server', async () => {
-    const response = await request(testServer.app).get('/sources');
+  test('Get sync without folder server', async () => {
+    const response = await request(testServer.app).get('/sync');
     expect(response.status).toBe(404);
   });
 
-  test('Add new source', async () => {
-    const response = await request(testServer.app).post('/sources').send({});
+  test('Add new sync', async () => {
+    const response = await request(testServer.app).post('/sync').send({});
     expect(response.status).toBe(404);
   });
 });
@@ -47,62 +47,62 @@ describe('Server width folder', () => {
     expect(response.status).toBe(200);
   });
 
-  test('Get sources - empty folder', async () => {
-    const response = await request(testServer.app).get('/sources');
+  test('Get sync - empty folder', async () => {
+    const response = await request(testServer.app).get('/sync');
     expect(response.status).toBe(200);
     expect(Object.keys(response.body).length).toEqual(0);
   });
 
-  test('Add new source', async () => {
-    const response = await request(testServer.app).post('/sources').send({});
+  test('Add new sync', async () => {
+    const response = await request(testServer.app).post('/sync').send({});
     expect(response.status).toBe(201);
   });
 
-  test('Get all sources', async () => {
-    const response = await request(testServer.app).get('/sources');
+  test('Get all sync', async () => {
+    const response = await request(testServer.app).get('/sync');
     expect(response.status).toBe(200);
     expect(Object.keys(response.body).length).toEqual(1);
   });
 
-  test('Update a source', async () => {
-    const response = await request(testServer.app).get('/sources');
+  test('Update a sync', async () => {
+    const response = await request(testServer.app).get('/sync');
     expect(response.status).toBe(200);
     expect(Object.keys(response.body).length).toEqual(1);
 
     const id = Object.keys(response.body)[0];
-    const responsePatch = await request(testServer.app).patch(`/sources/${id}`).send({
-      name: 'Source1',
+    const responsePatch = await request(testServer.app).patch(`/sync/${id}`).send({
+      name: 'Sync1',
     });
     expect(responsePatch.status).toBe(204);
   });
 
-  test('Get a updated source', async () => {
-    const response = await request(testServer.app).get('/sources');
+  test('Get a updated sync', async () => {
+    const response = await request(testServer.app).get('/sync');
     expect(response.status).toBe(200);
     expect(Object.keys(response.body).length).toEqual(1);
 
     const id = Object.keys(response.body)[0];
-    const responseGet = await request(testServer.app).get(`/sources/${id}`);
+    const responseGet = await request(testServer.app).get(`/sync/${id}`);
     expect(responseGet.status).toBe(200);
-    expect(responseGet.body['name']).toBe('Source1');
+    expect(responseGet.body['name']).toBe('Sync1');
   });
 
-  test('Delete a source', async () => {
-    let response = await request(testServer.app).get('/sources');
+  test('Delete a sync', async () => {
+    let response = await request(testServer.app).get('/sync');
     expect(response.status).toBe(200);
     expect(Object.keys(response.body).length).toEqual(1);
 
     const id = Object.keys(response.body)[0];
-    const responseDelete = await request(testServer.app).delete(`/sources/${id}`);
+    const responseDelete = await request(testServer.app).delete(`/sync/${id}`);
     expect(responseDelete.status).toBe(200);
 
-    response = await request(testServer.app).get('/sources');
+    response = await request(testServer.app).get('/sync');
     expect(response.status).toBe(200);
     expect(Object.keys(response.body).length).toEqual(0);
   });
 
   test('Get connectors', async () => {
-    const response = await request(testServer.app).get('/sources');
+    const response = await request(testServer.app).get('/sync');
     expect(response.status).toBe(200);
     expect(Object.keys(response.body).length).toEqual(0);
   });

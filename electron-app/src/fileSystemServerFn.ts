@@ -9,16 +9,16 @@ export async function beforeStartServer(basePath: string) {
     await createDirectory(basePath);
   }
 
-  if (!(await pathExists(`${basePath}/sources`))) {
-    await createDirectory(`${basePath}/sources`);
+  if (!(await pathExists(`${basePath}/sync`))) {
+    await createDirectory(`${basePath}/sync`);
   }
 
   const configPath = `${basePath}/config.json`;
   if (!(await pathExists(configPath))) {
     await createFile(configPath, JSON.stringify(defaultConfig, null, 2));
   }
-  const sourcesPath = `${basePath}/sources.json`;
-  if (!(await pathExists(sourcesPath))) {
-    await createFile(sourcesPath, JSON.stringify({}, null, 2));
+  const syncPath = `${basePath}/sync.json`;
+  if (!(await pathExists(syncPath))) {
+    await createFile(syncPath, JSON.stringify({}, null, 2));
   }
 }

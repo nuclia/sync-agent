@@ -3,7 +3,7 @@ import fs from 'fs/promises';
 import { v4 as uuidv4 } from 'uuid';
 import { pathExists } from '../../fileSystemFn';
 
-export class SourceFileSystemRoutes {
+export class SyncFileSystemRoutes {
   private readonly basePath: string;
 
   constructor(basePath: string) {
@@ -14,7 +14,7 @@ export class SourceFileSystemRoutes {
     const router = Router();
 
     router.use('/', async (_req, res, next) => {
-      if (!(await pathExists(`${this.basePath}/sources.json`))) {
+      if (!(await pathExists(`${this.basePath}/sync.json`))) {
         res.status(404).send({ error: 'Nuclia folder not found' });
         return;
       }
@@ -22,38 +22,38 @@ export class SourceFileSystemRoutes {
     });
 
     router.get('/', async (_req, res) => {
-      const data = await fs.readFile(`${this.basePath}/sources.json`, 'utf8');
+      const data = await fs.readFile(`${this.basePath}/sync.json`, 'utf8');
       res.status(200).send(JSON.parse(data));
     });
 
     router.post('/', async (req, res) => {
-      const dataNewSource = req.body;
+      const dataNewSync = req.body;
       const uuid = uuidv4();
 
-      const currentSources = JSON.parse(await fs.readFile(`${this.basePath}/sources.json`, 'utf8'));
-      const sourceAlreadyExists = uuid in currentSources;
-      if (sourceAlreadyExists) {
+      const currentSync = JSON.parse(await fs.readFile(`${this.basePath}/sync.json`, 'utf8'));
+      const syncAlreadyExists = uuid in currentSync;
+      if (syncAlreadyExists) {
         res.status(409).send({
-          reason: `Source with id ${dataNewSource.id} already exists`,
+          reason: `Sync with id ${dataNewSync.id} already exists`,
         });
         return;
       }
-      currentSources[uuid] = dataNewSource;
-      await fs.writeFile(`${this.basePath}/sources.json`, JSON.stringify(currentSources, null, 2));
+      currentSync[uuid] = dataNewSync;
+      await fs.writeFile(`${this.basePath}/sync.json`, JSON.stringify(currentSync, null, 2));
 
       res.status(201).send({
-        id: dataNewSource.id,
+        id: dataNewSync.id,
       });
     });
 
     router.get('/:id', async (req, res) => {
       const { id } = req.params;
       try {
-        const currentSources = JSON.parse(await fs.readFile(`${this.basePath}/sources.json`, 'utf8'));
-        if (!(id in currentSources)) {
+        const currentSync = JSON.parse(await fs.readFile(`${this.basePath}/sync.json`, 'utf8'));
+        if (!(id in currentSync)) {
           res.status(404).send(null);
         } else {
-          res.status(200).send(currentSources[id]);
+          res.status(200).send(currentSync[id]);
         }
       } catch (error) {
         console.error(error);
@@ -63,18 +63,18 @@ export class SourceFileSystemRoutes {
 
     router.patch('/:id', async (req, res) => {
       const { id } = req.params;
-      const dataNewSource = req.body;
+      const dataNewSync = req.body;
       try {
-        const currentSources = JSON.parse(await fs.readFile(`${this.basePath}/sources.json`, 'utf8'));
-        if (!(id in currentSources)) {
+        const currentSync = JSON.parse(await fs.readFile(`${this.basePath}/sync.json`, 'utf8'));
+        if (!(id in currentSync)) {
           res.status(404).send(null);
         } else {
-          currentSources[id] = {
-            ...currentSources[id],
-            ...dataNewSource,
+          currentSync[id] = {
+            ...currentSync[id],
+            ...dataNewSync,
           };
 
-          await fs.writeFile(`${this.basePath}/sources.json`, JSON.stringify(currentSources, null, 2));
+          await fs.writeFile(`${this.basePath}/sync.json`, JSON.stringify(currentSync, null, 2));
           res.status(204).send(null);
         }
       } catch (error) {
@@ -86,12 +86,12 @@ export class SourceFileSystemRoutes {
     router.delete('/:id', async (req, res) => {
       const { id } = req.params;
       try {
-        const currentSources = JSON.parse(await fs.readFile(`${this.basePath}/sources.json`, 'utf8'));
-        if (!(id in currentSources)) {
+        const currentSync = JSON.parse(await fs.readFile(`${this.basePath}/sync.json`, 'utf8'));
+        if (!(id in currentSync)) {
           res.status(404).send(null);
         } else {
-          delete currentSources[id];
-          await fs.writeFile(`${this.basePath}/sources.json`, JSON.stringify(currentSources, null, 2));
+          delete currentSync[id];
+          await fs.writeFile(`${this.basePath}/sync.json`, JSON.stringify(currentSync, null, 2));
           res.status(200).send(null);
         }
       } catch (error) {

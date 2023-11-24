@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { SourceFileSystemRoutes } from './source/routes';
+import { SyncFileSystemRoutes } from './sync/routes';
 
 export class AppFileSystemRoutes {
   private readonly basePath: string;
@@ -11,8 +11,8 @@ export class AppFileSystemRoutes {
 
   getRoutes(): Router {
     const router = Router();
-    const sourceFileSystemRoutes = new SourceFileSystemRoutes(this.basePath);
-    router.use('/sources', sourceFileSystemRoutes.getRoutes());
+    const syncFileSystemRoutes = new SyncFileSystemRoutes(this.basePath);
+    router.use('/sync', syncFileSystemRoutes.getRoutes());
     return router;
   }
 }
