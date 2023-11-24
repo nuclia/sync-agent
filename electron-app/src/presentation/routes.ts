@@ -1,6 +1,7 @@
 import { Router } from 'express';
 
-import { SyncFileSystemRoutes } from './sync/routes';
+import { LogsFileSystemRoutes } from '../logic/logs/presentation/routes';
+import { SyncFileSystemRoutes } from '../logic/sync/presentation/routes';
 
 export class AppFileSystemRoutes {
   private readonly basePath: string;
@@ -12,7 +13,9 @@ export class AppFileSystemRoutes {
   getRoutes(): Router {
     const router = Router();
     const syncFileSystemRoutes = new SyncFileSystemRoutes(this.basePath);
+    const logsFileSystemRoutes = new LogsFileSystemRoutes(this.basePath);
     router.use('/sync', syncFileSystemRoutes.getRoutes());
+    router.use('/logs', logsFileSystemRoutes.getRoutes());
     return router;
   }
 }

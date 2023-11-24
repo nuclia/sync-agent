@@ -71,7 +71,7 @@ describe('Server width folder', () => {
 
     const id = Object.keys(response.body)[0];
     const responsePatch = await request(testServer.app).patch(`/sync/${id}`).send({
-      name: 'Sync1',
+      title: 'Sync1',
     });
     expect(responsePatch.status).toBe(204);
   });
@@ -84,7 +84,7 @@ describe('Server width folder', () => {
     const id = Object.keys(response.body)[0];
     const responseGet = await request(testServer.app).get(`/sync/${id}`);
     expect(responseGet.status).toBe(200);
-    expect(responseGet.body['name']).toBe('Sync1');
+    expect(responseGet.body['title']).toBe('Sync1');
   });
 
   test('Delete a sync', async () => {
@@ -105,5 +105,26 @@ describe('Server width folder', () => {
     const response = await request(testServer.app).get('/sync');
     expect(response.status).toBe(200);
     expect(Object.keys(response.body).length).toEqual(0);
+  });
+});
+
+describe('Server Logs', () => {
+  beforeAll(async () => {
+    await beforeStartServer('.nuclia');
+    await testServer.start();
+  });
+  afterAll(async () => {
+    await deleteDirectory('.nuclia');
+    await testServer.close();
+  });
+
+  test('Init server', async () => {
+    const response = await request(testServer.app).get('/');
+    expect(response.status).toBe(200);
+  });
+
+  test('Get logs', async () => {
+    const response = await request(testServer.app).get('/logs');
+    expect(response.status).toBe(200);
   });
 });

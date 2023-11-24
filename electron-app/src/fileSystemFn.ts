@@ -2,31 +2,20 @@ import { constants } from 'fs';
 import fs from 'fs/promises';
 import path from 'path';
 
-export async function createFile(path: string, content: string | Uint8Array): Promise<void> {
-  try {
-    await fs.writeFile(path, content);
-    console.log(`File created at ${path}`);
-  } catch (error) {
-    console.error('Error creating file:', error);
-  }
+export async function writeFile(path: string, content: string | Uint8Array): Promise<void> {
+  await fs.writeFile(path, content);
+}
+
+export async function appendFile(path: string, content: string | Uint8Array): Promise<void> {
+  await fs.appendFile(path, content);
 }
 
 export async function createDirectory(path: string): Promise<void> {
-  try {
-    await fs.mkdir(path, { recursive: true });
-    console.log(`Directory deleted at ${path}`);
-  } catch (error) {
-    console.error('Error delete directory:', error);
-  }
+  await fs.mkdir(path, { recursive: true });
 }
 
 export async function deleteDirectory(path: string): Promise<void> {
-  try {
-    await fs.rmdir(path, { recursive: true });
-    console.log(`Directory created at ${path}`);
-  } catch (error) {
-    console.error('Error creating directory:', error);
-  }
+  await fs.rmdir(path, { recursive: true });
 }
 
 export async function pathExists(path: string): Promise<boolean> {
@@ -36,6 +25,14 @@ export async function pathExists(path: string): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+export async function readFile(path: string) {
+  return await fs.readFile(path, 'utf-8');
+}
+
+export async function deleteFile(path: string) {
+  await fs.rm(path);
 }
 
 export async function findFilesInDirectory(directory: string, extensions: string[]): Promise<string[]> {
