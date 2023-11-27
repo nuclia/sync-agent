@@ -12,6 +12,6 @@ export class UpdateSync implements UpdateSyncUseCase {
 
   async execute(dto: UpdateSyncDto) {
     await this.repository.updateSync(dto);
-    eventEmitter.emit(EVENTS.SYNC_UPDATED);
+    eventEmitter.emit(EVENTS.SYNC_UPDATED, dto.values);
   }
 }

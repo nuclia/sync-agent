@@ -12,6 +12,6 @@ export class CreateSync implements CreateSyncUseCase {
 
   async execute(dto: CreateSyncDto): Promise<void> {
     await this.repository.createSync(dto);
-    eventEmitter.emit(EVENTS.SYNC_CREATED);
+    eventEmitter.emit(EVENTS.SYNC_CREATED, dto.values);
   }
 }

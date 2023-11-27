@@ -6,24 +6,28 @@ import { LogRepository } from './logic/logs/infrastructure/log.repository';
 import { eventEmitter } from './server';
 
 export function initFileSystemSubscribers(basePath: string) {
-  eventEmitter.subscribe(EVENTS.SYNC_CREATED, () => {
+  eventEmitter.subscribe(EVENTS.SYNC_CREATED, (values: { [key: string]: unknown }) => {
     const saveLog = new SaveLogs(new LogRepository(new FileSystemLogDatasource(basePath)));
     saveLog.execute(
       new LogEntity({
         message: 'Sync created',
         level: LogSeverityLevel.low,
         origin: 'electron-app',
+        action: EVENTS.SYNC_CREATED,
+        payload: values,
       }),
     );
   });
 
-  eventEmitter.subscribe(EVENTS.SYNC_UPDATED, () => {
+  eventEmitter.subscribe(EVENTS.SYNC_UPDATED, (values: { [key: string]: unknown }) => {
     const saveLog = new SaveLogs(new LogRepository(new FileSystemLogDatasource(basePath)));
     saveLog.execute(
       new LogEntity({
         message: 'Sync updated',
         level: LogSeverityLevel.low,
         origin: 'electron-app',
+        action: EVENTS.SYNC_UPDATED,
+        payload: values,
       }),
     );
   });
@@ -35,6 +39,7 @@ export function initFileSystemSubscribers(basePath: string) {
         message: 'Sync deleted',
         level: LogSeverityLevel.low,
         origin: 'electron-app',
+        action: EVENTS.SYNC_DELETED,
       }),
     );
   });

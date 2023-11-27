@@ -75,7 +75,9 @@ describe('Server width folder', () => {
   test('Get logs with sync created', async () => {
     const response = await request(testServer.app).get('/logs');
     expect(response.status).toBe(200);
-    expect(Object.keys(response.body).length).toEqual(1);
+    expect(response.body.length).toEqual(1);
+    expect(response.body[0].message).toEqual('Sync created');
+    expect(Object.keys(response.body[0].payload).length).toBeGreaterThan(0);
   });
 
   test('Update a sync', async () => {
@@ -125,6 +127,9 @@ describe('Server width folder', () => {
     const response = await request(testServer.app).get('/logs');
     expect(response.status).toBe(200);
     expect(Object.keys(response.body).length).toEqual(3);
+    expect(response.body[1].message).toEqual('Sync updated');
+    expect(Object.keys(response.body[1].payload).length).toBeGreaterThan(0);
+    expect(Object.keys(response.body[2].payload).length).toEqual(0);
   });
 
   test('Delete logs', async () => {
