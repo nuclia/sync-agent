@@ -30,10 +30,5 @@ export interface NucliaOptions {
 }
 
 export type Classification = {};
-export type Sync = {
-  connector: Connector;
-  kb: NucliaOptions;
-  folders: string[];
-  labels?: Classification[];
-  title: string;
-};
+
+export type MakeOptional<Type, Key extends keyof Type> = Omit<Type, Key> & Partial<Pick<Type, Key>>;

@@ -1,9 +1,9 @@
 import { CustomError } from '../../../errors';
-import { SyncEntity } from '../sync.entity';
+import { ISyncEntity } from '../sync.entity';
 import { ISyncRepository } from '../sync.repository';
 
 export interface GetSyncUseCase {
-  execute(id: string): Promise<SyncEntity>;
+  execute(id: string): Promise<ISyncEntity>;
 }
 
 export class GetSync implements GetSyncUseCase {

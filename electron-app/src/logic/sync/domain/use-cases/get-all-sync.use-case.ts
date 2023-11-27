@@ -1,8 +1,8 @@
-import { SyncEntity } from '../sync.entity';
+import { ISyncEntity } from '../sync.entity';
 import { ISyncRepository } from '../sync.repository';
 
 export interface GetAllSyncUseCase {
-  execute(): Promise<{ [id: string]: SyncEntity }>;
+  execute(): Promise<{ [id: string]: ISyncEntity }>;
 }
 
 export class GetAllSync implements GetAllSyncUseCase {

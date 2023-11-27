@@ -1,5 +1,6 @@
+import { CreateSyncDto } from '../domain/dto/create-sync.dto';
+import { UpdateSyncDto } from '../domain/dto/update-sync.dto';
 import { ISyncDatasource } from '../domain/sync.datasource';
-import { SyncEntity } from '../domain/sync.entity';
 import { ISyncRepository } from '../domain/sync.repository';
 
 export class SyncRepository implements ISyncRepository {
@@ -13,15 +14,15 @@ export class SyncRepository implements ISyncRepository {
     return this.syncDatasource.getSync(id);
   }
 
-  async createSync(sync: SyncEntity) {
-    return this.syncDatasource.createSync(sync);
+  async createSync(dto: CreateSyncDto) {
+    return this.syncDatasource.createSync(dto);
   }
 
   async deleteSync(id: string) {
     return this.syncDatasource.deleteSync(id);
   }
 
-  async updateSync(id: string, sync: SyncEntity) {
-    return this.syncDatasource.updateSync(id, sync);
+  async updateSync(dto: UpdateSyncDto) {
+    return this.syncDatasource.updateSync(dto);
   }
 }

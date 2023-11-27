@@ -1,10 +1,13 @@
 import { pathExists, readFile, writeFile } from '../../../fileSystemFn';
+import { CustomError } from '../../errors';
+import { CreateSyncDto } from '../domain/dto/create-sync.dto';
+import { UpdateSyncDto } from '../domain/dto/update-sync.dto';
 import { ISyncDatasource } from '../domain/sync.datasource';
-import { SyncEntity } from '../domain/sync.entity';
+import { ISyncEntity } from '../domain/sync.entity';
 
 export class FileSystemSyncDatasource implements ISyncDatasource {
   private basePath: string;
-  private allSyncData: { [id: string]: SyncEntity };
+  private allSyncData: { [id: string]: ISyncEntity };
 
   constructor(basePath: string) {
     this.basePath = `${basePath}/sync.json`;
@@ -20,28 +23,28 @@ export class FileSystemSyncDatasource implements ISyncDatasource {
     }
   };
 
-  async createSync(newSync: SyncEntity): Promise<void> {
-    await this.loadSyncData();
-    console.log('newSync', newSync);
-    this.allSyncData[newSync.id] = newSync;
+  async createSync(dto: CreateSyncDto): Promise<void> {
+    const { id } = dto.values;
+    const data = await this.getSync(id);
+    if (data !== null) {
+      throw new CustomError(`Sync with id ${id} already exists`, 409);
+    }
 
+    await this.loadSyncData();
+    this.allSyncData[id] = dto.values;
     await this.createSyncFile();
     await writeFile(this.basePath, JSON.stringify(this.allSyncData, null, 2));
   }
 
-  async getAllSync(): Promise<{ [id: string]: SyncEntity }> {
+  async getAllSync(): Promise<{ [id: string]: ISyncEntity }> {
     await this.loadSyncData();
-    const result: { [id: string]: SyncEntity } = {};
-    for (const key in this.allSyncData) {
-      result[key] = new SyncEntity(this.allSyncData[key]);
-    }
-    return result;
+    return this.allSyncData;
   }
 
-  async getSync(id: string): Promise<SyncEntity | null> {
+  async getSync(id: string): Promise<ISyncEntity | null> {
     await this.loadSyncData();
     if (id in this.allSyncData) {
-      return new SyncEntity(this.allSyncData[id]);
+      return this.allSyncData[id];
     }
     return null;
   }
@@ -52,9 +55,15 @@ export class FileSystemSyncDatasource implements ISyncDatasource {
     await writeFile(this.basePath, JSON.stringify(this.allSyncData, null, 2));
   }
 
-  async updateSync(id: string, sync: SyncEntity): Promise<void> {
+  async updateSync(dto: UpdateSyncDto): Promise<void> {
+    const { id, ...sync } = dto.values;
+    const data = await this.getSync(id);
+    if (data === null) {
+      throw new CustomError(`Sync with id ${id} not found`, 404);
+    }
+    const newSync = { ...data, ...sync };
     await this.loadSyncData();
-    this.allSyncData[id] = sync;
+    this.allSyncData[id] = newSync;
     await writeFile(this.basePath, JSON.stringify(this.allSyncData, null, 2));
   }
 }

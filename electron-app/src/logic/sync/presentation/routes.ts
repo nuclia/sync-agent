@@ -1,8 +1,8 @@
 import { Response, Router } from 'express';
-import { v4 as uuidv4 } from 'uuid';
 import { pathExists } from '../../../fileSystemFn';
 import { CustomError } from '../../errors';
-import { SyncEntity } from '../domain/sync.entity';
+import { CreateSyncDto } from '../domain/dto/create-sync.dto';
+import { UpdateSyncDto } from '../domain/dto/update-sync.dto';
 import { CreateSync } from '../domain/use-cases/create-sync.use-case';
 import { DeleteSync } from '../domain/use-cases/delete-sync.use-case';
 import { GetAllSync } from '../domain/use-cases/get-all-sync.use-case';
@@ -50,16 +50,12 @@ export class SyncFileSystemRoutes {
     });
 
     router.post('/', async (req, res) => {
-      const dataNewSync = req.body;
-      const id = uuidv4();
-      const newSync = new SyncEntity({
-        ...dataNewSync,
-        id,
-      });
+      const [error, createSyncDto] = CreateSyncDto.create(req.body);
+      if (error) return res.status(400).json({ error });
       try {
-        await new CreateSync(syncRepository).execute(newSync);
+        await new CreateSync(syncRepository).execute(createSyncDto!);
         res.status(201).send({
-          id: newSync.id,
+          id: createSyncDto!.values.id,
         });
       } catch (error) {
         this.handleError(res, error);
@@ -78,9 +74,11 @@ export class SyncFileSystemRoutes {
 
     router.patch('/:id', async (req, res) => {
       const { id } = req.params;
-      const dataNewSync = req.body;
+      const [error, updateSyncDto] = UpdateSyncDto.create({ ...req.body, id });
+      if (error) return res.status(400).json({ error });
+
       try {
-        await new UpdateSync(syncRepository).execute(id, dataNewSync);
+        await new UpdateSync(syncRepository).execute(updateSyncDto!);
         res.status(204).send(null);
       } catch (error) {
         this.handleError(res, error);
