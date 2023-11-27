@@ -50,6 +50,10 @@ export class FileSystemSyncDatasource implements ISyncDatasource {
   }
 
   async deleteSync(id: string): Promise<void> {
+    const data = await this.getSync(id);
+    if (data === null) {
+      throw new CustomError(`Sync with id ${id} not found`, 404);
+    }
     await this.loadSyncData();
     delete this.allSyncData[id];
     await writeFile(this.basePath, JSON.stringify(this.allSyncData, null, 2));

@@ -1,6 +1,9 @@
 export enum EVENTS {
   START_LISTENING = 'start-listening',
   STOP_LISTENING = 'stop-listening',
+  SYNC_CREATED = 'sync-created',
+  SYNC_UPDATED = 'sync-updated',
+  SYNC_DELETED = 'sync-deleted',
 }
 
 export type EVENTS_TYPE = (typeof EVENTS)[keyof typeof EVENTS];

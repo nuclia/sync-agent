@@ -1,3 +1,5 @@
+import { EVENTS } from '../../../../events/events';
+import { eventEmitter } from '../../../../server';
 import { CreateSyncDto } from '../dto/create-sync.dto';
 import { ISyncRepository } from '../sync.repository';
 
@@ -10,5 +12,6 @@ export class CreateSync implements CreateSyncUseCase {
 
   async execute(dto: CreateSyncDto): Promise<void> {
     await this.repository.createSync(dto);
+    eventEmitter.emit(EVENTS.SYNC_CREATED);
   }
 }

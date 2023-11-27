@@ -40,7 +40,7 @@ export class FileSystemLogDatasource implements ILogDatasource {
     const content = await readFile(path);
     if (content === '') return [];
 
-    const logs = content.split('\n').map(LogEntity.fromJson);
+    const logs = content.split('\n').filter(Boolean).map(LogEntity.fromJson);
     return logs;
   };
 

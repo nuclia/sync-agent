@@ -1,3 +1,5 @@
+import { EVENTS } from '../../../../events/events';
+import { eventEmitter } from '../../../../server';
 import { UpdateSyncDto } from '../dto/update-sync.dto';
 import { ISyncRepository } from '../sync.repository';
 
@@ -10,5 +12,6 @@ export class UpdateSync implements UpdateSyncUseCase {
 
   async execute(dto: UpdateSyncDto) {
     await this.repository.updateSync(dto);
+    eventEmitter.emit(EVENTS.SYNC_UPDATED);
   }
 }

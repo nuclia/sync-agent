@@ -4,9 +4,11 @@ import { deleteDirectory } from '../src/fileSystemFn';
 import { beforeStartServer } from '../src/fileSystemServerFn';
 import { AppFileSystemRoutes } from '../src/presentation/routes';
 import { Server } from '../src/server';
+import { initFileSystemSubscribers } from '../src/subscribers';
 
 const appRoutes = new AppFileSystemRoutes('.nuclia');
 const testServer = new Server({ port: 8000, routes: appRoutes.getRoutes() });
+initFileSystemSubscribers('.nuclia');
 
 describe('Server without folder', () => {
   beforeAll(async () => {
@@ -53,6 +55,12 @@ describe('Server width folder', () => {
     expect(Object.keys(response.body).length).toEqual(0);
   });
 
+  test('Get empty logs', async () => {
+    const response = await request(testServer.app).get('/logs');
+    expect(response.status).toBe(200);
+    expect(Object.keys(response.body).length).toEqual(0);
+  });
+
   test('Add new sync', async () => {
     const response = await request(testServer.app).post('/sync').send({});
     expect(response.status).toBe(201);
@@ -60,6 +68,12 @@ describe('Server width folder', () => {
 
   test('Get all sync', async () => {
     const response = await request(testServer.app).get('/sync');
+    expect(response.status).toBe(200);
+    expect(Object.keys(response.body).length).toEqual(1);
+  });
+
+  test('Get logs with sync created', async () => {
+    const response = await request(testServer.app).get('/logs');
     expect(response.status).toBe(200);
     expect(Object.keys(response.body).length).toEqual(1);
   });
@@ -106,25 +120,19 @@ describe('Server width folder', () => {
     expect(response.status).toBe(200);
     expect(Object.keys(response.body).length).toEqual(0);
   });
-});
 
-describe('Server Logs', () => {
-  beforeAll(async () => {
-    await beforeStartServer('.nuclia');
-    await testServer.start();
-  });
-  afterAll(async () => {
-    await deleteDirectory('.nuclia');
-    await testServer.close();
-  });
-
-  test('Init server', async () => {
-    const response = await request(testServer.app).get('/');
-    expect(response.status).toBe(200);
-  });
-
-  test('Get logs', async () => {
+  test('Get all logs', async () => {
     const response = await request(testServer.app).get('/logs');
     expect(response.status).toBe(200);
+    expect(Object.keys(response.body).length).toEqual(3);
+  });
+
+  test('Delete logs', async () => {
+    let response = await request(testServer.app).delete('/logs');
+    expect(response.status).toBe(200);
+
+    response = await request(testServer.app).get('/logs');
+    expect(response.status).toBe(200);
+    expect(Object.keys(response.body).length).toEqual(0);
   });
 });
