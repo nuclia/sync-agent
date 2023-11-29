@@ -9,7 +9,6 @@ export class CreateSyncDto {
     const returnObj: ISyncEntity = {
       connector: this.options.connector,
       kb: this.options.kb,
-      folders: this.options.folders,
       title: this.options.title,
       id: this.options.id,
     };

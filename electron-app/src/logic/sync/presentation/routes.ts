@@ -6,6 +6,7 @@ import { UpdateSyncDto } from '../domain/dto/update-sync.dto';
 import { CreateSync } from '../domain/use-cases/create-sync.use-case';
 import { DeleteSync } from '../domain/use-cases/delete-sync.use-case';
 import { GetAllSync } from '../domain/use-cases/get-all-sync.use-case';
+import { GetSyncFolders } from '../domain/use-cases/get-sync-folders.use-case';
 import { GetSync } from '../domain/use-cases/get-sync.use-case';
 import { UpdateSync } from '../domain/use-cases/update-sync.use-case';
 import { FileSystemSyncDatasource } from '../infrastructure/file-system.sync.datasource';
@@ -66,6 +67,16 @@ export class SyncFileSystemRoutes {
       const { id } = req.params;
       try {
         const data = await new GetSync(syncRepository).execute(id);
+        res.status(200).send(data);
+      } catch (error) {
+        this.handleError(res, error);
+      }
+    });
+
+    router.get('/:id/folders', async (req, res) => {
+      const { id } = req.params;
+      try {
+        const data = await new GetSyncFolders(syncRepository).execute(id);
         res.status(200).send(data);
       } catch (error) {
         this.handleError(res, error);
