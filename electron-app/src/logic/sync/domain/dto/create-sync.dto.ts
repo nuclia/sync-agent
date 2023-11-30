@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { MakeOptional } from '../../../../types/server';
+import { getConnector } from '../../../connector/infrastructure/factory';
 import { ISyncEntity } from '../sync.entity';
 
 export class CreateSyncDto {
@@ -23,6 +24,15 @@ export class CreateSyncDto {
     if (!id) {
       id = uuidv4();
     }
+    const connectorDefinition = getConnector(props.connector?.name || '');
+    if (!connectorDefinition) {
+      return ['Connector definition is not defined'];
+    }
+    const sourceConnector = connectorDefinition.factory();
+    if (!sourceConnector.areParametersValid(props.connector.parameters)) {
+      return [`Connector ${props.connector.name} parameters are not valid`];
+    }
+
     return [undefined, new CreateSyncDto({ ...props, id })];
   }
 }

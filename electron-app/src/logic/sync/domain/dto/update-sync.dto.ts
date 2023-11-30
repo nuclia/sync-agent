@@ -1,3 +1,4 @@
+import { getConnector } from '../../../connector/infrastructure/factory';
 import { ISyncEntity } from '../sync.entity';
 
 type Values = Partial<ISyncEntity> & { id: string };
@@ -18,10 +19,20 @@ export class UpdateSyncDto {
   }
 
   static create(props: Values): [string?, UpdateSyncDto?] {
-    const { id } = props;
+    const { id, connector } = props;
 
     if (!id) {
       return ['id is mandatory'];
+    }
+    if (connector) {
+      const connectorDefinition = getConnector(connector?.name || '');
+      if (!connectorDefinition) {
+        return ['Connector definition is not defined'];
+      }
+      const sourceConnector = connectorDefinition.factory();
+      if (!sourceConnector.areParametersValid(connector.parameters)) {
+        return [`Connector ${connector.name} parameters are not valid`];
+      }
     }
 
     return [undefined, new UpdateSyncDto(props)];

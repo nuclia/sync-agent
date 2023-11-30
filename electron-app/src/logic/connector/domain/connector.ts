@@ -44,6 +44,7 @@ export interface Field {
 export interface IConnector {
   isExternal: boolean;
   setParameters(params: ConnectorParameters): void;
+  areParametersValid(params: ConnectorParameters): boolean;
   getParameters(): ConnectorParameters;
   getFolders(query?: string): Observable<SearchResults>;
   getFiles(query?: string): Observable<SearchResults>;

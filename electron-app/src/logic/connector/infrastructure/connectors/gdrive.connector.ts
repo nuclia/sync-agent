@@ -9,7 +9,7 @@ export const GDriveConnector: SourceConnectorDefinition = {
   factory: () => new GDriveImpl(),
 };
 
-class GDriveImpl extends OAuthBaseConnector implements IConnector {
+export class GDriveImpl extends OAuthBaseConnector implements IConnector {
   params: ConnectorParameters = {};
   isExternal = false;
 
@@ -23,6 +23,16 @@ class GDriveImpl extends OAuthBaseConnector implements IConnector {
 
   getParameters(): ConnectorParameters {
     return this.params;
+  }
+
+  areParametersValid(params: ConnectorParameters) {
+    if (!params.token) {
+      return false;
+    }
+    if (!params.refresh_token) {
+      return false;
+    }
+    return true;
   }
 
   getLastModified(since: string, folders?: SyncItem[] | undefined): Observable<SyncItem[]> {

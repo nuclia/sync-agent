@@ -2,7 +2,14 @@ import { Blob as FSBlob } from 'buffer';
 import * as fs from 'fs';
 import path from 'path';
 import { Observable, forkJoin, map, of, switchMap } from 'rxjs';
-import { ConnectorParameters, FileStatus, IConnector, Link, SearchResults, SyncItem } from '../../domain/connector';
+import {
+  ConnectorParameters,
+  FileStatus,
+  IConnector,
+  Link,
+  SearchResults,
+  SyncItem,
+} from 'src/logic/connector/domain/connector';
 import { SourceConnectorDefinition } from '../factory';
 
 const FILES_TO_IGNORE = ['.DS_Store', 'Thumbs.db'];
@@ -22,6 +29,13 @@ class FolderImpl implements IConnector {
 
   setParameters(params: ConnectorParameters) {
     this.params = params;
+  }
+
+  areParametersValid(params: ConnectorParameters) {
+    if (!params.path) {
+      return false;
+    }
+    return true;
   }
 
   getParameters(): ConnectorParameters {

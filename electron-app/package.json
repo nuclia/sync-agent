@@ -11,7 +11,7 @@
     "make": "npm run compile && electron-forge make",
     "publish": "electron-forge publish",
     "lint": "eslint .",
-    "test": "vitest run",
+    "test": "vitest run --threads=false",
     "test:watch": "vitest",
     "format:check": "prettier . --check",
     "format": "prettier . --write",
