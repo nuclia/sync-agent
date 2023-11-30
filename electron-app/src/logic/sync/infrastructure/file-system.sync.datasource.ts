@@ -5,6 +5,31 @@ import { UpdateSyncDto } from '../domain/dto/update-sync.dto';
 import { ISyncDatasource } from '../domain/sync.datasource';
 import { ISyncEntity } from '../domain/sync.entity';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type PlainObject = Record<string, any>;
+
+function isObject(item: unknown) {
+  return item && typeof item === 'object' && !Array.isArray(item);
+}
+
+function deepMerge<T extends PlainObject>(target: T, ...sources: PlainObject[]): T {
+  if (!sources.length) return target;
+  const source = sources.shift();
+
+  if (isObject(target) && isObject(source)) {
+    for (const key in source) {
+      if (isObject(source[key])) {
+        if (!target[key]) Object.assign(target, { [key]: {} });
+        deepMerge(target[key], source[key]);
+      } else {
+        Object.assign(target, { [key]: source[key] });
+      }
+    }
+  }
+
+  return deepMerge(target, ...sources);
+}
+
 export class FileSystemSyncDatasource implements ISyncDatasource {
   private basePath: string;
   private allSyncData: { [id: string]: ISyncEntity };
@@ -65,7 +90,7 @@ export class FileSystemSyncDatasource implements ISyncDatasource {
     if (data === null) {
       throw new CustomError(`Sync with id ${id} not found`, 404);
     }
-    const newSync = { ...data, ...sync };
+    const newSync = deepMerge(data, sync);
     await this.loadSyncData();
     this.allSyncData[id] = newSync;
     await writeFile(this.basePath, JSON.stringify(this.allSyncData, null, 2));

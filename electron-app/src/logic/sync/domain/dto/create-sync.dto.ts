@@ -33,6 +33,25 @@ export class CreateSyncDto {
       return [`Connector ${props.connector.name} parameters are not valid`];
     }
 
+    if (!props.kb) {
+      return ['The Knowledge Box info is mandatory'];
+    }
+
+    if (props.kb) {
+      if (!props.kb.knowledgeBox) {
+        return ['knowledgeBox is mandatory'];
+      }
+      if (!props.kb.zone) {
+        return ['zone is mandatory'];
+      }
+      if (!props.kb.backend) {
+        return ['backend is mandatory'];
+      }
+      if (!props.kb.apiKey) {
+        return ['apiKey is mandatory'];
+      }
+    }
+
     return [undefined, new CreateSyncDto({ ...props, id })];
   }
 }

@@ -31,6 +31,12 @@ export const serverTest = test.extend({
             path: 'test',
           },
         },
+        kb: {
+          knowledgeBox: 'test',
+          zone: 'local',
+          backend: 'http://localhost:8000',
+          apiKey: 'apiKey',
+        },
       });
     expect(response.status).toBe(201);
     await use(server);

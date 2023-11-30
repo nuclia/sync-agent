@@ -26,10 +26,10 @@ export class GDriveImpl extends OAuthBaseConnector implements IConnector {
   }
 
   areParametersValid(params: ConnectorParameters) {
-    if (!params.token) {
+    if (!params?.token) {
       return false;
     }
-    if (!params.refresh_token) {
+    if (!params?.refresh_token) {
       return false;
     }
     return true;

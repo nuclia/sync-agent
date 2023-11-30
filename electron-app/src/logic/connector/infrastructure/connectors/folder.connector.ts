@@ -32,7 +32,7 @@ class FolderImpl implements IConnector {
   }
 
   areParametersValid(params: ConnectorParameters) {
-    if (!params.path) {
+    if (!params?.path) {
       return false;
     }
     return true;

@@ -19,7 +19,7 @@ export class UpdateSyncDto {
   }
 
   static create(props: Values): [string?, UpdateSyncDto?] {
-    const { id, connector } = props;
+    const { id, connector, kb } = props;
 
     if (!id) {
       return ['id is mandatory'];
@@ -32,6 +32,23 @@ export class UpdateSyncDto {
       const sourceConnector = connectorDefinition.factory();
       if (!sourceConnector.areParametersValid(connector.parameters)) {
         return [`Connector ${connector.name} parameters are not valid`];
+      }
+    }
+    const isDefined = (value: unknown) => value !== null && value !== undefined;
+
+    if (kb) {
+      const { knowledgeBox, zone, backend, apiKey } = kb;
+      if (isDefined(knowledgeBox) && !knowledgeBox) {
+        return ['knowledgeBox is mandatory'];
+      }
+      if (isDefined(zone) && !zone) {
+        return ['zone is mandatory'];
+      }
+      if (isDefined(backend) && !backend) {
+        return ['backend is mandatory'];
+      }
+      if (isDefined(apiKey) && !apiKey) {
+        return ['apiKey is mandatory'];
       }
     }
 
