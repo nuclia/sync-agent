@@ -79,7 +79,7 @@ describe('Test validate gdrive params', () => {
     expect(
       sourceConnector.areParametersValid({
         incorrect: 'test',
-        refresh_token: 'test',
+        refresh: 'test',
       }),
     ).toBe(false);
   });
@@ -88,7 +88,7 @@ describe('Test validate gdrive params', () => {
     expect(
       sourceConnector.areParametersValid({
         token: '',
-        refresh_token: '',
+        refresh: '',
       }),
     ).toBe(false);
   });
