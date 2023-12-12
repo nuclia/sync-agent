@@ -1,5 +1,4 @@
 import { CustomError } from '../../../errors';
-import { ISyncEntity } from '../sync.entity';
 import { ISyncRepository } from '../sync.repository';
 import { getConnector } from '../../../connector/infrastructure/factory';
 
