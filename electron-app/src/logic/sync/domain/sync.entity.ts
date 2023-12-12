@@ -5,7 +5,7 @@ import { getConnector } from '../../connector/infrastructure/factory';
 
 export type Connector = {
   name: 'gdrive' | 'folder';
-  logo: string;
+  // logo: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   parameters: { [key: string]: any };
 };
