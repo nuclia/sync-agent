@@ -1,5 +1,6 @@
 import compression from 'compression';
 import express, { Router } from 'express';
+import cors from 'cors';
 import http from 'http';
 import { EVENTS, EventEmitter } from './events/events';
 
@@ -46,10 +47,20 @@ export class Server {
   }
 
   async start() {
+    //* CORS
+    this.app.use(
+      cors({
+        origin: '*',
+      }),
+    );
     //* Middlewares
     this.app.use(express.json()); // raw
     this.app.use(express.urlencoded({ extended: true })); // x-www-form-urlencoded
     this.app.use(compression());
+    this.app.use((req, res, next) => {
+      res.setHeader('Content-Type', 'application/json');
+      next();
+    });
 
     //* Routes
     this.app.use(this.routes);
@@ -59,7 +70,7 @@ export class Server {
     });
 
     this.app.get('/status', async (_req, res) => {
-      res.status(200).send('Server is running');
+      res.status(200).send(JSON.stringify({ running: true }));
     });
 
     this.app.post('/stop', async (_req, res) => {
