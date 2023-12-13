@@ -66,7 +66,7 @@ export class Server {
     this.app.use(this.routes);
 
     this.app.get('/', async (_req, res) => {
-      res.status(200).send('Server is running');
+      res.status(200).send(JSON.stringify('Server is running'));
     });
 
     this.app.get('/status', async (_req, res) => {
