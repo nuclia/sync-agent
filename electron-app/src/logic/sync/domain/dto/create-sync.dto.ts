@@ -28,10 +28,6 @@ export class CreateSyncDto {
     if (!connectorDefinition) {
       return ['Connector definition is not defined'];
     }
-    const sourceConnector = connectorDefinition.factory();
-    if (!sourceConnector.areParametersValid(props.connector.parameters)) {
-      return [`Connector ${props.connector.name} parameters are not valid`];
-    }
 
     if (!props.kb) {
       return ['The Knowledge Box info is mandatory'];

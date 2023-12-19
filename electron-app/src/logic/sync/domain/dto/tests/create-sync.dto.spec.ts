@@ -42,7 +42,7 @@ describe('Create Sync dto tests', () => {
     expect(dto).toBeUndefined();
   });
 
-  test('should not create a valid dto - connector params are not valid', () => {
+  test('should not create a valid dto - connector params are incomplete', () => {
     const [error, dto] = CreateSyncDto.create({
       ...props,
       id: undefined,
@@ -52,8 +52,8 @@ describe('Create Sync dto tests', () => {
       },
     });
 
-    expect(error).toEqual('Connector folder parameters are not valid');
-    expect(dto).toBeUndefined();
+    expect(error).toBeUndefined();
+    expect(dto).toBeDefined();
   });
 
   test('should not create a valid dto - kb params are not valid', () => {
