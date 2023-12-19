@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Observable } from 'rxjs';
+import { z } from 'zod';
 
 export enum FileStatus {
   PENDING = 'PENDING',
@@ -16,15 +17,17 @@ export interface ConnectorParameters {
   [key: string]: any;
 }
 
-export interface SyncItem {
-  uuid?: string;
-  title: string;
-  originalId: string;
-  metadata: { [key: string]: string };
-  status: FileStatus;
-  modifiedGMT?: string;
-  isFolder?: boolean;
-}
+export const SyncItemValidator = z.object({
+  uuid: z.string().optional(),
+  title: z.string().min(1),
+  originalId: z.string().min(1),
+  metadata: z.record(z.string()),
+  status: z.nativeEnum(FileStatus),
+  modifiedGMT: z.string().optional(),
+  isFolder: z.boolean().optional(),
+  parents: z.array(z.string()).optional(),
+});
+export type SyncItem = z.infer<typeof SyncItemValidator>;
 
 export interface SearchResults {
   items: SyncItem[];
@@ -54,4 +57,5 @@ export interface IConnector {
   getLink(resource: SyncItem): Observable<Link>;
   hasAuthData(): boolean;
   refreshAuthentication(): Observable<boolean>;
+  isAccesTokenValid(): Observable<boolean>;
 }

@@ -1,4 +1,4 @@
-import { Observable, concatMap, forkJoin, from, map, of } from 'rxjs';
+import { Observable, catchError, concatMap, forkJoin, from, map, of } from 'rxjs';
 
 import { ConnectorParameters, FileStatus, IConnector, Link, SearchResults, SyncItem } from '../../domain/connector';
 import { SourceConnectorDefinition } from '../factory';
@@ -29,13 +29,16 @@ export class GDriveImpl extends OAuthBaseConnector implements IConnector {
     if (!params?.token) {
       return false;
     }
-    if (!params?.refresh_token) {
+    if (!params?.refresh) {
       return false;
     }
     return true;
   }
 
   getLastModified(since: string, folders?: SyncItem[] | undefined): Observable<SyncItem[]> {
+    if ((folders ?? []).length === 0) {
+      return of([]);
+    }
     try {
       return forkJoin((folders || []).map((folder) => this._getItems('', folder.uuid))).pipe(
         map((results) => {
@@ -58,6 +61,33 @@ export class GDriveImpl extends OAuthBaseConnector implements IConnector {
     return this._getItems(query);
   }
 
+  isAccesTokenValid(): Observable<boolean> {
+    return from(
+      fetch('https://www.googleapis.com/drive/v3/about?fields=user', {
+        headers: {
+          Authorization: `Bearer ${this.params.token || ''}`,
+        },
+      }).then(
+        (res) => res.json(),
+        (err) => {
+          console.error(`Error fetching about: ${err}`);
+          throw new Error(err);
+        },
+      ),
+    ).pipe(
+      concatMap((res) => {
+        if (res.error && res.error.status === 'UNAUTHENTICATED') {
+          return of(false);
+        }
+        return of(true);
+      }),
+      catchError(() => {
+        return of(true);
+      }),
+    );
+  }
+
+  // Script create the tree https://gist.github.com/tanaikech/97b336f04c739ae0181a606eab3dff42
   private _getItems(
     query = '',
     folder = '',
@@ -66,7 +96,7 @@ export class GDriveImpl extends OAuthBaseConnector implements IConnector {
     previous?: SearchResults,
   ): Observable<SearchResults> {
     let path =
-      'https://www.googleapis.com/drive/v3/files?pageSize=50&fields=nextPageToken,files(id,name,mimeType,modifiedTime)';
+      'https://www.googleapis.com/drive/v3/files?pageSize=50&fields=nextPageToken,files(id,name,mimeType,modifiedTime,parents)';
     const allDrives = '&corpora=allDrives&supportsAllDrives=true&includeItemsFromAllDrives=true';
     path += allDrives;
     if (query) {
@@ -121,6 +151,7 @@ export class GDriveImpl extends OAuthBaseConnector implements IConnector {
       title: item.name,
       originalId: item.id,
       modifiedGMT: item.modifiedTime,
+      parents: item.parents,
       metadata: {
         needsPdfConversion: needsPdfConversion ? 'yes' : 'no',
         mimeType: needsPdfConversion ? 'application/pdf' : item.mimeType,

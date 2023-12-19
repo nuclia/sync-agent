@@ -2,14 +2,8 @@ import { Blob as FSBlob } from 'buffer';
 import * as fs from 'fs';
 import path from 'path';
 import { Observable, forkJoin, map, of, switchMap } from 'rxjs';
-import {
-  ConnectorParameters,
-  FileStatus,
-  IConnector,
-  Link,
-  SearchResults,
-  SyncItem,
-} from 'src/logic/connector/domain/connector';
+
+import { ConnectorParameters, FileStatus, IConnector, Link, SearchResults, SyncItem } from '../../domain/connector';
 import { SourceConnectorDefinition } from '../factory';
 
 const FILES_TO_IGNORE = ['.DS_Store', 'Thumbs.db'];
@@ -134,6 +128,9 @@ class FolderImpl implements IConnector {
   }
 
   refreshAuthentication(): Observable<boolean> {
+    return of(true);
+  }
+  isAccesTokenValid(): Observable<boolean> {
     return of(true);
   }
 }
