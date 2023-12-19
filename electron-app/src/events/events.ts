@@ -4,6 +4,9 @@ export enum EVENTS {
   SYNC_CREATED = 'sync-created',
   SYNC_UPDATED = 'sync-updated',
   SYNC_DELETED = 'sync-deleted',
+  START_SYNCHRONIZATION_SYNC_OBJECT = 'start-synchronization-sync-object',
+  FINISH_SYNCHRONIZATION_SYNC_OBJECT = 'finish-synchronization-sync-object',
+  FINISH_SYNCHRONIZATION_SINGLE_FILE = 'finish-synchronization-single-file',
 }
 
 export type EVENTS_TYPE = (typeof EVENTS)[keyof typeof EVENTS];

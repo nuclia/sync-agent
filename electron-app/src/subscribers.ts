@@ -43,4 +43,41 @@ export function initFileSystemSubscribers(basePath: string) {
       }),
     );
   });
+
+  eventEmitter.subscribe(EVENTS.START_SYNCHRONIZATION_SYNC_OBJECT, (payload: { [key: string]: string }) => {
+    const saveLog = new SaveLogs(new LogRepository(new FileSystemLogDatasource(basePath)));
+    saveLog.execute(
+      new LogEntity({
+        message: 'Synchronization started',
+        level: LogSeverityLevel.low,
+        origin: 'electron-app',
+        action: EVENTS.START_SYNCHRONIZATION_SYNC_OBJECT,
+        payload,
+      }),
+    );
+  });
+  eventEmitter.subscribe(EVENTS.FINISH_SYNCHRONIZATION_SYNC_OBJECT, (payload: { [key: string]: string }) => {
+    const saveLog = new SaveLogs(new LogRepository(new FileSystemLogDatasource(basePath)));
+    saveLog.execute(
+      new LogEntity({
+        message: 'Synchronization finished',
+        level: LogSeverityLevel.low,
+        origin: 'electron-app',
+        action: EVENTS.FINISH_SYNCHRONIZATION_SYNC_OBJECT,
+        payload,
+      }),
+    );
+  });
+  eventEmitter.subscribe(EVENTS.FINISH_SYNCHRONIZATION_SINGLE_FILE, (payload: { [key: string]: string }) => {
+    const saveLog = new SaveLogs(new LogRepository(new FileSystemLogDatasource(basePath)));
+    saveLog.execute(
+      new LogEntity({
+        message: 'Synchronization single file finished',
+        level: LogSeverityLevel.low,
+        origin: 'electron-app',
+        action: EVENTS.FINISH_SYNCHRONIZATION_SINGLE_FILE,
+        payload,
+      }),
+    );
+  });
 }
