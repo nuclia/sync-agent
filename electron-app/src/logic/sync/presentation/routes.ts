@@ -12,6 +12,7 @@ import { SyncAllFolders } from '../domain/use-cases/sync-all-folders-data.use-ca
 import { UpdateSync } from '../domain/use-cases/update-sync.use-case';
 import { FileSystemSyncDatasource } from '../infrastructure/file-system.sync.datasource';
 import { SyncRepository } from '../infrastructure/sync.repository';
+import { GetSyncAuth } from '../domain/use-cases/get-sync-auth.use-case';
 
 export class SyncFileSystemRoutes {
   private readonly basePath: string;
@@ -78,6 +79,16 @@ export class SyncFileSystemRoutes {
       try {
         const data = await new GetSync(syncRepository).execute(id);
         res.status(200).send(data);
+      } catch (error) {
+        this.handleError(res, error);
+      }
+    });
+
+    router.get('/:id/auth', async (req, res) => {
+      const { id } = req.params;
+      try {
+        const data = await new GetSyncAuth(syncRepository).execute(id);
+        res.status(200).send({ hasAuth: data });
       } catch (error) {
         this.handleError(res, error);
       }
