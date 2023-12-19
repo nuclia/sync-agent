@@ -24,12 +24,16 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@nuclia/core": "1.9.0",
     "compression": "^1.7.4",
     "electron-squirrel-startup": "^1.0.0",
     "express": "^4.18.2",
+    "localstorage-polyfill": "^1.0.1",
+    "mime-types": "^2.1.35",
     "rxjs": "^7.8.1",
     "typescript": "^5.2.2",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@electron-forge/cli": "^6.4.2",
@@ -42,6 +46,7 @@
     "@electron-forge/publisher-github": "^6.4.2",
     "@types/compression": "^1.7.5",
     "@types/express": "^4.17.21",
+    "@types/mime-types": "^2.1.4",
     "@types/uuid": "^9.0.7",
     "@typescript-eslint/eslint-plugin": "^6.12.0",
     "@typescript-eslint/parser": "^6.12.0",
