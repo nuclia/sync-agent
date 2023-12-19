@@ -65,7 +65,7 @@ describe('Create Sync dto tests', () => {
         knowledgeBox: '',
       },
     });
-    expect(error).toEqual('knowledgeBox is mandatory');
+    expect(error).toEqual('Invalid format for kb: Error: knowledgeBox is required');
     expect(dto).toBeUndefined();
 
     [error, dto] = UpdateSyncDto.create({
@@ -74,7 +74,7 @@ describe('Create Sync dto tests', () => {
         apiKey: '',
       },
     });
-    expect(error).toEqual('apiKey is mandatory');
+    expect(error).toEqual('Invalid format for kb: Error: apiKey is required');
     expect(dto).toBeUndefined();
   });
 });

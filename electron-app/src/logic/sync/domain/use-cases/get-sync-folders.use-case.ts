@@ -4,6 +4,7 @@ import { SearchResults } from '../../../connector/domain/connector';
 import { CustomError } from '../../../errors';
 import { SyncEntity } from '../sync.entity';
 import { ISyncRepository } from '../sync.repository';
+import { RefreshAccessToken } from './refresh-acces-token.use-case';
 
 export interface GetSyncFoldersUseCase {
   execute(id: string): Promise<SearchResults>;
@@ -17,8 +18,13 @@ export class GetSyncFolders implements GetSyncFoldersUseCase {
     if (data === null) {
       throw new CustomError(`Sync with id ${id} not found`, 404);
     }
-    const syncEntity = new SyncEntity(data);
-    const dataFolders = await firstValueFrom(syncEntity.folders.pipe());
-    return dataFolders;
+
+    try {
+      const syncEntity = new SyncEntity(data);
+      const updatedEntity = await firstValueFrom(new RefreshAccessToken(this.repository).execute(syncEntity));
+      return await firstValueFrom(updatedEntity.allFolders.pipe());
+    } catch (error) {
+      throw new CustomError(`Error getting folders for sync with id ${id}`, 500);
+    }
   }
 }
