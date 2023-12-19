@@ -130,4 +130,8 @@ export class SyncEntity {
   getConnectorParameters() {
     return this.sourceConnector!.getParameters();
   }
+
+  hasAuthData() {
+    return this.sourceConnector!.hasAuthData();
+  }
 }
