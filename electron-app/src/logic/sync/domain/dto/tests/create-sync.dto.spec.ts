@@ -75,7 +75,7 @@ describe('Create Sync dto tests', () => {
     });
 
     expect(error).toEqual(
-      'Invalid format for kb: Error: backend is required, zone is required, knowledgeBox is required, apiKey is required',
+      'Invalid format for kb: Error: backend: Required, zone: Required, knowledgeBox: Required, apiKey: Required',
     );
     expect(dto).toBeUndefined();
 
@@ -87,7 +87,7 @@ describe('Create Sync dto tests', () => {
       },
     });
 
-    expect(error).toEqual('Invalid format for kb: Error: backend is required, zone is required, apiKey is required');
+    expect(error).toEqual('Invalid format for kb: Error: backend: Required, zone: Required, apiKey: Required');
     expect(dto).toBeUndefined();
 
     [error, dto] = CreateSyncDto.create({
@@ -99,7 +99,7 @@ describe('Create Sync dto tests', () => {
       },
     });
 
-    expect(error).toEqual('Invalid format for kb: Error: backend is required, zone is required, apiKey is required');
+    expect(error).toEqual('Invalid format for kb: Error: backend: Required, zone: Required, apiKey: Required');
     expect(dto).toBeUndefined();
 
     [error, dto] = CreateSyncDto.create({
@@ -111,7 +111,7 @@ describe('Create Sync dto tests', () => {
       },
     });
 
-    expect(error).toEqual('Invalid format for kb: Error: backend is required, apiKey is required');
+    expect(error).toEqual('Invalid format for kb: Error: backend: Required, apiKey: Required');
     expect(dto).toBeUndefined();
 
     [error, dto] = CreateSyncDto.create({
@@ -124,7 +124,7 @@ describe('Create Sync dto tests', () => {
       },
     });
 
-    expect(error).toEqual('Invalid format for kb: Error: apiKey is required');
+    expect(error).toEqual('Invalid format for kb: Error: apiKey: Required');
     expect(dto).toBeUndefined();
   });
 });

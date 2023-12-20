@@ -57,7 +57,7 @@ export class UpdateSyncDto {
       }
     }
 
-    if (foldersToSync) {
+    if (foldersToSync && foldersToSync.length > 0) {
       let errorMsg = '';
       const valid = foldersToSync.some((folder) => {
         try {

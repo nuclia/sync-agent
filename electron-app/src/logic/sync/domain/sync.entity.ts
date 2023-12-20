@@ -16,25 +16,23 @@ export const NucliaOptionsValidator = z.object({
    * The Nuclia backend to use.
    *
    * Example: `https://nuclia.cloud/api` */
-  backend: z.string({ required_error: 'backend is required' }).min(1, { message: 'backend is required' }),
+  backend: z.string().min(1, { message: 'Required' }),
   /**
    * The geographical zone for the regional API calls.
    *
    * Example: `europe-1` */
-  zone: z.string({ required_error: 'zone is required' }).min(1, { message: 'zone is required' }),
+  zone: z.string().min(1, { message: 'Required' }),
   /**
    * The Nuclia Knowledge Box unique id.
    *
    * Example: `17815eb2-06a5-40ee-a5aa-b2f9dbc5da70` */
-  knowledgeBox: z
-    .string({ required_error: 'knowledgeBox is required' })
-    .min(1, { message: 'knowledgeBox is required' }),
+  knowledgeBox: z.string().min(1, { message: 'Required' }),
   /**
    * Allows you to make calls to a private Knowledge Box.
    *
    * It can be used in a server-side app, but never in a web app.
    */
-  apiKey: z.string({ required_error: 'apiKey is required' }).min(1, { message: 'apiKey is required' }),
+  apiKey: z.string().min(1, { message: 'Required' }),
 });
 
 export type NucliaOptions = z.infer<typeof NucliaOptionsValidator>;

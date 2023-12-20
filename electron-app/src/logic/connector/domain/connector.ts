@@ -19,8 +19,8 @@ export interface ConnectorParameters {
 
 export const SyncItemValidator = z.object({
   uuid: z.string().optional(),
-  title: z.string().min(1),
-  originalId: z.string().min(1),
+  title: z.string().min(1, { message: 'Required' }),
+  originalId: z.string().min(1, { message: 'Required' }),
   metadata: z.record(z.string()),
   status: z.nativeEnum(FileStatus),
   modifiedGMT: z.string().optional(),
