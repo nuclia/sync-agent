@@ -23,17 +23,33 @@ jobs:
       run: npm install
       working-directory: electron-app
 
+    - name: install dependencies
+      run: npm install
+      working-directory: server
+
     - name: lint/format
       env:
         CI: false
       run: npm run ci:format
       working-directory: electron-app
 
+    - name: lint/format
+      env:
+        CI: false
+      run: npm run ci:format
+      working-directory: server
+
     - name: test
       env:
         CI: false
       run: npm run test
       working-directory: electron-app
+
+    - name: test
+      env:
+        CI: false
+      run: npm run test
+      working-directory: server
 
     - name: build
       env:
