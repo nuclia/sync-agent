@@ -34,7 +34,8 @@
     "rxjs": "^7.8.1",
     "typescript": "^5.2.2",
     "uuid": "^9.0.1",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "@nuclia/sync-agent": "file:../server"
   },
   "devDependencies": {
     "@electron-forge/cli": "^6.4.2",
@@ -63,6 +64,9 @@
   "config": {
     "forge": "./forge.config.js"
   },
+  "extraResources": [
+    "./public/**"
+  ],
   "engines": {
     "node": ">=20.0.0"
   }
