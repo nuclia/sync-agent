@@ -1,7 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
 import { MakeOptional } from '../../../../types/server';
 import { getConnector } from '../../../connector/infrastructure/factory';
-import { ISyncEntity } from '../sync.entity';
+import { ISyncEntity, NucliaOptionsValidator } from '../sync.entity';
+import { validateZodSchema } from './validate';
 
 export class CreateSyncDto {
   private constructor(public readonly options: ISyncEntity) {}
@@ -34,18 +35,15 @@ export class CreateSyncDto {
     }
 
     if (props.kb) {
-      if (!props.kb.knowledgeBox) {
-        return ['knowledgeBox is mandatory'];
+      try {
+        validateZodSchema(NucliaOptionsValidator, props.kb);
+      } catch (error) {
+        return [`Invalid format for kb: ${error}`];
       }
-      if (!props.kb.zone) {
-        return ['zone is mandatory'];
-      }
-      if (!props.kb.backend) {
-        return ['backend is mandatory'];
-      }
-      if (!props.kb.apiKey) {
-        return ['apiKey is mandatory'];
-      }
+    }
+
+    if (props.foldersToSync) {
+      return ['You can not create a sync with foldersToSync'];
     }
 
     return [undefined, new CreateSyncDto({ ...props, id })];

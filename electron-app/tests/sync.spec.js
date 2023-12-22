@@ -68,10 +68,22 @@ describe('Test Sync object', () => {
     });
   });
 
+  serverTest('Get entity auth', async ({ serverWithOAuthSync }) => {
+    const responseAuth = await request(serverWithOAuthSync.app).get('/sync/sync_oauth_gdrive/auth');
+    expect(responseAuth.status).toBe(200);
+    expect(responseAuth.body.hasAuth).toBe(true);
+  });
+
+  serverTest('Get entity auth', async ({ serverWithSyncWithoutConnector }) => {
+    const responseAuth = await request(serverWithSyncWithoutConnector.app).get('/sync/sync_without_connector/auth');
+    expect(responseAuth.status).toBe(200);
+    expect(responseAuth.body.hasAuth).toBe(false);
+  });
+
   serverTest('Delete a sync', async ({ serverWithSync }) => {
     let response = await request(serverWithSync.app).get('/sync');
     expect(response.status).toBe(200);
-    expect(Object.keys(response.body).length).toEqual(1);
+    expect(Object.keys(response.body).length).toEqual(3);
 
     const id = Object.keys(response.body)[0];
     const responseDelete = await request(serverWithSync.app).delete(`/sync/${id}`);
@@ -79,6 +91,6 @@ describe('Test Sync object', () => {
 
     response = await request(serverWithSync.app).get('/sync');
     expect(response.status).toBe(200);
-    expect(Object.keys(response.body).length).toEqual(0);
+    expect(Object.keys(response.body).length).toEqual(2);
   });
 });

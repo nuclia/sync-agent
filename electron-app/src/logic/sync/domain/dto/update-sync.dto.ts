@@ -1,5 +1,7 @@
+import { SyncItemValidator } from '../../../connector/domain/connector';
 import { getConnector } from '../../../connector/infrastructure/factory';
 import { ISyncEntity } from '../sync.entity';
+import { validateZodSchema } from './validate';
 
 type Values = Partial<ISyncEntity> & { id: string };
 export class UpdateSyncDto {
@@ -14,12 +16,14 @@ export class UpdateSyncDto {
     if (this.options.kb) returnObj.kb = this.options.kb;
     if (this.options.labels) returnObj.labels = this.options.labels;
     if (this.options.title) returnObj.title = this.options.title;
+    if (this.options.lastSyncGMT) returnObj.lastSyncGMT = this.options.lastSyncGMT;
+    if (this.options.foldersToSync) returnObj.foldersToSync = this.options.foldersToSync;
 
     return returnObj;
   }
 
   static create(props: Values): [string?, UpdateSyncDto?] {
-    const { id, connector, kb } = props;
+    const { id, connector, kb, foldersToSync } = props;
 
     if (!id) {
       return ['id is mandatory'];
@@ -34,21 +38,37 @@ export class UpdateSyncDto {
         return [`Connector ${connector.name} parameters are not valid`];
       }
     }
+
     const isDefined = (value: unknown) => value !== null && value !== undefined;
 
     if (kb) {
       const { knowledgeBox, zone, backend, apiKey } = kb;
       if (isDefined(knowledgeBox) && !knowledgeBox) {
-        return ['knowledgeBox is mandatory'];
+        return ['Invalid format for kb: Error: knowledgeBox is required'];
       }
       if (isDefined(zone) && !zone) {
-        return ['zone is mandatory'];
+        return ['Invalid format for kb: Error: zone is required'];
       }
       if (isDefined(backend) && !backend) {
-        return ['backend is mandatory'];
+        return ['Invalid format for kb: Error: backend is required'];
       }
       if (isDefined(apiKey) && !apiKey) {
-        return ['apiKey is mandatory'];
+        return ['Invalid format for kb: Error: apiKey is required'];
+      }
+    }
+
+    if (foldersToSync && foldersToSync.length > 0) {
+      let errorMsg = '';
+      const valid = foldersToSync.some((folder) => {
+        try {
+          validateZodSchema(SyncItemValidator, folder);
+          return true;
+        } catch (error) {
+          errorMsg = `Invalid format for foldersToSync: ${error}`;
+        }
+      });
+      if (!valid) {
+        return [errorMsg];
       }
     }
 

@@ -5,8 +5,8 @@ import { UpdateSyncDto } from '../update-sync.dto';
 const props: any = {
   id: 'test',
 };
-describe('Create Sync dto tests', () => {
-  test('should create a valid dto', () => {
+describe('Update Sync dto tests', () => {
+  test('should update a valid dto', () => {
     let [error, dto] = UpdateSyncDto.create(props);
     expect(error).toBeUndefined();
     expect(dto).toBeDefined();
@@ -15,6 +15,17 @@ describe('Create Sync dto tests', () => {
       ...props,
       connector: undefined,
       kb: undefined,
+      foldersToSync: undefined,
+    });
+    expect(error).toBeUndefined();
+    expect(dto).toBeDefined();
+
+    [error, dto] = UpdateSyncDto.create({
+      ...props,
+      foldersToSync: [],
+      kb: {
+        backend: 'backend',
+      },
     });
     expect(error).toBeUndefined();
     expect(dto).toBeDefined();
@@ -24,6 +35,7 @@ describe('Create Sync dto tests', () => {
       kb: {
         backend: 'backend',
       },
+      foldersToSync: [{ title: 'folder1', metadata: {}, status: 'PENDING', originalId: 'id' }],
     });
     expect(error).toBeUndefined();
     expect(dto).toBeDefined();
@@ -65,7 +77,7 @@ describe('Create Sync dto tests', () => {
         knowledgeBox: '',
       },
     });
-    expect(error).toEqual('knowledgeBox is mandatory');
+    expect(error).toEqual('Invalid format for kb: Error: knowledgeBox is required');
     expect(dto).toBeUndefined();
 
     [error, dto] = UpdateSyncDto.create({
@@ -74,7 +86,44 @@ describe('Create Sync dto tests', () => {
         apiKey: '',
       },
     });
-    expect(error).toEqual('apiKey is mandatory');
+    expect(error).toEqual('Invalid format for kb: Error: apiKey is required');
+    expect(dto).toBeUndefined();
+  });
+
+  test('should not update a valid dto - folders to sync params error', () => {
+    let [error, dto] = UpdateSyncDto.create({
+      ...props,
+      foldersToSync: [{}],
+    });
+    expect(error).toEqual(
+      'Invalid format for foldersToSync: Error: title: Required, originalId: Required, metadata: Required',
+    );
+    expect(dto).toBeUndefined();
+
+    [error, dto] = UpdateSyncDto.create({
+      ...props,
+      foldersToSync: [{ title: 'folder1' }],
+    });
+    expect(error).toEqual('Invalid format for foldersToSync: Error: originalId: Required, metadata: Required');
+    expect(dto).toBeUndefined();
+
+    [error, dto] = UpdateSyncDto.create({
+      ...props,
+      foldersToSync: [{ title: 'folder1', metadata: 'metadata' }],
+    });
+    expect(error).toEqual(
+      'Invalid format for foldersToSync: Error: originalId: Required, metadata: Expected object, received string',
+    );
+    expect(dto).toBeUndefined();
+
+    [error, dto] = UpdateSyncDto.create({
+      ...props,
+      foldersToSync: [{ title: 'folder1', metadata: {}, status: '' }],
+    });
+    expect(error).toEqual(
+      // eslint-disable-next-line quotes
+      "Invalid format for foldersToSync: Error: originalId: Required, status: Invalid enum value. Expected 'PENDING' | 'PROCESSING' | 'UPLOADED', received ''",
+    );
     expect(dto).toBeUndefined();
   });
 });

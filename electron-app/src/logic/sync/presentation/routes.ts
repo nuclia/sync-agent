@@ -6,12 +6,13 @@ import { UpdateSyncDto } from '../domain/dto/update-sync.dto';
 import { CreateSync } from '../domain/use-cases/create-sync.use-case';
 import { DeleteSync } from '../domain/use-cases/delete-sync.use-case';
 import { GetAllSync } from '../domain/use-cases/get-all-sync.use-case';
+import { GetSyncAuth } from '../domain/use-cases/get-sync-auth.use-case';
 import { GetSyncFolders } from '../domain/use-cases/get-sync-folders.use-case';
 import { GetSync } from '../domain/use-cases/get-sync.use-case';
+import { SyncAllFolders } from '../domain/use-cases/sync-all-folders-data.use-case';
 import { UpdateSync } from '../domain/use-cases/update-sync.use-case';
 import { FileSystemSyncDatasource } from '../infrastructure/file-system.sync.datasource';
 import { SyncRepository } from '../infrastructure/sync.repository';
-import { GetSyncAuth } from '../domain/use-cases/get-sync-auth.use-case';
 
 export class SyncFileSystemRoutes {
   private readonly basePath: string;
@@ -46,6 +47,15 @@ export class SyncFileSystemRoutes {
       try {
         const data = await new GetAllSync(syncRepository).execute();
         res.status(200).send(data);
+      } catch (error) {
+        this.handleError(res, error);
+      }
+    });
+
+    router.get('/execute', async (_req, res) => {
+      try {
+        await new SyncAllFolders(syncRepository).execute();
+        res.status(200).send({ success: true });
       } catch (error) {
         this.handleError(res, error);
       }
