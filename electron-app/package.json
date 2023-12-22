@@ -3,7 +3,7 @@
   "productName": "nuclia-sync-agent",
   "version": "0.0.1",
   "description": "This is a Nuclia Sync Agent App",
-  "main": "build/index.js",
+  "main": "build/electron-app/src/index.js",
   "scripts": {
     "compile": "tsc",
     "start": "npm run compile && electron-forge start",
@@ -63,6 +63,9 @@
   "config": {
     "forge": "./forge.config.js"
   },
+  "extraResources": [
+    "./public/**"
+  ],
   "engines": {
     "node": ">=20.0.0"
   }

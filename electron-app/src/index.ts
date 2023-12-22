@@ -1,12 +1,12 @@
 import { Menu, Tray, app, nativeImage } from 'electron';
 import os from 'os';
 import path from 'path';
-import { EVENTS } from './events/events';
-import { beforeStartServer } from './fileSystemServerFn';
+import { EVENTS } from '../../server/src/events/events';
+import { beforeStartServer } from '../../server/src/fileSystemServerFn';
 
-import { AppFileSystemRoutes } from './presentation/routes';
-import { Server, eventEmitter } from './server';
-import { initFileSystemSubscribers } from './subscribers';
+import { AppFileSystemRoutes } from '../../server/src/presentation/routes';
+import { Server, eventEmitter } from '../../server/src/server';
+import { initFileSystemSubscribers } from '../../server/src/subscribers';
 
 let contextMenu: Electron.Menu;
 let tray = null;
