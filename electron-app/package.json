@@ -3,7 +3,7 @@
   "productName": "nuclia-sync-agent",
   "version": "0.0.1",
   "description": "This is a Nuclia Sync Agent App",
-  "main": "build/electron-app/src/index.js",
+  "main": "build/index.js",
   "scripts": {
     "compile": "tsc",
     "start": "npm run compile && electron-forge start",
@@ -34,7 +34,8 @@
     "rxjs": "^7.8.1",
     "typescript": "^5.2.2",
     "uuid": "^9.0.1",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "@nuclia/sync-agent": "file:../server"
   },
   "devDependencies": {
     "@electron-forge/cli": "^6.4.2",

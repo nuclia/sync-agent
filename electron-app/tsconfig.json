@@ -1,14 +1,12 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "target": "es2015",
     "module": "commonjs",
     "strict": true,
     "esModuleInterop": true,
     "outDir": "./build",
-    "paths": {
-      "@server/*": ["../server/src/*"],
-    }
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "**/*.spec.ts", "**/*.spec.js"]
+  "exclude": ["**/*.spec.ts", "**/*.spec.js"]
 }
