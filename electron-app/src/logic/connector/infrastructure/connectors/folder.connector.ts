@@ -43,7 +43,38 @@ class FolderImpl implements IConnector {
     return this._getFiles(this.params.path, query);
   }
 
-  getLastModified(since: string, folders?: SyncItem[]): Observable<SyncItem[]> {
+  getFilesFromFolders(folders: SyncItem[]): Observable<SearchResults> {
+    if ((folders ?? []).length === 0) {
+      return of({
+        items: [],
+      });
+    }
+    try {
+      return forkJoin((folders || []).map((folder) => this._getFiles(folder.originalId))).pipe(
+        map((results) => {
+          const result: { items: SyncItem[] } = {
+            items: [],
+          };
+          results.forEach((res) => {
+            result.items = [...result.items, ...res.items];
+          });
+          return result;
+        }),
+      );
+    } catch (err) {
+      return of({
+        items: [],
+      });
+    }
+  }
+
+  getLastModified(since: string, folders?: SyncItem[]): Observable<SearchResults> {
+    if ((folders ?? []).length === 0) {
+      return of({
+        items: [],
+      });
+    }
+
     try {
       return forkJoin(
         (folders || []).map((folder) =>
@@ -51,9 +82,18 @@ class FolderImpl implements IConnector {
             switchMap((results) => this.getFilesModifiedSince(results.items, since)),
           ),
         ),
-      ).pipe(map((results) => results.reduce((acc, result) => acc.concat(result), [] as SyncItem[])));
+      ).pipe(
+        map((results) => {
+          const items = results.reduce((acc, result) => acc.concat(result), [] as SyncItem[]);
+          return {
+            items,
+          };
+        }),
+      );
     } catch (err) {
-      return of([]);
+      return of({
+        items: [],
+      });
     }
   }
 

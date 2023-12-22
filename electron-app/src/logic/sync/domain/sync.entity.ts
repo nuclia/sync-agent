@@ -1,7 +1,7 @@
-import { Observable, catchError, map, of } from 'rxjs';
+import { Observable, catchError, forkJoin, map, of } from 'rxjs';
 
 import { z } from 'zod';
-import { IConnector, SearchResults, SyncItem } from '../../connector/domain/connector';
+import { FileStatus, IConnector, SearchResults, SyncItem } from '../../connector/domain/connector';
 import { getConnector } from '../../connector/infrastructure/factory';
 
 export type Connector = {
@@ -99,22 +99,28 @@ export class SyncEntity {
   }
 
   getLastModified(): Observable<{ success: boolean; results: SyncItem[]; error?: string }> {
-    try {
-      return this.sourceConnector!.getLastModified(
-        this.lastSyncGMT || '2000-01-01T00:00:00.000Z',
-        this.foldersToSync,
-      ).pipe(
-        map((results) => {
-          return { success: true, results };
-        }),
-        catchError((err) => {
-          console.error(`Error on ${this.id}: ${err.message}`);
-          return of({ success: false, results: [], error: `${err}` });
-        }),
-      );
-    } catch (err) {
-      return of({ success: false, results: [], error: `${err}` });
-    }
+    const foldersToSyncPending: SyncItem[] = (this.foldersToSync ?? []).filter(
+      (folder) => folder.status === FileStatus.PENDING || folder.status === undefined,
+    );
+    const foldersToSyncUpdated: SyncItem[] = (this.foldersToSync ?? []).filter(
+      (folder) => folder.status === FileStatus.UPLOADED,
+    );
+
+    const getFilesFoldersUpdated = this.sourceConnector!.getLastModified(
+      this.lastSyncGMT || '2000-01-01T00:00:00.000Z',
+      foldersToSyncUpdated,
+    );
+    const getFilesFolderPending = this.sourceConnector!.getFilesFromFolders(foldersToSyncPending);
+    return forkJoin([getFilesFoldersUpdated, getFilesFolderPending]).pipe(
+      map((results) => {
+        const [updated, pending] = results;
+        return { success: true, results: [...updated.items, ...pending.items] };
+      }),
+      catchError((err) => {
+        console.error(`Error on ${this.id}: ${err.message}`);
+        return of({ success: false, results: [], error: `${err}` });
+      }),
+    );
   }
 
   isAccesTokenValid(): Observable<boolean> {

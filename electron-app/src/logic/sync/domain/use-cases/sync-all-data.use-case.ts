@@ -6,7 +6,7 @@ import { eventEmitter } from '../../../../server';
 import { UpdateSyncDto } from '../dto/update-sync.dto';
 import { SyncEntity } from '../sync.entity';
 import { ISyncRepository } from '../sync.repository';
-import { RefreshAccessToken } from './refresh-acces-token.use-case';
+import { RefreshAccessToken } from './refresh-access-token.use-case';
 import { SyncSingleFile } from './sync-single-file.use-case';
 import { UpdateSync } from './update-sync.use-case';
 

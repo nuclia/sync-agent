@@ -22,7 +22,7 @@ export const SyncItemValidator = z.object({
   title: z.string().min(1, { message: 'Required' }),
   originalId: z.string().min(1, { message: 'Required' }),
   metadata: z.record(z.string()),
-  status: z.nativeEnum(FileStatus),
+  status: z.nativeEnum(FileStatus).optional(),
   modifiedGMT: z.string().optional(),
   isFolder: z.boolean().optional(),
   parents: z.array(z.string()).optional(),
@@ -51,7 +51,8 @@ export interface IConnector {
   getParameters(): ConnectorParameters;
   getFolders(query?: string): Observable<SearchResults>;
   getFiles(query?: string): Observable<SearchResults>;
-  getLastModified(since: string, folders?: SyncItem[]): Observable<SyncItem[]>;
+  getFilesFromFolders(folders: SyncItem[]): Observable<SearchResults>;
+  getLastModified(since: string, folders?: SyncItem[]): Observable<SearchResults>;
   // we cannot use the TextField from the SDK because we want to keep connectors independant
   download(resource: SyncItem): Observable<Blob | { body: string; format?: 'PLAIN' | 'MARKDOWN' | 'HTML' } | undefined>;
   getLink(resource: SyncItem): Observable<Link>;

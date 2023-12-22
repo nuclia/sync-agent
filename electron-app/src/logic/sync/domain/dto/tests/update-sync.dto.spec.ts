@@ -96,7 +96,7 @@ describe('Update Sync dto tests', () => {
       foldersToSync: [{}],
     });
     expect(error).toEqual(
-      'Invalid format for foldersToSync: Error: title: Required, originalId: Required, metadata: Required, status: Required',
+      'Invalid format for foldersToSync: Error: title: Required, originalId: Required, metadata: Required',
     );
     expect(dto).toBeUndefined();
 
@@ -104,9 +104,7 @@ describe('Update Sync dto tests', () => {
       ...props,
       foldersToSync: [{ title: 'folder1' }],
     });
-    expect(error).toEqual(
-      'Invalid format for foldersToSync: Error: originalId: Required, metadata: Required, status: Required',
-    );
+    expect(error).toEqual('Invalid format for foldersToSync: Error: originalId: Required, metadata: Required');
     expect(dto).toBeUndefined();
 
     [error, dto] = UpdateSyncDto.create({
@@ -114,7 +112,7 @@ describe('Update Sync dto tests', () => {
       foldersToSync: [{ title: 'folder1', metadata: 'metadata' }],
     });
     expect(error).toEqual(
-      'Invalid format for foldersToSync: Error: originalId: Required, metadata: Expected object, received string, status: Required',
+      'Invalid format for foldersToSync: Error: originalId: Required, metadata: Expected object, received string',
     );
     expect(dto).toBeUndefined();
 

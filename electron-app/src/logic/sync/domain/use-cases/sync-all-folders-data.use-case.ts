@@ -3,10 +3,11 @@ import { Observable, delay, forkJoin, map, of, switchMap, tap } from 'rxjs';
 
 import { EVENTS } from '../../../../events/events';
 import { eventEmitter } from '../../../../server';
+import { FileStatus } from '../../../connector/domain/connector';
 import { UpdateSyncDto } from '../dto/update-sync.dto';
 import { SyncEntity } from '../sync.entity';
 import { ISyncRepository } from '../sync.repository';
-import { RefreshAccessToken } from './refresh-acces-token.use-case';
+import { RefreshAccessToken } from './refresh-access-token.use-case';
 import { SyncSingleFile } from './sync-single-file.use-case';
 import { UpdateSync } from './update-sync.use-case';
 
@@ -29,9 +30,15 @@ export class SyncAllFolders implements SyncAllFoldersUseCase {
       error,
     });
 
+    const foldersToSyncCopy = (structuredClone(syncEntity.foldersToSync) ?? []).map((folder) => {
+      folder.status = FileStatus.UPLOADED;
+      return folder;
+    });
+
     const [, updateSyncDto] = UpdateSyncDto.create({
       lastSyncGMT: new Date().toISOString(),
       id: syncEntity.id,
+      foldersToSync: foldersToSyncCopy,
     });
     new UpdateSync(this.repository).execute(updateSyncDto!);
   };

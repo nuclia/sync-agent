@@ -4,7 +4,7 @@ import { SearchResults } from '../../../connector/domain/connector';
 import { CustomError } from '../../../errors';
 import { SyncEntity } from '../sync.entity';
 import { ISyncRepository } from '../sync.repository';
-import { RefreshAccessToken } from './refresh-acces-token.use-case';
+import { RefreshAccessToken } from './refresh-access-token.use-case';
 
 export interface GetSyncFoldersUseCase {
   execute(id: string): Promise<SearchResults>;

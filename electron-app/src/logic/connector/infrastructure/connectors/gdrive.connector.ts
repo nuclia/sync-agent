@@ -35,21 +35,53 @@ export class GDriveImpl extends OAuthBaseConnector implements IConnector {
     return true;
   }
 
-  getLastModified(since: string, folders?: SyncItem[] | undefined): Observable<SyncItem[]> {
+  getLastModified(since: string, folders?: SyncItem[] | undefined): Observable<SearchResults> {
     if ((folders ?? []).length === 0) {
-      return of([]);
+      return of({
+        items: [],
+      });
     }
     try {
       return forkJoin((folders || []).map((folder) => this._getItems('', folder.uuid))).pipe(
         map((results) => {
-          return results.reduce(
+          const items = results.reduce(
             (acc, result) => acc.concat(result.items.filter((item) => item.modifiedGMT && item.modifiedGMT > since)),
             [] as SyncItem[],
           );
+          return {
+            items,
+          };
         }),
       );
     } catch (err) {
-      return of([]);
+      return of({
+        items: [],
+      });
+    }
+  }
+
+  getFilesFromFolders(folders: SyncItem[]): Observable<SearchResults> {
+    if ((folders ?? []).length === 0) {
+      return of({
+        items: [],
+      });
+    }
+    try {
+      return forkJoin((folders || []).map((folder) => this._getItems('', folder.uuid))).pipe(
+        map((results) => {
+          const result: { items: SyncItem[] } = {
+            items: [],
+          };
+          results.forEach((res) => {
+            result.items = [...result.items, ...res.items];
+          });
+          return result;
+        }),
+      );
+    } catch (err) {
+      return of({
+        items: [],
+      });
     }
   }
 

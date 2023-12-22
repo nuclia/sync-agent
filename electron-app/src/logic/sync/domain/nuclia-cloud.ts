@@ -52,7 +52,6 @@ export class NucliaCloud {
         switchMap((kb) =>
           kb.getResourceBySlug(slug, [], []).pipe(
             switchMap((resource) => {
-              console.log('get source from nuclia', resource);
               if (data.metadata?.labels) {
                 return resource
                   .modify({ usermetadata: { classifications: data.metadata.labels } })
