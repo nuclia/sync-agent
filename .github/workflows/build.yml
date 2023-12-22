@@ -45,6 +45,12 @@ jobs:
       run: npm run test
       working-directory: server
 
+    - name: compile server
+      env:
+        CI: false
+      run: npm run compile
+      working-directory: server
+
     - name: build
       env:
         CI: false
