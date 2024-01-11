@@ -1,4 +1,5 @@
 import { IConnector } from '../domain/connector';
+import { DropboxConnector } from './connectors/dropbox.connector';
 import { FolderConnector } from './connectors/folder.connector';
 import { GDriveConnector } from './connectors/gdrive.connector';
 
@@ -17,6 +18,7 @@ export type CONNECTORS_NAMES = 'folder' | 'gdrive';
 const connectors: { [id: string]: SourceConnectorDefinition } = {
   folder: FolderConnector,
   gdrive: GDriveConnector,
+  dropbox: DropboxConnector,
 };
 
 // TODO: add the dynamic connectors
