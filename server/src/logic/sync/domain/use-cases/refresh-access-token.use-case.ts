@@ -28,7 +28,7 @@ export class RefreshAccessToken implements RefreshAccessTokenUseCase {
                 });
                 await new UpdateSync(this.repository).execute(updateSyncDto!);
               } else {
-                throw new Error('Failed to refresh authentication');
+                throw new Error(`Failed to refresh authentication for ${entity.id}`);
               }
               return entity;
             }),

@@ -109,7 +109,10 @@ export class DropboxImpl extends OAuthBaseConnector implements IConnector {
       ),
     ).pipe(
       concatMap((res) => {
-        if (res.error && res.error['.tag'] === 'invalid_access_token') {
+        if (
+          res.error &&
+          (res.error['.tag'] === 'invalid_access_token' || res.error['.tag'] === 'expired_access_token')
+        ) {
           return of(false);
         }
         return of(true);
