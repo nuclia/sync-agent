@@ -2,7 +2,7 @@ import { Menu, Tray, app, nativeImage } from 'electron';
 import os from 'os';
 import path from 'path';
 
-import { EVENTS, eventEmitter, initFileSystemServer } from '@nuclia/sync-agent';
+import { EVENTS, eventEmitter, initFileSystemServer } from './sync-agent';
 
 let contextMenu: Electron.Menu;
 let tray = null;
