@@ -5,7 +5,7 @@ export class OAuthBaseConnector {
   params: ConnectorParameters = {};
   refreshAuthentication(): Observable<boolean> {
     return from(
-      fetch(`https://nuclia.cloud/api/external_auth/gdrive/refresh?refresh_token=${this.params.refresh}`, {
+      fetch(`${this.params.refresh_endpoint}?refresh_token=${this.params.refresh}`, {
         method: 'GET',
         headers: {
           origin: 'http://localhost:4200/',
