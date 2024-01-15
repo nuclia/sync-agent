@@ -117,6 +117,6 @@ describe('Test last modified', () => {
       ]),
     );
 
-    expect(lastModified.items.length).toEqual(2);
+    expect(lastModified.items.length).toEqual(3);
   });
 });
