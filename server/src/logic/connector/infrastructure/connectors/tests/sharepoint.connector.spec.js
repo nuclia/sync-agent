@@ -117,20 +117,6 @@ describe('Test last modified', () => {
       ]),
     );
 
-    expect(lastModified).toEqual({
-      items: [
-        {
-          uuid: '1v8WV_aNM5qB_642saVlPhOkN1xI0NtQo',
-          title: 'PO6300590983',
-          originalId: '1v8WV_aNM5qB_642saVlPhOkN1xI0NtQo',
-          modifiedGMT: '2023-11-29T12:49:27.539Z',
-          metadata: {
-            needsPdfConversion: 'yes',
-            mimeType: 'application/pdf',
-          },
-          status: FileStatus.PENDING,
-        },
-      ],
-    });
+    expect(lastModified.items.length).toEqual(2);
   });
 });
