@@ -1,19 +1,12 @@
 import { Menu, Tray, app, nativeImage } from 'electron';
 import os from 'os';
 import path from 'path';
-import { EVENTS } from './events/events';
-import { beforeStartServer } from './fileSystemServerFn';
 
-import { AppFileSystemRoutes } from './presentation/routes';
-import { Server, eventEmitter } from './server';
-import { initFileSystemSubscribers } from './subscribers';
+import { EVENTS, eventEmitter, initFileSystemServer } from './sync-agent';
 
 let contextMenu: Electron.Menu;
 let tray = null;
 const basePath = `${os.homedir()}/.nuclia`;
-const appRoutes = new AppFileSystemRoutes(basePath);
-const server = new Server({ port: 8000, routes: appRoutes.getRoutes() });
-initFileSystemSubscribers(basePath);
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -31,7 +24,7 @@ const updateTrayAfterStopServer = () => {
 
 const createWindow = async () => {
   const icon = nativeImage.createFromPath(path.join(__dirname, '../public/logo.png'));
-
+  const server = await initFileSystemServer(basePath);
   tray = new Tray(icon);
   contextMenu = Menu.buildFromTemplate([
     {
@@ -58,7 +51,6 @@ const createWindow = async () => {
   ]);
   tray.setToolTip('Nuclia sync');
   tray.setContextMenu(contextMenu);
-  await beforeStartServer(basePath);
   server.start();
 };
 

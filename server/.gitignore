@@ -98,4 +98,3 @@ http_server
 .DS_Store
 
 build
-src/sync-agent

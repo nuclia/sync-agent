@@ -1,15 +1,18 @@
 {
-  "name": "nuclia-sync-agent",
-  "productName": "nuclia-sync-agent",
+  "name": "@nuclia/sync-agent",
   "version": "0.0.1",
-  "description": "This is a Nuclia Sync Agent App",
+  "description": "This is a sync agent to synchronize user files from diferent sources to nuclia",
   "main": "build/index.js",
+  "types": "build/types/index.d.ts",
+  "files": [
+    "build/events/index.js"
+  ],
+  "keywords": [
+    "Nuclia"
+  ],
+  "license": "MIT",
   "scripts": {
     "compile": "tsc",
-    "start": "npm run compile && electron-forge start",
-    "package": "electron-forge package",
-    "make": "npm run compile && electron-forge make",
-    "publish": "electron-forge publish",
     "lint": "eslint .",
     "test": "vitest run --threads=false",
     "test:watch": "vitest",
@@ -17,34 +20,19 @@
     "format": "prettier . --write",
     "ci:format": "prettier . --check && eslint ."
   },
-  "keywords": [],
-  "author": {
-    "name": "Roger Boixader Güell",
-    "email": "r.boixader@iskra.cat"
-  },
-  "license": "MIT",
   "dependencies": {
-    "@nuclia/core": "1.9.0",
+    "@nuclia/core": "1.9.1",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
-    "electron-squirrel-startup": "^1.0.0",
     "express": "^4.18.2",
     "localstorage-polyfill": "^1.0.1",
     "mime-types": "^2.1.35",
     "rxjs": "^7.8.1",
-    "typescript": "^5.2.2",
+    "typescript": "^5.3.3",
     "uuid": "^9.0.1",
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@electron-forge/cli": "^6.4.2",
-    "@electron-forge/maker-deb": "^6.4.2",
-    "@electron-forge/maker-dmg": "^6.4.2",
-    "@electron-forge/maker-rpm": "^6.4.2",
-    "@electron-forge/maker-squirrel": "^6.4.2",
-    "@electron-forge/maker-zip": "^6.4.2",
-    "@electron-forge/plugin-auto-unpack-natives": "^6.4.2",
-    "@electron-forge/publisher-github": "^6.4.2",
     "@types/compression": "^1.7.5",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
@@ -52,7 +40,6 @@
     "@types/uuid": "^9.0.7",
     "@typescript-eslint/eslint-plugin": "^6.12.0",
     "@typescript-eslint/parser": "^6.12.0",
-    "electron": "^27.0.4",
     "eslint": "^8.54.0",
     "eslint-config-prettier": "9.0.0",
     "prettier": "3.1.0",
@@ -60,12 +47,6 @@
     "vite-tsconfig-paths": "^4.2.1",
     "vitest": "^0.34.6"
   },
-  "config": {
-    "forge": "./forge.config.js"
-  },
-  "extraResources": [
-    "./public/**"
-  ],
   "engines": {
     "node": ">=20.0.0"
   }

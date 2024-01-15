@@ -12,7 +12,6 @@ export function initFileSystemSubscribers(basePath: string) {
       new LogEntity({
         message: 'Sync created',
         level: LogSeverityLevel.low,
-        origin: 'electron-app',
         action: EVENTS.SYNC_CREATED,
         payload: values,
       }),
@@ -25,7 +24,6 @@ export function initFileSystemSubscribers(basePath: string) {
       new LogEntity({
         message: 'Sync updated',
         level: LogSeverityLevel.low,
-        origin: 'electron-app',
         action: EVENTS.SYNC_UPDATED,
         payload: values,
       }),
@@ -38,7 +36,6 @@ export function initFileSystemSubscribers(basePath: string) {
       new LogEntity({
         message: 'Sync deleted',
         level: LogSeverityLevel.low,
-        origin: 'electron-app',
         action: EVENTS.SYNC_DELETED,
       }),
     );
@@ -50,7 +47,6 @@ export function initFileSystemSubscribers(basePath: string) {
       new LogEntity({
         message: 'Synchronization started',
         level: LogSeverityLevel.low,
-        origin: 'electron-app',
         action: EVENTS.START_SYNCHRONIZATION_SYNC_OBJECT,
         payload,
       }),
@@ -62,7 +58,6 @@ export function initFileSystemSubscribers(basePath: string) {
       new LogEntity({
         message: 'Synchronization finished',
         level: LogSeverityLevel.low,
-        origin: 'electron-app',
         action: EVENTS.FINISH_SYNCHRONIZATION_SYNC_OBJECT,
         payload,
       }),
@@ -74,7 +69,6 @@ export function initFileSystemSubscribers(basePath: string) {
       new LogEntity({
         message: 'Synchronization single file finished',
         level: LogSeverityLevel.low,
-        origin: 'electron-app',
         action: EVENTS.FINISH_SYNCHRONIZATION_SINGLE_FILE,
         payload,
       }),

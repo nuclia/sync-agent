@@ -1,32 +1,8 @@
 import compression from 'compression';
-import express, { Router } from 'express';
 import cors from 'cors';
+import express, { Router } from 'express';
 import http from 'http';
 import { EVENTS, EventEmitter } from './events/events';
-
-// appExpress.patch("/config/:paramKey", async (req, res) => {
-//   try {
-//     const { paramKey } = req.params;
-//     const { value } = req.body;
-//     const data = await fs.readFile(`${basePath}/config.json`, "utf8");
-//     const configData = JSON.parse(data);
-//     if (paramKey in configData) {
-//       configData[paramKey] = value;
-//       await fs.writeFile(
-//         `${basePath}/config.json`,
-//         JSON.stringify(configData, null, 2)
-//       );
-//       res.status(204).send(null);
-//     } else {
-//       res.status(412).send({
-//         reason: `Parameter ${paramKey} does not exist in config file`,
-//       });
-//     }
-//   } catch (error) {
-//     console.error(error);
-//     res.status(400).send(null);
-//   }
-// });
 
 interface Options {
   port: number;
