@@ -14,7 +14,7 @@ import { UpdateSync } from './update-sync.use-case';
 require('localstorage-polyfill');
 
 export interface SyncAllFoldersUseCase {
-  execute(since: Date | undefined): Promise<boolean>;
+  execute(since: Date | undefined): Promise<void>;
 }
 
 export class SyncAllFolders implements SyncAllFoldersUseCase {
@@ -107,7 +107,5 @@ export class SyncAllFolders implements SyncAllFoldersUseCase {
         }),
       )
       .subscribe(() => console.log('Finish sync folders data'));
-
-    return true;
   }
 }
