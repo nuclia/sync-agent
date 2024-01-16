@@ -18,7 +18,8 @@
     "test:watch": "vitest",
     "format:check": "prettier . --check",
     "format": "prettier . --write",
-    "ci:format": "prettier . --check && eslint ."
+    "ci:format": "prettier . --check && eslint .",
+    "start-server": "npm run compile && node build/start-file-system-server.js"
   },
   "dependencies": {
     "@nuclia/core": "1.9.1",
