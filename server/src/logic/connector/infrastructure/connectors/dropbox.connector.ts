@@ -32,6 +32,11 @@ export class DropboxImpl extends OAuthBaseConnector implements IConnector {
     if (!params?.refresh) {
       return false;
     }
+    try {
+      new URL(params.refresh_endpoint);
+    } catch (err) {
+      return false;
+    }
     return true;
   }
 
