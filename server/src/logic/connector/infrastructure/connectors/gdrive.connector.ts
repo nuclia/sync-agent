@@ -32,6 +32,12 @@ export class GDriveImpl extends OAuthBaseConnector implements IConnector {
     if (!params?.refresh) {
       return false;
     }
+    try {
+      new URL(params.refresh_endpoint);
+    } catch (err) {
+      return false;
+    }
+
     return true;
   }
 

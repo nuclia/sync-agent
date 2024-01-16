@@ -84,11 +84,31 @@ describe('Test validate gdrive params', () => {
     ).toBe(false);
   });
 
+  gDriveTest('Incorrect - With wrong params - two valid', ({ sourceConnector }) => {
+    expect(
+      sourceConnector.areParametersValid({
+        token: 'test',
+        refresh: 'test',
+      }),
+    ).toBe(false);
+  });
+
+  gDriveTest('Incorrect - With wrong params - invalid url', ({ sourceConnector }) => {
+    expect(
+      sourceConnector.areParametersValid({
+        token: 'test',
+        refresh: 'test',
+        refresh_endpoint: 'invalid_url',
+      }),
+    ).toBe(false);
+  });
+
   gDriveTest('Incorrect - With empty params', ({ sourceConnector }) => {
     expect(
       sourceConnector.areParametersValid({
         token: '',
         refresh: '',
+        refresh_endpoint: '',
       }),
     ).toBe(false);
   });
@@ -98,6 +118,7 @@ describe('Test validate gdrive params', () => {
       sourceConnector.areParametersValid({
         token: 'test',
         refresh: 'test',
+        refresh_endpoint: 'https://stashify.cloud/api/external_auth/gdrive/refresh',
       }),
     ).toBe(true);
   });
