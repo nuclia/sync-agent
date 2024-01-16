@@ -24,7 +24,7 @@ const updateTrayAfterStopServer = () => {
 
 const createWindow = async () => {
   const icon = nativeImage.createFromPath(path.join(__dirname, '../public/logo.png'));
-  const server = await initFileSystemServer(basePath);
+  const server = await initFileSystemServer({ basePath });
   tray = new Tray(icon);
   contextMenu = Menu.buildFromTemplate([
     {
