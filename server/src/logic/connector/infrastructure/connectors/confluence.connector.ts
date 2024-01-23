@@ -114,20 +114,26 @@ export class ConfluenceImpl implements IConnector {
       };
     };
     const failure = (url: string) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return (err: any) => {
         console.error(`Error for ${url}: ${err}`);
         throw new Error();
       };
     };
-    const endpoint = loadFolders
-      ? `${this.params.url}/rest/api/space?`
-      : folder
-        ? `${this.params.url}/rest/api/content/search?cql=space="${folder}" and lastModified > "${
-            lastModified ? lastModified.slice(0, 16).replace('T', ' ') : '1970-01-01'
-          }"`
-        : query
-          ? `${this.params.url}/rest/api/content/search?cql=text~"${query}"`
-          : `${this.params.url}/rest/api/content?`;
+    let endpoint = this.params.url;
+    if (loadFolders) {
+      endpoint += '/rest/api/space?';
+    } else {
+      if (folder) {
+        endpoint += `/rest/api/content/search?cql=space="${folder}" and lastModified > "${
+          lastModified ? lastModified.slice(0, 16).replace('T', ' ') : '1970-01-01'
+        }"`;
+      } else if (query) {
+        endpoint += `/rest/api/content/search?cql=text~"${query}"`;
+      } else {
+        endpoint += '/rest/api/content?';
+      }
+    }
     return from(
       fetch(`${endpoint}&limit=${BATCH_SIZE}&start=${start || 0}`, {
         method: 'GET',
@@ -139,6 +145,7 @@ export class ConfluenceImpl implements IConnector {
     ).pipe(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       concatMap((result: any) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const newItems = result.results?.map((r: any) => this.mapResults(r, loadFolders));
         const items = [...(previous?.items || []), ...newItems];
         const next = (start || 0) + BATCH_SIZE;
