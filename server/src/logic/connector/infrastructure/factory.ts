@@ -1,9 +1,11 @@
 import { IConnector } from '../domain/connector';
+import { ConfluenceConnector } from './connectors/confluence.connector';
 import { DropboxConnector } from './connectors/dropbox.connector';
 import { FolderConnector } from './connectors/folder.connector';
 import { GDriveConnector } from './connectors/gdrive.connector';
 import { OneDriveConnector } from './connectors/onedrive.connector';
 import { SharepointConnector } from './connectors/sharepoint.connector';
+import { SitemapConnector } from './connectors/sitemap.connector';
 
 export interface ConnectorDefinition {
   id: string;
@@ -23,6 +25,8 @@ const connectors: { [id: string]: SourceConnectorDefinition } = {
   dropbox: DropboxConnector,
   onedrive: OneDriveConnector,
   sharepoint: SharepointConnector,
+  sitemap: SitemapConnector,
+  confluence: ConfluenceConnector,
 };
 
 // TODO: add the dynamic connectors

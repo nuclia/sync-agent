@@ -27,6 +27,7 @@ export const initFileSystemServer = async ({
   await beforeStartServer(basePath);
 
   if (startAutoSyncProcess) {
+    syncAllFoldersFileSystemProcess(basePath);
     setInterval(() => {
       syncAllFoldersFileSystemProcess(basePath);
     }, secondsForAutoSync * 1000);

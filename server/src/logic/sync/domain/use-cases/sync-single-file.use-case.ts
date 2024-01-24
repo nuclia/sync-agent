@@ -19,9 +19,13 @@ function downloadFileOrLink(
   item: SyncItem,
 ): Observable<{ type: 'blob' | 'link' | 'text'; blob?: Blob; link?: any; text?: TextField }> {
   const connector = sync.sourceConnector;
-  return connector!
-    .download(item)
-    .pipe(map((res) => (res instanceof Blob ? { type: 'blob', blob: res } : { type: 'text', text: res })));
+  if (connector?.isExternal) {
+    return connector.getLink(item).pipe(map((link) => ({ type: 'link', link })));
+  } else {
+    return connector!
+      .download(item)
+      .pipe(map((res) => (res instanceof Blob ? { type: 'blob', blob: res } : { type: 'text', text: res })));
+  }
 }
 
 export class SyncSingleFile implements SyncSingleFileUseCase {

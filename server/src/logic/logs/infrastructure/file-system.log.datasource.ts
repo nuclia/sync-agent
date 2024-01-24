@@ -22,7 +22,7 @@ export class FileSystemLogDatasource implements ILogDatasource {
       await createDirectory(this.basePath);
     }
 
-    const dateText = new Intl.DateTimeFormat('en-ca', { dateStyle: 'short' }).format(new Date());
+    const dateText = new Date().toISOString().slice(0, 10);
     const fileName = `${this.basePath}/${dateText}.log`;
     if (!(await pathExists(`${this.basePath}/${dateText}.log`))) {
       await writeFile(`${this.basePath}/${dateText}.log`, '');
