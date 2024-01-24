@@ -1,7 +1,6 @@
 import { Observable, map, of, from, switchMap } from 'rxjs';
 import { ConnectorParameters, FileStatus, IConnector, Link, SearchResults, SyncItem } from '../../domain/connector';
 import { SourceConnectorDefinition } from '../factory';
-import axios from 'axios';
 import cheerio from 'cheerio';
 
 interface SiteMapModel {
@@ -10,9 +9,9 @@ interface SiteMapModel {
 }
 
 async function fetchSitemap(url: string): Promise<string> {
-  const response = await axios.get(url);
+  const response = await fetch(url);
   // todo: control whether it is zipped or plain
-  return response.data;
+  return response.text();
 }
 
 export function parseSitemap(sitemapContent: string): Promise<SiteMapModel[]> {
