@@ -1,7 +1,7 @@
 module.exports = {
   packagerConfig: {
     asar: true,
-    icon: 'public/logo.png',
+    icon: 'public/logo.*',
     name: 'Nuclia sync',
     executableName: 'nuclia-sync-agent',
   },
@@ -16,7 +16,12 @@ module.exports = {
     },
     {
       name: '@electron-forge/maker-deb',
-      config: {},
+      config: {
+        options: {
+          icon: 'public/logo.png',
+          productName: 'Nuclia sync agent',
+        },
+      },
     },
     {
       name: '@electron-forge/maker-dmg',
