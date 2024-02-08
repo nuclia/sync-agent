@@ -1,4 +1,4 @@
-import { Observable, catchError, forkJoin, map, of } from 'rxjs';
+import { catchError, forkJoin, map, Observable, of } from 'rxjs';
 
 import { z } from 'zod';
 import { FileStatus, IConnector, SearchResults, SyncItem } from '../../connector/domain/connector';
@@ -81,6 +81,7 @@ export class SyncEntity {
   }
 
   get allFolders(): Observable<SearchResults> {
+    console.log('SyncEntity – allFolders');
     if (!this.sourceConnector) {
       return of({
         items: [],

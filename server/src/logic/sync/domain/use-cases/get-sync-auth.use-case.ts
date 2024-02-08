@@ -12,7 +12,7 @@ export class GetSyncAuth implements GetSyncAuthUseCase {
   async execute(id: string) {
     const data = await this.repository.getSync(id);
     if (data === null) {
-      throw new CustomError(`Sync with id ${id} not found`, 404);
+      throw new CustomError(`Get sync auth: Sync with id ${id} not found`, 404);
     }
     return new SyncEntity(data).hasAuthData();
   }

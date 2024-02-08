@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Observable, delay, forkJoin, map, of, switchMap, tap } from 'rxjs';
+import { delay, forkJoin, map, Observable, of, switchMap, tap } from 'rxjs';
 
 import { EVENTS } from '../../../../events/events';
 import { eventEmitter } from '../../../../server';
@@ -42,7 +42,7 @@ export class SyncAllFolders implements SyncAllFoldersUseCase {
     });
     new UpdateSync(this.repository).execute(updateSyncDto!);
   };
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   async execute() {
     const syncObjects = await this.repository.getAllSync();
     of(Object.values(syncObjects))

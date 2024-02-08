@@ -12,7 +12,7 @@ export class GetSync implements GetSyncUseCase {
   async execute(id: string) {
     const data = await this.repository.getSync(id);
     if (data === null) {
-      throw new CustomError(`Sync with id ${id} not found`, 404);
+      throw new CustomError(`Get sync: Sync with id ${id} not found`, 404);
     }
     return data;
   }

@@ -52,7 +52,7 @@ export class FileSystemSyncDatasource implements ISyncDatasource {
     const { id } = dto.values;
     const data = await this.getSync(id);
     if (data !== null) {
-      throw new CustomError(`Sync with id ${id} already exists`, 409);
+      throw new CustomError(`Create sync: Sync with id ${id} already exists`, 409);
     }
 
     await this.loadSyncData();
@@ -77,7 +77,7 @@ export class FileSystemSyncDatasource implements ISyncDatasource {
   async deleteSync(id: string): Promise<void> {
     const data = await this.getSync(id);
     if (data === null) {
-      throw new CustomError(`Sync with id ${id} not found`, 404);
+      throw new CustomError(`Delete sync: Sync with id ${id} not found`, 404);
     }
     await this.loadSyncData();
     delete this.allSyncData[id];
@@ -88,7 +88,7 @@ export class FileSystemSyncDatasource implements ISyncDatasource {
     const { id, ...sync } = dto.values;
     const data = await this.getSync(id);
     if (data === null) {
-      throw new CustomError(`Sync with id ${id} not found`, 404);
+      throw new CustomError(`Update sync: Sync with id ${id} not found`, 404);
     }
     const newSync = deepMerge(data, sync);
     await this.loadSyncData();

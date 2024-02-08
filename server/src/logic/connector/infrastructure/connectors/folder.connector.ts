@@ -1,7 +1,7 @@
 import { Blob as FSBlob } from 'buffer';
 import * as fs from 'fs';
 import path from 'path';
-import { Observable, forkJoin, map, of, switchMap } from 'rxjs';
+import { forkJoin, map, Observable, of, switchMap } from 'rxjs';
 import { ConnectorParameters, FileStatus, IConnector, Link, SearchResults, SyncItem } from '../../domain/connector';
 import { SourceConnectorDefinition } from '../factory';
 
@@ -36,7 +36,7 @@ class FolderImpl implements IConnector {
   }
 
   getFolders(): Observable<SearchResults> {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not supported by Folder connector.');
   }
 
   getFiles(query?: string): Observable<SearchResults> {
