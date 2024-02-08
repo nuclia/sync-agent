@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Observable, catchError, delay, forkJoin, map, of, switchMap, tap } from 'rxjs';
+import { catchError, delay, forkJoin, map, Observable, of, switchMap, tap } from 'rxjs';
 
-import { EVENTS } from '../../../../events/events';
+import { EVENTS } from '../../../../events';
 import { eventEmitter } from '../../../../server';
 import { UpdateSyncDto } from '../dto/update-sync.dto';
 import { SyncEntity } from '../sync.entity';

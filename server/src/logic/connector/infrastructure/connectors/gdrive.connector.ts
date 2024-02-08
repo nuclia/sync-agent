@@ -1,4 +1,4 @@
-import { Observable, catchError, concatMap, forkJoin, from, map, of } from 'rxjs';
+import { catchError, concatMap, forkJoin, from, map, Observable, of } from 'rxjs';
 
 import { ConnectorParameters, FileStatus, IConnector, Link, SearchResults, SyncItem } from '../../domain/connector';
 import { SourceConnectorDefinition } from '../factory';
@@ -99,7 +99,7 @@ export class GDriveImpl extends OAuthBaseConnector implements IConnector {
     return this._getItems(query);
   }
 
-  isAccesTokenValid(): Observable<boolean> {
+  isAccessTokenValid(): Observable<boolean> {
     return from(
       fetch('https://www.googleapis.com/drive/v3/about?fields=user', {
         headers: {

@@ -2,7 +2,7 @@
 
 import { lookup } from 'mime-types';
 import { createHash } from 'node:crypto';
-import { Observable, catchError, delay, map, of, retry, switchMap, throwError, timer } from 'rxjs';
+import { catchError, delay, map, Observable, of, retry, switchMap, throwError, timer } from 'rxjs';
 
 import {
   FIELD_TYPE,

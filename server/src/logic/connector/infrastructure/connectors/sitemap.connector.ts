@@ -1,4 +1,4 @@
-import { Observable, map, of, from, switchMap } from 'rxjs';
+import { from, map, Observable, of, switchMap } from 'rxjs';
 import { ConnectorParameters, FileStatus, IConnector, Link, SearchResults, SyncItem } from '../../domain/connector';
 import { SourceConnectorDefinition } from '../factory';
 import cheerio from 'cheerio';
@@ -118,7 +118,7 @@ class SitemapImpl implements IConnector {
   refreshAuthentication(): Observable<boolean> {
     return of(true);
   }
-  isAccesTokenValid(): Observable<boolean> {
+  isAccessTokenValid(): Observable<boolean> {
     return of(true);
   }
 

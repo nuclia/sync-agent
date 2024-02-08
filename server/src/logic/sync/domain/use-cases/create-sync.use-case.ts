@@ -1,4 +1,4 @@
-import { EVENTS } from '../../../../events/events';
+import { EVENTS } from '../../../../events';
 import { eventEmitter } from '../../../../server';
 import { CreateSyncDto } from '../dto/create-sync.dto';
 import { ISyncRepository } from '../sync.repository';
