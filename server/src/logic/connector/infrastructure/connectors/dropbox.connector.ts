@@ -191,7 +191,7 @@ export class DropboxImpl extends OAuthBaseConnector implements IConnector {
       originalId: (isFolder ? raw.path_lower : raw.id) || '',
       metadata: {},
       status: FileStatus.PENDING,
-      uuid: raw.uuid || '',
+      uuid: (isFolder ? raw.path_lower : raw.id) || '',
       modifiedGMT: raw.client_modified,
       isFolder,
     };
