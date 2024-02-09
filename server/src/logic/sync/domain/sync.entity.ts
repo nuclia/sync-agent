@@ -105,12 +105,15 @@ export class SyncEntity {
     const foldersToSyncUpdated: SyncItem[] = (this.foldersToSync ?? []).filter(
       (folder) => folder.status === FileStatus.UPLOADED,
     );
-    const getFilesFoldersUpdated = foldersToSyncUpdated.length > 0 ? this.sourceConnector!.getLastModified(
-      this.lastSyncGMT || '2000-01-01T00:00:00.000Z',
-      foldersToSyncUpdated,
-    ) : of({items: []});
+    const getFilesFoldersUpdated =
+      foldersToSyncUpdated.length > 0
+        ? this.sourceConnector!.getLastModified(this.lastSyncGMT || '2000-01-01T00:00:00.000Z', foldersToSyncUpdated)
+        : of({ items: [] });
 
-    const getFilesFolderPending = foldersToSyncPending.length > 0 ? this.sourceConnector!.getFilesFromFolders(foldersToSyncPending) : of({items: []});
+    const getFilesFolderPending =
+      foldersToSyncPending.length > 0
+        ? this.sourceConnector!.getFilesFromFolders(foldersToSyncPending)
+        : of({ items: [] });
     return forkJoin([getFilesFoldersUpdated, getFilesFolderPending]).pipe(
       map(([updated, pending]) => {
         return { success: true, results: [...updated.items, ...pending.items] };
