@@ -1,4 +1,4 @@
-import { Observable, catchError, forkJoin, map, of } from 'rxjs';
+import { catchError, forkJoin, map, Observable, of } from 'rxjs';
 
 import { z } from 'zod';
 import { FileStatus, IConnector, SearchResults, SyncItem } from '../../connector/domain/connector';
@@ -105,7 +105,6 @@ export class SyncEntity {
     const foldersToSyncUpdated: SyncItem[] = (this.foldersToSync ?? []).filter(
       (folder) => folder.status === FileStatus.UPLOADED,
     );
-
     const getFilesFoldersUpdated = this.sourceConnector!.getLastModified(
       this.lastSyncGMT || '2000-01-01T00:00:00.000Z',
       foldersToSyncUpdated,
@@ -123,8 +122,8 @@ export class SyncEntity {
     );
   }
 
-  isAccesTokenValid(): Observable<boolean> {
-    return this.sourceConnector!.isAccesTokenValid();
+  isAccessTokenValid(): Observable<boolean> {
+    return this.sourceConnector!.isAccessTokenValid();
   }
 
   refreshAuthentication(): Observable<boolean> {

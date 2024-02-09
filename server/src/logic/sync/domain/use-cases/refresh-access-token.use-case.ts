@@ -1,4 +1,4 @@
-import { Observable, concatMap, of } from 'rxjs';
+import { concatMap, Observable, of } from 'rxjs';
 import { UpdateSyncDto } from '../dto/update-sync.dto';
 import { SyncEntity } from '../sync.entity';
 import { ISyncRepository } from '../sync.repository';
@@ -12,7 +12,7 @@ export class RefreshAccessToken implements RefreshAccessTokenUseCase {
   constructor(private readonly repository: ISyncRepository) {}
 
   execute(entity: SyncEntity) {
-    const observable = entity.isAccesTokenValid().pipe(
+    const observable = entity.isAccessTokenValid().pipe(
       concatMap((isValid) => {
         if (!isValid) {
           return entity.refreshAuthentication().pipe(

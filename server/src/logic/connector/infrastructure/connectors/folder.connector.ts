@@ -1,7 +1,7 @@
 import { Blob as FSBlob } from 'buffer';
 import * as fs from 'fs';
 import path from 'path';
-import { Observable, forkJoin, map, of, switchMap } from 'rxjs';
+import { forkJoin, map, Observable, of, switchMap } from 'rxjs';
 import { ConnectorParameters, FileStatus, IConnector, Link, SearchResults, SyncItem } from '../../domain/connector';
 import { SourceConnectorDefinition } from '../factory';
 
@@ -36,7 +36,7 @@ class FolderImpl implements IConnector {
   }
 
   getFolders(): Observable<SearchResults> {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not supported by Folder connector.');
   }
 
   getFiles(query?: string): Observable<SearchResults> {
@@ -105,12 +105,12 @@ class FolderImpl implements IConnector {
     });
   }
 
-  private listAllFiles(folderpath: string): string[] {
+  private listAllFiles(folderPath: string): string[] {
     let files: string[] = [];
     const contents = fs
-      .readdirSync(folderpath)
+      .readdirSync(folderPath)
       .filter((file) => !FILES_TO_IGNORE.includes(file))
-      .map((file) => path.join(folderpath, file));
+      .map((file) => path.join(folderPath, file));
     contents.forEach((contentPath) => {
       if (fs.statSync(contentPath).isDirectory()) {
         files = [...files, ...this.listAllFiles(contentPath)];
@@ -163,13 +163,13 @@ class FolderImpl implements IConnector {
   }
 
   getLink(): Observable<Link> {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not supported by Folder connector.');
   }
 
   refreshAuthentication(): Observable<boolean> {
     return of(true);
   }
-  isAccesTokenValid(): Observable<boolean> {
+  isAccessTokenValid(): Observable<boolean> {
     return of(true);
   }
 }

@@ -16,7 +16,7 @@ export class GetSyncFolders implements GetSyncFoldersUseCase {
   async execute(id: string) {
     const data = await this.repository.getSync(id);
     if (data === null) {
-      throw new CustomError(`Sync with id ${id} not found`, 404);
+      throw new CustomError(`Get sync folders: Sync with id ${id} not found`, 404);
     }
 
     try {

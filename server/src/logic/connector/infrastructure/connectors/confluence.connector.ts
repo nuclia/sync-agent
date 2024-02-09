@@ -1,4 +1,4 @@
-import { Observable, concatMap, forkJoin, from, map, of } from 'rxjs';
+import { concatMap, forkJoin, from, map, Observable, of } from 'rxjs';
 import { ConnectorParameters, FileStatus, IConnector, Link, SearchResults, SyncItem } from '../../domain/connector';
 import { SourceConnectorDefinition } from '../factory';
 
@@ -213,7 +213,7 @@ export class ConfluenceImpl implements IConnector {
   refreshAuthentication(): Observable<boolean> {
     return of(true);
   }
-  isAccesTokenValid(): Observable<boolean> {
+  isAccessTokenValid(): Observable<boolean> {
     return of(true);
   }
 }

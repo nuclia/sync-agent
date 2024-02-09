@@ -15,10 +15,10 @@ export class LogsFileSystemRoutes {
   private handleError = (res: Response, error: unknown) => {
     console.error(error);
     if (error instanceof CustomError) {
-      res.status(error.statusCode).json({ error: error.message });
+      res.status(error.statusCode).json({ message: error.message });
       return;
     }
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ message: 'Internal server error' });
   };
 
   getRoutes(): Router {

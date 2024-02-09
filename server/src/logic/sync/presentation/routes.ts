@@ -23,11 +23,11 @@ export class SyncFileSystemRoutes {
 
   private handleError = (res: Response, error: unknown) => {
     if (error instanceof CustomError) {
-      res.status(error.statusCode).json({ error: error.message });
+      res.status(error.statusCode).json({ message: error.message });
       return;
     }
     // grabar log
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ message: 'Internal server error' });
   };
 
   getRoutes(): Router {
@@ -37,7 +37,7 @@ export class SyncFileSystemRoutes {
 
     router.use('/', async (_req, res, next) => {
       if (!(await pathExists(`${this.basePath}/sync.json`))) {
-        res.status(404).send({ error: 'Nuclia folder not found' });
+        res.status(404).send({ message: 'Nuclia folder not found' });
         return;
       }
       next();
@@ -107,7 +107,7 @@ export class SyncFileSystemRoutes {
     router.patch('/:id', async (req, res) => {
       const { id } = req.params;
       const [error, updateSyncDto] = UpdateSyncDto.create({ ...req.body, id });
-      if (error) return res.status(400).json({ error });
+      if (error) return res.status(400).json({ message: error });
 
       try {
         await new UpdateSync(syncRepository).execute(updateSyncDto!);

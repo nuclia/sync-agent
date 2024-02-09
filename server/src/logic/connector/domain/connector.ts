@@ -58,5 +58,5 @@ export interface IConnector {
   getLink(resource: SyncItem): Observable<Link>;
   hasAuthData(): boolean;
   refreshAuthentication(): Observable<boolean>;
-  isAccesTokenValid(): Observable<boolean>;
+  isAccessTokenValid(): Observable<boolean>;
 }
