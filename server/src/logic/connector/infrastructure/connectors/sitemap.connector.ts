@@ -1,7 +1,7 @@
 import { from, map, Observable, of, switchMap } from 'rxjs';
 import { ConnectorParameters, FileStatus, IConnector, Link, SearchResults, SyncItem } from '../../domain/connector';
 import { SourceConnectorDefinition } from '../factory';
-import cheerio from 'cheerio';
+import * as cheerio from 'cheerio';
 
 interface SiteMapModel {
   loc: string;
@@ -10,7 +10,7 @@ interface SiteMapModel {
 
 async function fetchSitemap(url: string): Promise<string> {
   const response = await fetch(url);
-  // todo: control whether it is zipped or plain
+  // TODO: control whether it is zipped or plain
   return response.text();
 }
 
@@ -53,11 +53,8 @@ class SitemapImpl implements IConnector {
     this.params = params;
   }
 
-  areParametersValid(params: ConnectorParameters) {
-    if (!params?.sitemap) {
-      return false;
-    }
-    return true;
+  areParametersValid(params: ConnectorParameters): boolean {
+    return !!params?.sitemap;
   }
 
   getParameters(): ConnectorParameters {
