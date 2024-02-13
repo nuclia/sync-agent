@@ -3,3 +3,4 @@ node_modules
 out
 forge.config.js
 vitest.config.ts
+src/sync-agent
