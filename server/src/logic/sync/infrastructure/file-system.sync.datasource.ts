@@ -39,7 +39,12 @@ export class FileSystemSyncDatasource implements ISyncDatasource {
     this.allSyncData = {};
   }
   private loadSyncData = async () => {
-    this.allSyncData = JSON.parse(await readFile(this.basePath));
+    const data = await readFile(this.basePath);
+    try {
+      this.allSyncData = JSON.parse(data);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   private createSyncFile = async () => {
