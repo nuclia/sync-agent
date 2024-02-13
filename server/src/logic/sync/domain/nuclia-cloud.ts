@@ -66,6 +66,9 @@ export class NucliaCloud {
                 if (data.metadata.labels) {
                   resourceData.usermetadata = { classifications: data.metadata?.labels };
                 }
+                if (data.metadata.path) {
+                  resourceData.origin = { path: data.metadata.path };
+                }
                 return kb.createResource(resourceData, true).pipe(
                   retry(RETRY_CONFIG),
                   map((data) => kb.getResourceFromData({ id: data.uuid })),
