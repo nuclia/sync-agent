@@ -67,7 +67,11 @@ export class NucliaCloud {
                   resourceData.usermetadata = { classifications: data.metadata?.labels };
                 }
                 if (data.metadata.path) {
-                  resourceData.origin = { path: data.metadata.path };
+                  let path = data.metadata.path;
+                  if (!path.startsWith('/')) {
+                    path = `/${path}`;
+                  }
+                  resourceData.origin = { path };
                 }
                 return kb.createResource(resourceData, true).pipe(
                   retry(RETRY_CONFIG),
