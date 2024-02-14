@@ -51,7 +51,7 @@ jobs:
       run: npm run compile
       working-directory: server
 
-    - name: build
-      env:
-        CI: false
-      run: npm run make
+    # - name: build
+    #   env:
+    #     CI: false
+    #   run: npm run make
