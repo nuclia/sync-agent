@@ -1,4 +1,4 @@
-import { catchError, concatMap, forkJoin, from, map, Observable, of } from 'rxjs';
+import { Observable, catchError, concatMap, forkJoin, from, map, of, switchMap } from 'rxjs';
 
 import { ConnectorParameters, FileStatus, IConnector, Link, SearchResults, SyncItem } from '../../domain/connector';
 import { SourceConnectorDefinition } from '../factory';
@@ -48,7 +48,7 @@ export class GDriveImpl extends OAuthBaseConnector implements IConnector {
       });
     }
     try {
-      return forkJoin((folders || []).map((folder) => this._getItems('', folder.uuid))).pipe(
+      return forkJoin((folders || []).map((folder) => this._getFileItems('', folder.uuid))).pipe(
         map((results) => {
           const items = results.reduce(
             (acc, result) => acc.concat(result.items.filter((item) => item.modifiedGMT && item.modifiedGMT > since)),
@@ -73,7 +73,7 @@ export class GDriveImpl extends OAuthBaseConnector implements IConnector {
       });
     }
     try {
-      return forkJoin((folders || []).map((folder) => this._getItems('', folder.uuid))).pipe(
+      return forkJoin((folders || []).map((folder) => this._getFileItems('', folder.uuid))).pipe(
         map((results) => {
           const result: { items: SyncItem[] } = {
             items: [],
@@ -96,7 +96,7 @@ export class GDriveImpl extends OAuthBaseConnector implements IConnector {
   }
 
   getFiles(query?: string): Observable<SearchResults> {
-    return this._getItems(query);
+    return this._getFileItems(query);
   }
 
   isAccessTokenValid(): Observable<boolean> {
@@ -125,6 +125,77 @@ export class GDriveImpl extends OAuthBaseConnector implements IConnector {
     );
   }
 
+  private getSubFolders(folders: SearchResults, folderId: string): string[] {
+    const getChildren = (folderId: string) => {
+      return folders.items.filter((item) => item.parents?.includes(folderId)).map((item) => item.originalId);
+    };
+    const children = getChildren(folderId);
+    return children.reduce((acc, child) => [...acc, ...getChildren(child)], children);
+  }
+
+  private _getFileItems(query = '', folder = ''): Observable<SearchResults> {
+    return this.getFolders().pipe(
+      switchMap((folders) => {
+        if (folder) {
+          const allTargetedFolders = [folder, ...this.getSubFolders(folders, folder)];
+          return forkJoin(allTargetedFolders.map((folder) => this._getItems(query, folder, false))).pipe(
+            map((results) => {
+              const items = results.reduce((acc, result) => acc.concat(result.items), [] as SyncItem[]);
+              return {
+                files: {
+                  items,
+                },
+                folders,
+              };
+            }),
+          );
+        } else {
+          return this._getItems(query, '', false).pipe(map((results) => ({ files: results, folders })));
+        }
+      }),
+      map(({ files, folders }) => {
+        const getFolder = (folderId: string) => {
+          return folders.items.find((folder) => folder.originalId === folderId);
+        };
+        const parents = folders.items.reduce(
+          (acc, folder) => {
+            if (folder.parents) {
+              acc[folder.originalId] = folder.parents[0];
+            }
+            return acc;
+          },
+          {} as { [key: string]: string },
+        );
+        const getFolderPath = (folderId: string | undefined) => {
+          if (!folderId) {
+            return [];
+          }
+          let path: string[] = [];
+          let currentFolder = getFolder(folderId);
+          while (currentFolder) {
+            path = [currentFolder.title, ...path];
+            if (!parents[currentFolder.originalId]) {
+              break;
+            }
+            currentFolder = getFolder(parents[currentFolder.originalId]);
+          }
+          return path;
+        };
+        const itemsWithPath = files.items.map((item) => ({
+          ...item,
+          metadata: {
+            ...item.metadata,
+            path: getFolderPath(item.parents?.[0]).join('/'),
+          },
+        }));
+        return {
+          ...files,
+          items: itemsWithPath,
+        };
+      }),
+    );
+  }
+
   // Script create the tree https://gist.github.com/tanaikech/97b336f04c739ae0181a606eab3dff42
   private _getItems(
     query = '',
@@ -148,7 +219,6 @@ export class GDriveImpl extends OAuthBaseConnector implements IConnector {
     if (nextPage) {
       path += `&pageToken=${nextPage}`;
     }
-
     return from(
       fetch(path, {
         headers: {

@@ -145,7 +145,9 @@ class FolderImpl implements IConnector {
     return files.map((file) => ({
       title: file.split('/').pop() || '',
       originalId: file,
-      metadata: {},
+      metadata: {
+        path: file.split('/').slice(0, -1).join('/'),
+      },
       status: FileStatus.PENDING,
       uid: '',
     }));

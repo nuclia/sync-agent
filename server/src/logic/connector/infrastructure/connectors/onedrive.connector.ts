@@ -124,13 +124,28 @@ export class OneDriveImpl extends OAuthBaseConnector implements IConnector {
     );
   }
 
-  private _getItems(
+  private _getItems(query = '', folder = '', foldersOnly = false, previous?: SearchResults): Observable<SearchResults> {
+    return this._getOneDriveItems(query, folder, foldersOnly, undefined, previous).pipe(
+      map((res) => {
+        const items = (res.value || [])
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .filter((item: any) => foldersOnly || !!item.file)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .map((item: any) => (foldersOnly ? this.mapToSyncItemFolder(item) : this.mapToSyncItem(item)));
+        return { items };
+      }),
+    );
+  }
+
+  private _getOneDriveItems(
     query = '',
     folder = '',
     foldersOnly = false,
     nextPage?: string,
-    previous?: SearchResults,
-  ): Observable<SearchResults> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    previous?: any,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ): Observable<any> {
     let path = `https://graph.microsoft.com/v1.0/me/drive/${folder ? `items/${folder}` : 'root'}`;
     if (query) {
       path += `/search(q='${query}')`;
@@ -167,16 +182,27 @@ export class OneDriveImpl extends OAuthBaseConnector implements IConnector {
             res['@odata.nextLink'] && res['@odata.nextLink'].includes('&$skiptoken=')
               ? res?.['@odata.nextLink'].split('&$skiptoken=')[1].split('&')[0]
               : undefined;
-          const items = (res.value || [])
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .filter((item: any) => foldersOnly || !!item.file)
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .map((item: any) => (foldersOnly ? this.mapToSyncItemFolder(item) : this.mapToSyncItem(item)));
-          const results = {
-            items: [...(previous?.items || []), ...items],
-            nextPage,
-          };
-          return nextPage ? this._getItems(query, folder, foldersOnly, nextPage, results) : of(results);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const folders: string[] = (res.value || []).filter((item: any) => !!item.folder).map((item: any) => item.id);
+          const results = { ...res, value: [...(previous?.value || []), ...(res?.value || [])] };
+          const currentFolderResults = nextPage
+            ? this._getOneDriveItems(query, folder, foldersOnly, nextPage, results)
+            : of(results);
+          if (folders.length === 0) {
+            return currentFolderResults;
+          } else {
+            return forkJoin([
+              currentFolderResults,
+              ...folders.map((subfolder) => this._getOneDriveItems(query, subfolder, foldersOnly)),
+            ]).pipe(
+              map((subresults) =>
+                subresults.reduce(
+                  (acc, subresult) => ({ ...acc, value: [...(acc.value || []), ...(subresult.value || [])] }),
+                  {},
+                ),
+              ),
+            );
+          }
         }
       }),
     );
@@ -189,7 +215,11 @@ export class OneDriveImpl extends OAuthBaseConnector implements IConnector {
       title: item.name,
       originalId: item.id,
       modifiedGMT: item.lastModifiedDateTime,
-      metadata: { mimeType: item.file.mimeType, downloadLink: item['@microsoft.graph.downloadUrl'] },
+      metadata: {
+        mimeType: item.file.mimeType,
+        downloadLink: item['@microsoft.graph.downloadUrl'],
+        path: item.parentReference.path,
+      },
       status: FileStatus.PENDING,
     };
   }

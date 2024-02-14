@@ -148,6 +148,7 @@ describe('Test last modified', () => {
           metadata: {
             needsPdfConversion: 'yes',
             mimeType: 'application/pdf',
+            path: '',
           },
           status: FileStatus.PENDING,
         },
