@@ -78,6 +78,7 @@ class SitemapImpl implements IConnector {
           originalId: parsedUrl.loc,
           metadata: {
             uri: parsedUrl.loc,
+            path: parsedUrl.loc.replace(/https?:\/\//, ''),
             lastModified: parsedUrl.lastmod,
           },
         })),
