@@ -68,7 +68,7 @@ export class NucliaCloud {
                 }
                 if (data.metadata.path) {
                   let path = data.metadata.path;
-                  if (!path.startsWith('/')) {
+                  if (path && !path.startsWith('/')) {
                     path = `/${path}`;
                   }
                   resourceData.origin = { path };

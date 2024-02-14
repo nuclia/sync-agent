@@ -163,7 +163,7 @@ export class ConfluenceImpl implements IConnector {
     return {
       title: (isFolder ? raw.name : raw.title) || '',
       originalId: (isFolder ? raw.key : itemOriginalId) || '',
-      metadata: { type: raw.type || '' },
+      metadata: { type: raw.type || '', path: raw._links?.webui || '' },
       status: FileStatus.PENDING,
       uuid: `${raw.id}` || '',
       isFolder: false,
