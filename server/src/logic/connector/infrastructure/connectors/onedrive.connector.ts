@@ -188,19 +188,21 @@ export class OneDriveImpl extends OAuthBaseConnector implements IConnector {
           const currentFolderResults = nextPage
             ? this._getOneDriveItems(query, folder, foldersOnly, nextPage, results)
             : of(results);
-          return folders.length === 0
-            ? currentFolderResults
-            : forkJoin([
-                currentFolderResults,
-                ...folders.map((subfolder) => this._getOneDriveItems(query, subfolder, foldersOnly)),
-              ]).pipe(
-                map((subresults) =>
-                  subresults.reduce(
-                    (acc, subresult) => ({ ...acc, value: [...(acc.value || []), ...(subresult.value || [])] }),
-                    {},
-                  ),
+          if (folders.length === 0) {
+            return currentFolderResults;
+          } else {
+            return forkJoin([
+              currentFolderResults,
+              ...folders.map((subfolder) => this._getOneDriveItems(query, subfolder, foldersOnly)),
+            ]).pipe(
+              map((subresults) =>
+                subresults.reduce(
+                  (acc, subresult) => ({ ...acc, value: [...(acc.value || []), ...(subresult.value || [])] }),
+                  {},
                 ),
-              );
+              ),
+            );
+          }
         }
       }),
     );
