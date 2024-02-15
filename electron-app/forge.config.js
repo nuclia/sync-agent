@@ -12,7 +12,7 @@ module.exports = {
       config: {
         // An URL to an ICO file to use as the application icon (displayed in Control Panel > Programs and Features).
         iconUrl: 'https://storage.googleapis.com/iskra/logo.ico',
-        setupExe: `Nuclia-Sync-Setup.exe`,
+        setupExe: 'Nuclia-Sync-Setup.exe',
       },
     },
     {

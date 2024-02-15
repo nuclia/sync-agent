@@ -15,7 +15,7 @@ jobs:
         os: [macos-latest, ubuntu-latest, windows-latest]
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: actions/setup-node@master
       with:
         node-version: 20
@@ -27,13 +27,13 @@ jobs:
       run: npm install
       working-directory: server
 
-    - name: lint/format
+    - name: lint/format electron-app
       env:
         CI: false
       run: npm run ci:format
       working-directory: electron-app
 
-    - name: lint/format
+    - name: lint/format server
       env:
         CI: false
       run: npm run ci:format
