@@ -10,10 +10,10 @@
     "package": "electron-forge package",
     "make": "npm run compile && electron-forge make",
     "publish": "electron-forge publish",
-    "lint": "eslint .",
-    "format:check": "prettier . --check",
-    "format": "prettier . --write",
-    "ci:format": "prettier . --check && eslint ."
+    "lint": "eslint src/index.ts",
+    "format:check": "prettier src/index.ts --check",
+    "format": "prettier src/index.ts --write",
+    "ci:format": "prettier src/index.ts --check && eslint ."
   },
   "keywords": [],
   "author": {
