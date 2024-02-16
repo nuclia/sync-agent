@@ -9,7 +9,7 @@
     "start": "npm run compile && electron-forge start",
     "package": "electron-forge package",
     "make": "npm run compile && electron-forge make",
-    "publish": "electron-forge publish",
+    "publish": "npm run compile && electron-forge publish",
     "lint": "eslint src/index.ts",
     "format:check": "prettier src/index.ts --check",
     "format": "prettier src/index.ts --write",
