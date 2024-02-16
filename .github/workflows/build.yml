@@ -57,5 +57,5 @@ jobs:
 
     - name: build
       env:
-        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: npm run publish
