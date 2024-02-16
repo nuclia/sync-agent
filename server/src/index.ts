@@ -19,7 +19,7 @@ export const initFileSystemServer = async ({
   basePath,
   secondsForAutoSync = 3600, // 1h
   startAutoSyncProcess = true,
-  port = 8080,
+  port = 8090,
 }: FileSystemServerOptions) => {
   const appRoutes = new AppFileSystemRoutes(basePath);
   const server = new Server({ port, routes: appRoutes.getRoutes() });
