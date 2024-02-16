@@ -58,4 +58,4 @@ jobs:
     - name: build
       env:
         CI: false
-      run: npm run make
+      run: npm run publish
