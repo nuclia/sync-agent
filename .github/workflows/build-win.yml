@@ -1,4 +1,4 @@
-name: build
+name: build-windows
 on:
   push:
     branches:
@@ -50,4 +50,4 @@ jobs:
     - name: build
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: npm run publish
+      run: npm run publish-win
