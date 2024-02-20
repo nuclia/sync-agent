@@ -50,5 +50,6 @@ jobs:
     - name: build
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: npm run publish-win
-      shell: powershell
+      run: |
+        Copy-Item server/src electron-app/src/sync-agent -r
+        npm run publish-win
