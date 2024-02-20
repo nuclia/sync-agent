@@ -50,6 +50,19 @@ jobs:
     - name: build
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
+        CERTIFICATE_CONTAINER_ID: ${{ secrets.CERTIFICATE_CONTAINER_ID }}
+        CERTIFICATE_READER: ${{ secrets.CERTIFICATE_READER }}
       run: |
         Copy-Item server/src electron-app/src/sync-agent -r
-        npm run publish-win
+        npm run make-win
+        signtool sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /f C:\Users\user\Documents\certificat_nuclia.cer /csp "eToken Base Cryptographic Provider" /kc "[$CERTIFICATE_READER{{$CERTIFICATE_PASSWORD}}]=$CERTIFICATE_CONTAINER_ID" electron-app/out/make/squirrel.windows/x64/Nuclia-Sync-Setup.exe
+
+    - name: Release Windows installer
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v0.0.2
+        files: |
+          out/make/*.exe
+          out/make/*.exe.blockmap
+          out/make/*.yml

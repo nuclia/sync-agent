@@ -9,7 +9,7 @@
     "start": "npm run copy-server-to-electron && cd electron-app && npm run start",
     "make": "npm run copy-server-to-electron && cd electron-app && npm run make",
     "publish": "npm run copy-server-to-electron && cd electron-app && npm run publish",
-    "publish-win": "cd electron-app && npm run publish"
+    "make-win": "cd electron-app && npm run make"
   },
   "keywords": [
     "electron",
