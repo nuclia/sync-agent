@@ -56,7 +56,7 @@ jobs:
       run: |
         Copy-Item server/src electron-app/src/sync-agent -r
         npm run make-win
-        signtool sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /f C:\Users\user\Documents\certificat_nuclia.cer /csp "eToken Base Cryptographic Provider" /kc "[$CERTIFICATE_READER{{$CERTIFICATE_PASSWORD}}]=$CERTIFICATE_CONTAINER_ID" electron-app/out/make/squirrel.windows/x64/Nuclia-Sync-Setup.exe
+        'C:/Program Files (x86)/Windows Kits/10/bin/10.0.22621.0/x86/signtool.exe' sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /f C:\Users\user\Documents\certificat_nuclia.cer /csp "eToken Base Cryptographic Provider" /kc "[$CERTIFICATE_READER{{$CERTIFICATE_PASSWORD}}]=$CERTIFICATE_CONTAINER_ID" electron-app/out/make/squirrel.windows/x64/Nuclia-Sync-Setup.exe
 
     - name: Release Windows installer
       uses: softprops/action-gh-release@v1
