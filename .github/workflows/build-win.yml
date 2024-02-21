@@ -62,6 +62,6 @@ jobs:
       with:
         tag_name: v0.0.2
         files: |
-          electron-app/out/make/squirrel.windows/x64/*.exe
-          electron-app/out/make/squirrel.windows/x64/*.exe.blockmap
-          electron-app/out/make/squirrel.windows/x64/*.yml
+          electron-app\out\make\squirrel.windows\x64\*.exe
+          electron-app\out\make\squirrel.windows\x64\*.exe.blockmap
+          electron-app\out\make\squirrel.windows\x64\*.yml
