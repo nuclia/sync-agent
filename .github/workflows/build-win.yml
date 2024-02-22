@@ -62,4 +62,4 @@ jobs:
       with:
         tag_name: v0.0.2
         files: |
-          C:\Users\user\actions-runner\_work\sync-agent\sync-agent\electron-app\out\make\squirrel.windows\x64\Nuclia-Sync-Setup.exe
+          C:/Users/user/actions-runner/_work/sync-agent/sync-agent/electron-app/out/make/squirrel.windows/x64/Nuclia-Sync-Setup.exe
