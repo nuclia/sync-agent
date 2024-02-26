@@ -1,11 +1,11 @@
 {
   "name": "@nuclia/sync-agent",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "This is a sync agent to synchronize user files from diferent sources to nuclia",
   "main": "build/index.js",
   "types": "build/types/index.d.ts",
   "files": [
-    "build/events/index.js"
+    "/build"
   ],
   "keywords": [
     "Nuclia"
