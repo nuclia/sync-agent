@@ -1,6 +1,6 @@
 {
   "name": "@nuclia/sync-agent",
-  "version": "0.0.1",
+  "version": "1.0.1",
   "description": "This is a sync agent to synchronize user files from diferent sources to nuclia",
   "main": "build/index.js",
   "types": "build/types/index.d.ts",
@@ -11,6 +11,9 @@
     "Nuclia"
   ],
   "license": "MIT",
+  "bin": {
+    "nuclia-sync-agent": "build/start-file-system-server.js"
+  },
   "scripts": {
     "compile": "tsc",
     "lint": "eslint .",
