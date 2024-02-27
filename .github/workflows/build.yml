@@ -73,4 +73,6 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         CI: false
-      run: npm run publish
+      run: |-
+        echo $APPLE_API_KEY
+        npm run publish
