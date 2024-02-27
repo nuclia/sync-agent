@@ -9,8 +9,8 @@ export class LogRepository implements ILogRepository {
     return this.logDatasource.saveLog(log);
   }
 
-  async getLogs(): Promise<LogEntity[]> {
-    return this.logDatasource.getLogs();
+  async getLogs(sync?: string, since?: string): Promise<LogEntity[]> {
+    return this.logDatasource.getLogs(sync, since);
   }
 
   async deleteLogs(): Promise<void> {
