@@ -65,7 +65,7 @@ jobs:
       if: matrix.os == 'macos-latest'
       run: |-
         mkdir -p ~/private_keys/
-        echo '${{ secrets.APPLE_API_SECRET }}' > ~/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8
+        echo '${{ secrets.APPLE_API_SECRET_BASE_64 }}' | base64 --decode > ~/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8
     - name: build
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -74,5 +74,4 @@ jobs:
         APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
         CI: false
       run: |-
-        echo $APPLE_API_KEY
         npm run publish
