@@ -74,4 +74,5 @@ jobs:
         APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
         CI: false
       run: |-
+        echo $APPLE_API_KEY
         npm run publish
