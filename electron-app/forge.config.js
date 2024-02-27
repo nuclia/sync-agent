@@ -4,6 +4,19 @@ module.exports = {
     icon: 'public/logo.*',
     name: 'Nuclia sync',
     executableName: 'nuclia-sync-agent',
+    osxSign: {
+      entitlements: 'entitlements.plist',
+      'entitlements-inherit': 'entitlements.plist',
+      'gatekeeper-assess': false,
+      hardenedRuntime: true,
+      identity: 'Developer ID Application: BOSUTECH XXI SL (DF2C2RHNCR)',
+    },
+    osxNotarize: {
+      tool: 'notarytool',
+      appleApiKey: process.env.APPLE_API_KEY,
+      appleApiKeyId: process.env.APPLE_API_KEY_ID,
+      appleApiIssuer: process.env.APPLE_API_ISSUER,
+    },
   },
   rebuildConfig: {},
   makers: [
