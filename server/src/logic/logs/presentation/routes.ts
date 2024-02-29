@@ -35,8 +35,24 @@ export class LogsFileSystemRoutes {
       }
     });
 
-    router.get('/:since', async (_req, res) => {
-      res.status(200).send([]);
+    router.get('/:sync', async (_req, res) => {
+      const { sync } = _req.params;
+      try {
+        const data = await new GetLogs(logRepository).execute(sync);
+        res.status(200).send(data);
+      } catch (error) {
+        this.handleError(res, error);
+      }
+    });
+
+    router.get('/:sync/:since', async (_req, res) => {
+      const { sync, since } = _req.params;
+      try {
+        const data = await new GetLogs(logRepository).execute(sync, since);
+        res.status(200).send(data);
+      } catch (error) {
+        this.handleError(res, error);
+      }
     });
 
     router.delete('/', async (_req, res) => {

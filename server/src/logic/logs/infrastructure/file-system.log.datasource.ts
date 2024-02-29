@@ -44,12 +44,16 @@ export class FileSystemLogDatasource implements ILogDatasource {
     return logs;
   };
 
-  async getLogs(): Promise<LogEntity[]> {
+  async getLogs(sync?: string, since?: string): Promise<LogEntity[]> {
     const files = await findFilesInDirectory(this.basePath, ['log']);
     const result = [];
     for (const file of files) {
       const logs = await this.getLogsFromFile(file);
-      result.push(...logs);
+      result.push(
+        ...logs.filter(
+          (log) => (!sync || log.payload.from === sync) && (!since || log.createdAt.toISOString() > since),
+        ),
+      );
     }
     return result;
   }
