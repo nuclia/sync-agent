@@ -127,9 +127,7 @@ jobs:
       with:
         tag_name: ${{ needs.pre-release.outputs.release-tag }}
         files: |
-          electron-app/out/make/*.dmg
-          electron-app/out/make/*.zip
-          electron-app/out/make/latest-*.yml
+          electron-app/out/make/*
 
     - name: Release Linux installer
       uses: softprops/action-gh-release@v1
@@ -137,8 +135,7 @@ jobs:
       with:
         tag_name: ${{ needs.pre-release.outputs.release-tag }}
         files: |
-          electron-app/out/make/*.deb
-          electron-app/out/make/*.rpm
+          electron-app/out/make/*
     
   build_job:
     runs-on: self-hosted
