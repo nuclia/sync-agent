@@ -57,14 +57,14 @@ jobs:
       run: npm run compile
       working-directory: server
     - name: Add MacOS certs
-      if: matrix.os == 'macos-latest' && steps.release.outputs.released == 'true'
+      if: matrix.os == 'macos-latest'
       run: chmod +x add-osx-cert.sh && ./add-osx-cert.sh
       working-directory: electron-app
       env:
         CERTIFICATE_OSX_APPLICATION_BASE64: ${{ secrets.CERTIFICATE_OSX_APPLICATION_BASE64 }}
         CERTIFICATE_OSX_PASSWORD: ${{ secrets.CERTIFICATE_OSX_PASSWORD }}
     - name: Prepare for app notarization
-      if: matrix.os == 'macos-latest' && steps.release.outputs.released == 'true'
+      if: matrix.os == 'macos-latest'
       run: |-
         mkdir -p ~/private_keys/
         echo '${{ secrets.APPLE_API_SECRET_BASE_64 }}' | base64 --decode > ~/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8
@@ -80,4 +80,10 @@ jobs:
 
     - name: build
       if: steps.release.outputs.released != 'true'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        APPLE_API_KEY: "~/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
+        APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+        APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+        CI: false
       run: npm run make
