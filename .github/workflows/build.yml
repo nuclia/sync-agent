@@ -119,9 +119,7 @@ jobs:
         APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
         APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
         CI: false
-      run: |
-        npm run make
-        ls -R ./electron-app/out
+      run: npm run make
     
     - name: Release MacOSX installer
       uses: softprops/action-gh-release@v1
@@ -129,7 +127,7 @@ jobs:
       with:
         tag_name: ${{ needs.pre-release.outputs.release-tag }}
         files: |
-          electron-app/out/make/*
+          electron-app/out/make/*.dmg
 
     - name: Release Linux installer
       uses: softprops/action-gh-release@v1
@@ -137,7 +135,8 @@ jobs:
       with:
         tag_name: ${{ needs.pre-release.outputs.release-tag }}
         files: |
-          electron-app/out/make/*
+          electron-app/out/make/deb/x64/*.deb
+          electron-app/out/make/rpm/x64/*.rpm
     
   build_job:
     runs-on: self-hosted
