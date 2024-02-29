@@ -50,16 +50,4 @@ module.exports = {
       config: {},
     },
   ],
-  publishers: [
-    {
-      name: '@electron-forge/publisher-github',
-      config: {
-        repository: {
-          owner: 'nuclia',
-          name: 'sync-agent',
-        },
-        draft: true,
-      },
-    },
-  ],
 };
