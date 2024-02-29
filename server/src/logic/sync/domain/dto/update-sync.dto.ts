@@ -42,18 +42,12 @@ export class UpdateSyncDto {
     const isDefined = (value: unknown) => value !== null && value !== undefined;
 
     if (kb) {
-      const { knowledgeBox, zone, backend, apiKey } = kb;
+      const { knowledgeBox, backend } = kb;
       if (isDefined(knowledgeBox) && !knowledgeBox) {
         return ['Invalid format for kb: Error: knowledgeBox is required'];
       }
-      if (isDefined(zone) && !zone) {
-        return ['Invalid format for kb: Error: zone is required'];
-      }
       if (isDefined(backend) && !backend) {
         return ['Invalid format for kb: Error: backend is required'];
-      }
-      if (isDefined(apiKey) && !apiKey) {
-        return ['Invalid format for kb: Error: apiKey is required'];
       }
     }
 

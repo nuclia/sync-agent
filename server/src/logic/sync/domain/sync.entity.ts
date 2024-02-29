@@ -20,8 +20,10 @@ export const NucliaOptionsValidator = z.object({
   /**
    * The geographical zone for the regional API calls.
    *
+   * It is not defined when using a local NucliaDB
+   *
    * Example: `europe-1` */
-  zone: z.string().min(1, { message: 'Required' }),
+  zone: z.string().optional(),
   /**
    * The Nuclia Knowledge Box unique id.
    *
@@ -31,8 +33,9 @@ export const NucliaOptionsValidator = z.object({
    * Allows you to make calls to a private Knowledge Box.
    *
    * It can be used in a server-side app, but never in a web app.
+   * It is not defined when using a local NucliaDB
    */
-  apiKey: z.string().min(1, { message: 'Required' }),
+  apiKey: z.string().optional(),
 });
 
 export type NucliaOptions = z.infer<typeof NucliaOptionsValidator>;
