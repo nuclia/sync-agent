@@ -119,7 +119,9 @@ jobs:
         APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
         APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
         CI: false
-      run: npm run make
+      run: |
+        npm run make
+        ls -R ./electron-app/out
     
     - name: Release MacOSX installer
       uses: softprops/action-gh-release@v1
