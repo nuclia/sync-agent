@@ -4,3 +4,4 @@ out
 package.json
 package-lock.json
 src/sync-agent
+forge.config.js

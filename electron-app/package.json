@@ -9,11 +9,11 @@
     "start": "npm run compile && electron-forge start",
     "package": "electron-forge package",
     "make": "npm run compile && electron-forge make",
-    "publish": "electron-forge publish",
-    "lint": "eslint .",
-    "format:check": "prettier . --check",
-    "format": "prettier . --write",
-    "ci:format": "prettier . --check && eslint ."
+    "publish": "npm run compile && electron-forge publish",
+    "lint": "eslint src/index.ts",
+    "format:check": "prettier src/index.ts --check",
+    "format": "prettier src/index.ts --write",
+    "ci:format": "prettier src/index.ts --check && eslint ."
   },
   "keywords": [],
   "author": {
@@ -32,6 +32,7 @@
     "localstorage-polyfill": "^1.0.1",
     "mime-types": "^2.1.35",
     "rxjs": "^7.8.1",
+    "socks": "^2.7.3",
     "typescript": "^5.2.2",
     "uuid": "^9.0.1",
     "zod": "^3.22.4"
