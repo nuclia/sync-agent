@@ -3,9 +3,7 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
+  
 jobs:
   build_job:
     runs-on: ${{ matrix.os }} 
@@ -16,6 +14,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - uses: justincy/github-action-npm-release@2.0.2
+      id: release
     - uses: actions/setup-python@v5
       if: matrix.os == 'macos-latest'
       with:
@@ -55,23 +57,27 @@ jobs:
       run: npm run compile
       working-directory: server
     - name: Add MacOS certs
-      if: matrix.os == 'macos-latest'
+      if: matrix.os == 'macos-latest' && steps.release.outputs.released == 'true'
       run: chmod +x add-osx-cert.sh && ./add-osx-cert.sh
       working-directory: electron-app
       env:
         CERTIFICATE_OSX_APPLICATION_BASE64: ${{ secrets.CERTIFICATE_OSX_APPLICATION_BASE64 }}
         CERTIFICATE_OSX_PASSWORD: ${{ secrets.CERTIFICATE_OSX_PASSWORD }}
     - name: Prepare for app notarization
-      if: matrix.os == 'macos-latest'
+      if: matrix.os == 'macos-latest' && steps.release.outputs.released == 'true'
       run: |-
         mkdir -p ~/private_keys/
         echo '${{ secrets.APPLE_API_SECRET_BASE_64 }}' | base64 --decode > ~/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8
-    - name: build
+    - name: build and publish
+      if: steps.release.outputs.released == 'true'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         APPLE_API_KEY: "~/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
         APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
         APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
         CI: false
-      run: |-
-        npm run publish
+      run: npm run publish
+
+    - name: build
+      if: steps.release.outputs.released != 'true'
+      run: npm run make

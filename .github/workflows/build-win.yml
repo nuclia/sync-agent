@@ -3,15 +3,17 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
+
 jobs:
   build_job:
     runs-on: self-hosted
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - uses: justincy/github-action-npm-release@2.0.2
+      id: release
     - uses: actions/setup-node@master
       with:
         node-version: 20
@@ -60,7 +62,8 @@ jobs:
 
     - name: Release Windows installer
       uses: softprops/action-gh-release@v1
+      if: steps.release.outputs.released == 'true'
       with:
-        tag_name: v0.0.2
+        tag_name: ${{ steps.release.outputs.release_id }}
         files: |
           C:/Users/user/actions-runner/_work/sync-agent/sync-agent/electron-app/out/make/squirrel.windows/x64/Nuclia-Sync-Setup.exe
