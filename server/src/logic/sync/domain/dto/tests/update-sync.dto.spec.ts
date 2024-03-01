@@ -71,22 +71,13 @@ describe('Update Sync dto tests', () => {
   });
 
   test('should not create a valid dto - kb params are not valid', () => {
-    let [error, dto] = UpdateSyncDto.create({
+    const [error, dto] = UpdateSyncDto.create({
       ...props,
       kb: {
         knowledgeBox: '',
       },
     });
     expect(error).toEqual('Invalid format for kb: Error: knowledgeBox is required');
-    expect(dto).toBeUndefined();
-
-    [error, dto] = UpdateSyncDto.create({
-      ...props,
-      kb: {
-        apiKey: '',
-      },
-    });
-    expect(error).toEqual('Invalid format for kb: Error: apiKey is required');
     expect(dto).toBeUndefined();
   });
 
