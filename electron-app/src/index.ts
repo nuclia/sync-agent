@@ -1,12 +1,15 @@
-import { Menu, Tray, app, nativeImage } from 'electron';
+import { Menu, Tray, app, nativeImage, dialog, shell } from 'electron';
 import os from 'os';
 import path from 'path';
+import semver from 'semver';
 
 import { EVENTS, eventEmitter, initFileSystemServer } from './sync-agent';
 
 let contextMenu: Electron.Menu;
 let tray = null;
 const basePath = `${os.homedir()}/.nuclia`;
+
+const VERSION = '0.99999.99999';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -22,7 +25,21 @@ const updateTrayAfterStopServer = () => {
   contextMenu.items[1].visible = false;
 };
 
+const checkUpdates = async () => {
+  const data = await fetch('https://raw.githubusercontent.com/nuclia/sync-agent/main/package.json').then((response) =>
+    response.json(),
+  );
+
+  if (semver.gt(data.version, VERSION)) {
+    await dialog.showMessageBox({
+      message: `A new version is available. Please download version ${data.version} and install it.`,
+    });
+    shell.openExternal(`https://github.com/nuclia/sync-agent/releases/tag/${data.version}`);
+  }
+};
+
 const createWindow = async () => {
+  await checkUpdates();
   const icon = nativeImage.createFromPath(path.join(__dirname, '../public/logo_16x16.png'));
   const server = await initFileSystemServer({ basePath });
   tray = new Tray(icon);
@@ -47,6 +64,10 @@ const createWindow = async () => {
       click: () => {
         app.quit();
       },
+    },
+    {
+      label: 'About',
+      click: () => dialog.showMessageBoxSync({ message: `Version: ${VERSION}` }),
     },
   ]);
   tray.setToolTip('Nuclia sync');

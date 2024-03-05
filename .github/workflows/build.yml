@@ -43,6 +43,11 @@ jobs:
     - name: Get package version
       run: node -p -e '`PACKAGE_VERSION=${require("./package.json").version}`' >> $GITHUB_ENV
 
+    - name: Set version in source
+      run: |-
+        sed -i.bak "s#99999.99999.99999#${{ env.PACKAGE_VERSION }}#" electron-app/src/index.ts
+        rm electron-app/src/index.ts.bak
+
     - name: Tag if new version
       uses: pkgdeps/git-tag-action@v2.0.5
       with:
