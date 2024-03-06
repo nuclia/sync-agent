@@ -9,9 +9,14 @@ interface SiteMapModel {
 }
 
 async function fetchSitemap(url: string): Promise<string> {
-  const response = await fetch(url);
-  // TODO: control whether it is zipped or plain
-  return response.text();
+  try {
+    const response = await fetch(url);
+    // TODO: control whether it is zipped or plain
+    return response.text();
+  } catch (error) {
+    console.error('Error fetching sitemap', error);
+    return Promise.resolve('');
+  }
 }
 
 export function parseSitemap(sitemapContent: string): Promise<SiteMapModel[]> {

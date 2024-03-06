@@ -172,9 +172,10 @@ export class NucliaCloud {
           })
           .pipe(
             retry(RETRY_CONFIG),
+            delay(500), // do not overload the server
             catchError((error) => {
               console.log('createOrUpdateResource – error:', JSON.stringify(error));
-              return throwError(() => new Error('Resource creation/modification failed'));
+              return of({ success: false, message: '' });
             }),
           ),
       ),
