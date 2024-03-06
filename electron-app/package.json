@@ -32,6 +32,7 @@
     "localstorage-polyfill": "^1.0.1",
     "mime-types": "^2.1.35",
     "rxjs": "^7.8.1",
+    "semver": "^7.6.0",
     "socks": "^2.7.3",
     "typescript": "^5.2.2",
     "uuid": "^9.0.1",
