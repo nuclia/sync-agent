@@ -7,6 +7,6 @@ The Nuclia Sync Agent server is NodeJS application that runs on your server and 
 To install and run the Nuclia Sync Agent server, run the following commands:
 
 ```bash
-npm install -g nuclia-sync-agent-server
-nuclia-sync-agent-server
+npm install -g @nuclia/sync-agent
+nuclia-sync-agent
 ```
