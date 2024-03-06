@@ -1,0 +1,44 @@
+name: test
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches-ignore:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@master
+        with:
+          node-version: 20
+      - name: install dependencies electron-app
+        run: npm install
+        working-directory: electron-app
+
+      - name: install dependencies server
+        run: npm install
+        working-directory: server
+
+      - name: lint/format electron-app
+        env:
+          CI: false
+        run: npm run ci:format
+        working-directory: electron-app
+
+      - name: lint/format server
+        env:
+          CI: false
+        run: npm run ci:format
+        working-directory: server
+
+      - name: test
+        env:
+          CI: false
+        run: npm run test
+        working-directory: server
