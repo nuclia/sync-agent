@@ -1,6 +1,6 @@
 {
   "name": "@nuclia/sync-agent",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "This is a sync agent to synchronize user files from diferent sources to nuclia",
   "main": "build/index.js",
   "types": "build/types/index.d.ts",
@@ -25,7 +25,7 @@
     "start-server": "npm run compile && node build/start-file-system-server.js"
   },
   "dependencies": {
-    "@nuclia/core": "^1.11.6",
+    "@nuclia/core": "^1.13.0",
     "cheerio": "^1.0.0-rc.12",
     "commander": "^11.1.0",
     "compression": "^1.7.4",
