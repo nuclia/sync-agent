@@ -9,7 +9,7 @@ let contextMenu: Electron.Menu;
 let tray = null;
 const basePath = `${os.homedir()}/.nuclia`;
 
-const VERSION = '0.99999.99999';
+const VERSION = '99999.99999.99999';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
