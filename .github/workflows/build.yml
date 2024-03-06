@@ -3,59 +3,59 @@ on:
   push:
     branches:
       - main
-  
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    - uses: actions/setup-node@master
-      with:
-        node-version: 20
-    - name: install dependencies electron-app
-      run: npm install
-      working-directory: electron-app
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@master
+        with:
+          node-version: 20
+      - name: install dependencies electron-app
+        run: npm install
+        working-directory: electron-app
 
-    - name: install dependencies server
-      run: npm install
-      working-directory: server
+      - name: install dependencies server
+        run: npm install
+        working-directory: server
 
-    - name: lint/format electron-app
-      env:
-        CI: false
-      run: npm run ci:format
-      working-directory: electron-app
+      - name: lint/format electron-app
+        env:
+          CI: false
+        run: npm run ci:format
+        working-directory: electron-app
 
-    - name: lint/format server
-      env:
-        CI: false
-      run: npm run ci:format
-      working-directory: server
+      - name: lint/format server
+        env:
+          CI: false
+        run: npm run ci:format
+        working-directory: server
 
-    - name: test
-      env:
-        CI: false
-      run: npm run test
-      working-directory: server
+      - name: test
+        env:
+          CI: false
+        run: npm run test
+        working-directory: server
 
-    - name: Get package version
-      run: node -p -e '`PACKAGE_VERSION=${require("./package.json").version}`' >> $GITHUB_ENV
+      - name: Get package version
+        run: node -p -e '`PACKAGE_VERSION=${require("./package.json").version}`' >> $GITHUB_ENV
 
-    - name: Set version in source
-      run: |-
-        sed -i.bak "s#99999.99999.99999#${{ env.PACKAGE_VERSION }}#" electron-app/src/index.ts
-        rm electron-app/src/index.ts.bak
+      - name: Set version in source
+        run: |-
+          sed -i.bak "s#99999.99999.99999#${{ env.PACKAGE_VERSION }}#" electron-app/src/index.ts
+          rm electron-app/src/index.ts.bak
 
-    - name: Tag if new version
-      uses: pkgdeps/git-tag-action@v2.0.5
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        github_repo: ${{ github.repository }}
-        version: ${{ env.PACKAGE_VERSION }}
-        git_commit_sha: ${{ github.sha }}
-        git_tag_prefix: 'v'
+      - name: Tag if new version
+        uses: pkgdeps/git-tag-action@v2.0.5
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_repo: ${{ github.repository }}
+          version: ${{ env.PACKAGE_VERSION }}
+          git_commit_sha: ${{ github.sha }}
+          git_tag_prefix: 'v'
 
   pre-release:
     name: 'Pre Release'
@@ -73,8 +73,8 @@ jobs:
         uses: justincy/github-action-npm-release@2.0.2
         id: release
 
-  build_ios_linux:
-    runs-on: ${{ matrix.os }} 
+  build_macos_linux:
+    runs-on: ${{ matrix.os }}
     needs: pre-release
 
     strategy:
@@ -82,107 +82,107 @@ jobs:
         os: [macos-latest, ubuntu-latest]
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    - uses: actions/setup-python@v5
-      if: startsWith(matrix.os, 'macos')
-      with:
-        python-version: '3.11'
-    - uses: actions/setup-node@master
-      with:
-        node-version: 20
-    - name: install dependencies electron-app
-      run: npm install
-      working-directory: electron-app
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        if: startsWith(matrix.os, 'macos')
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@master
+        with:
+          node-version: 20
+      - name: install dependencies electron-app
+        run: npm install
+        working-directory: electron-app
 
-    - name: install dependencies server
-      run: npm install
-      working-directory: server
+      - name: install dependencies server
+        run: npm install
+        working-directory: server
 
-    - name: compile server
-      env:
-        CI: false
-      run: npm run compile
-      working-directory: server
-    - name: Add MacOS certs
-      if: startsWith(matrix.os, 'macos')
-      run: chmod +x add-osx-cert.sh && ./add-osx-cert.sh
-      working-directory: electron-app
-      env:
-        CERTIFICATE_OSX_APPLICATION_BASE64: ${{ secrets.CERTIFICATE_OSX_APPLICATION_BASE64 }}
-        CERTIFICATE_OSX_PASSWORD: ${{ secrets.CERTIFICATE_OSX_PASSWORD }}
-    - name: Prepare for app notarization
-      if: startsWith(matrix.os, 'macos')
-      run: |-
-        mkdir -p ~/private_keys/
-        echo '${{ secrets.APPLE_API_SECRET_BASE_64 }}' | base64 --decode > ~/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8
-    - name: make
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        APPLE_API_KEY: "~/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
-        APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
-        APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
-        CI: false
-      run: npm run make
-    
-    - name: Release MacOSX installer
-      uses: softprops/action-gh-release@v1
-      if: startsWith(matrix.os, 'macos')
-      with:
-        tag_name: ${{ needs.pre-release.outputs.release-tag }}
-        files: |
-          electron-app/out/make/*.dmg
+      - name: compile server
+        env:
+          CI: false
+        run: npm run compile
+        working-directory: server
+      - name: Add MacOS certs
+        if: startsWith(matrix.os, 'macos')
+        run: chmod +x add-osx-cert.sh && ./add-osx-cert.sh
+        working-directory: electron-app
+        env:
+          CERTIFICATE_OSX_APPLICATION_BASE64: ${{ secrets.CERTIFICATE_OSX_APPLICATION_BASE64 }}
+          CERTIFICATE_OSX_PASSWORD: ${{ secrets.CERTIFICATE_OSX_PASSWORD }}
+      - name: Prepare for app notarization
+        if: startsWith(matrix.os, 'macos')
+        run: |-
+          mkdir -p ~/private_keys/
+          echo '${{ secrets.APPLE_API_SECRET_BASE_64 }}' | base64 --decode > ~/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8
+      - name: make
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APPLE_API_KEY: '~/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8'
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          CI: false
+        run: npm run make
 
-    - name: Release Linux installer
-      uses: softprops/action-gh-release@v1
-      if: startsWith(matrix.os, 'ubuntu')
-      with:
-        tag_name: ${{ needs.pre-release.outputs.release-tag }}
-        files: |
-          electron-app/out/make/deb/x64/*.deb
-          electron-app/out/make/rpm/x64/*.rpm
-    
-  build_job:
+      - name: Release MacOSX installer
+        uses: softprops/action-gh-release@v1
+        if: startsWith(matrix.os, 'macos')
+        with:
+          tag_name: ${{ needs.pre-release.outputs.release-tag }}
+          files: |
+            electron-app/out/make/*.dmg
+
+      - name: Release Linux installer
+        uses: softprops/action-gh-release@v1
+        if: startsWith(matrix.os, 'ubuntu')
+        with:
+          tag_name: ${{ needs.pre-release.outputs.release-tag }}
+          files: |
+            electron-app/out/make/deb/x64/*.deb
+            electron-app/out/make/rpm/x64/*.rpm
+
+  build_job_windows:
     runs-on: self-hosted
     needs: pre-release
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    - uses: actions/setup-node@master
-      with:
-        node-version: 20
-    - name: install dependencies electron-app
-      run: npm install
-      working-directory: electron-app
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@master
+        with:
+          node-version: 20
+      - name: install dependencies electron-app
+        run: npm install
+        working-directory: electron-app
 
-    - name: install dependencies server
-      run: npm install
-      working-directory: server
+      - name: install dependencies server
+        run: npm install
+        working-directory: server
 
-    - name: compile server
-      env:
-        CI: false
-      run: npm run compile
-      working-directory: server
+      - name: compile server
+        env:
+          CI: false
+        run: npm run compile
+        working-directory: server
 
-    - name: build
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
-        CERTIFICATE_CONTAINER_ID: ${{ secrets.CERTIFICATE_CONTAINER_ID }}
-        CERTIFICATE_READER: ${{ secrets.CERTIFICATE_READER }}
-      run: |
-        Copy-Item server/src electron-app/src/sync-agent -r
-        npm run make-win
-        & 'C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x86\signtool.exe' sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /f C:\Users\user\Documents\nuclia-certificate.cer /csp "eToken Base Cryptographic Provider" /kc "[$env:CERTIFICATE_READER{{$env:CERTIFICATE_PASSWORD}}]=$env:CERTIFICATE_CONTAINER_ID" electron-app/out/make/squirrel.windows/x64/Nuclia-Sync-Setup.exe
+      - name: build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
+          CERTIFICATE_CONTAINER_ID: ${{ secrets.CERTIFICATE_CONTAINER_ID }}
+          CERTIFICATE_READER: ${{ secrets.CERTIFICATE_READER }}
+        run: |
+          Copy-Item server/src electron-app/src/sync-agent -r
+          npm run make-win
+          & 'C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x86\signtool.exe' sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /f C:\Users\user\Documents\nuclia-certificate.cer /csp "eToken Base Cryptographic Provider" /kc "[$env:CERTIFICATE_READER{{$env:CERTIFICATE_PASSWORD}}]=$env:CERTIFICATE_CONTAINER_ID" electron-app/out/make/squirrel.windows/x64/Nuclia-Sync-Setup.exe
 
-    - name: Release Windows installer
-      uses: softprops/action-gh-release@v1
-      if: needs.pre-release.outputs.release-desktop == 'true'
-      with:
-        tag_name: ${{ needs.pre-release.outputs.release-tag }}
-        files: |
-          C:/Users/user/actions-runner/_work/sync-agent/sync-agent/electron-app/out/make/squirrel.windows/x64/Nuclia-Sync-Setup.exe
+      - name: Release Windows installer
+        uses: softprops/action-gh-release@v1
+        if: needs.pre-release.outputs.release-desktop == 'true'
+        with:
+          tag_name: ${{ needs.pre-release.outputs.release-tag }}
+          files: |
+            C:/Users/user/actions-runner/_work/sync-agent/sync-agent/electron-app/out/make/squirrel.windows/x64/Nuclia-Sync-Setup.exe
