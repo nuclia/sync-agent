@@ -62,7 +62,7 @@ export class SyncSingleFile implements SyncSingleFileUseCase {
             });
           } else if (data.type === 'link' && data.link) {
             return nucliaConnector
-              .uploadLink(item.originalId, item.title, data.link)
+              .uploadLink(item.originalId, item.title, data.link, { labels: sync.labels })
               .pipe(map(() => ({ success: true, message: '' })));
           } else {
             return of({ success: false, message: '' });
