@@ -20,7 +20,7 @@ jobs:
         run: |-
           cd server
           VERSION=`cat ../package.json| grep '"version":'`
-          sed -i 3s/.*/$VERSION/ package.json
+          sed -i "3s/.*/$VERSION/" package.json
           npm install
           npm run compile
       - name: Publish
