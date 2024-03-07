@@ -158,26 +158,28 @@ export class NucliaCloud {
     }
   }
 
-  uploadLink(originalId: string, filename: string, data: Link): Observable<void> {
+  uploadLink(originalId: string, filename: string, data: Link, metadata?: any): Observable<void> {
     const slug = sha256(originalId);
+    const payload: ICreateResource = {
+      title: filename,
+      slug,
+      links: { link: { uri: data.uri } },
+      origin: { url: data.uri },
+      icon: 'application/stf-link',
+    };
+    if (metadata.labels) {
+      payload.usermetadata = { classifications: metadata.labels };
+    }
     return this.getKb().pipe(
       switchMap((kb) =>
-        kb
-          .createOrUpdateResource({
-            title: filename,
-            slug,
-            links: { link: { uri: data.uri } },
-            origin: { url: data.uri },
-            icon: 'application/stf-link',
-          })
-          .pipe(
-            retry(RETRY_CONFIG),
-            delay(500), // do not overload the server
-            catchError((error) => {
-              console.log('createOrUpdateResource – error:', JSON.stringify(error));
-              return of({ success: false, message: '' });
-            }),
-          ),
+        kb.createOrUpdateResource(payload).pipe(
+          retry(RETRY_CONFIG),
+          delay(500), // do not overload the server
+          catchError((error) => {
+            console.log('createOrUpdateResource – error:', JSON.stringify(error));
+            return of({ success: false, message: '' });
+          }),
+        ),
       ),
       map(() => undefined),
     );
