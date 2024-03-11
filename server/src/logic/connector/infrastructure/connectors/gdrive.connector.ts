@@ -260,9 +260,9 @@ export class GDriveImpl extends OAuthBaseConnector implements IConnector {
       originalId: item.id,
       modifiedGMT: item.modifiedTime,
       parents: item.parents,
+      mimeType: needsPdfConversion ? 'application/pdf' : item.mimeType,
       metadata: {
         needsPdfConversion: needsPdfConversion ? 'yes' : 'no',
-        mimeType: needsPdfConversion ? 'application/pdf' : item.mimeType,
       },
       status: FileStatus.PENDING,
     };

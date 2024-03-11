@@ -215,8 +215,8 @@ export class OneDriveImpl extends OAuthBaseConnector implements IConnector {
       title: item.name,
       originalId: item.id,
       modifiedGMT: item.lastModifiedDateTime,
+      mimeType: item.file.mimeType,
       metadata: {
-        mimeType: item.file.mimeType,
         downloadLink: item['@microsoft.graph.downloadUrl'],
         path: item.parentReference.path,
       },

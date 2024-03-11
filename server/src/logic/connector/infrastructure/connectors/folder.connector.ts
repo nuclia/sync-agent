@@ -4,6 +4,7 @@ import path from 'path';
 import { forkJoin, map, Observable, of, switchMap } from 'rxjs';
 import { ConnectorParameters, FileStatus, IConnector, Link, SearchResults, SyncItem } from '../../domain/connector';
 import { SourceConnectorDefinition } from '../factory';
+import { lookup } from 'mime-types';
 
 const FILES_TO_IGNORE = ['.DS_Store', 'Thumbs.db'];
 
@@ -145,6 +146,7 @@ class FolderImpl implements IConnector {
     return files.map((file) => ({
       title: file.split('/').pop() || '',
       originalId: file,
+      mimeType: lookup(file) || 'application/octet-stream',
       metadata: {
         path: file.split('/').slice(0, -1).join('/'),
       },
