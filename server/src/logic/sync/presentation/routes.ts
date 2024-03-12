@@ -13,6 +13,7 @@ import { SyncAllFolders } from '../domain/use-cases/sync-all-folders-data.use-ca
 import { UpdateSync } from '../domain/use-cases/update-sync.use-case';
 import { FileSystemSyncDatasource } from '../infrastructure/file-system.sync.datasource';
 import { SyncRepository } from '../infrastructure/sync.repository';
+import { SyncEntity } from '../domain/sync.entity';
 
 export class SyncFileSystemRoutes {
   private readonly basePath: string;
@@ -77,6 +78,7 @@ export class SyncFileSystemRoutes {
     router.get('/:id', async (req, res) => {
       const { id } = req.params;
       try {
+        await this.checkAuth(id, req.headers.token as string, syncRepository);
         const data = await new GetSync(syncRepository).execute(id);
         res.status(200).send(data);
       } catch (error) {
@@ -97,6 +99,7 @@ export class SyncFileSystemRoutes {
     router.get('/:id/folders', async (req, res) => {
       const { id } = req.params;
       try {
+        await this.checkAuth(id, req.headers.token as string, syncRepository);
         const data = await new GetSyncFolders(syncRepository).execute(id);
         res.status(200).send(data);
       } catch (error) {
@@ -110,6 +113,7 @@ export class SyncFileSystemRoutes {
       if (error) return res.status(400).json({ message: error });
 
       try {
+        await this.checkAuth(id, req.headers.token as string, syncRepository);
         await new UpdateSync(syncRepository).execute(updateSyncDto!);
         res.status(204).send(null);
       } catch (error) {
@@ -120,6 +124,7 @@ export class SyncFileSystemRoutes {
     router.delete('/:id', async (req, res) => {
       const { id } = req.params;
       try {
+        await this.checkAuth(id, req.headers.token as string, syncRepository);
         await new DeleteSync(syncRepository).execute(id);
         res.status(200).send(null);
       } catch (error) {
@@ -128,5 +133,20 @@ export class SyncFileSystemRoutes {
     });
 
     return router;
+  }
+
+  private async checkAuth(id: string, auth: string, syncRepository: SyncRepository) {
+    if (!auth) {
+      throw new CustomError('Check auth: No auth token provided', 401);
+    }
+    const data = await syncRepository.getSync(id);
+    if (data === null) {
+      throw new CustomError(`Check auth: Sync with id ${id} not found`, 404);
+    }
+    const syncEntity = new SyncEntity(data);
+    const checkAuth = await syncEntity.checkNucliaAuth(auth);
+    if (!checkAuth) {
+      throw new CustomError(`Check auth: Auth for sync with id ${id} not valid`, 401);
+    }
   }
 }
