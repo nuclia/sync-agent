@@ -52,6 +52,7 @@ export class SyncSingleFile implements SyncSingleFileUseCase {
                 return nucliaConnector.upload(item.originalId, item.title, {
                   buffer: arrayBuffer,
                   metadata: { ...item.metadata, labels: sync.labels },
+                  mimeType: item.mimeType,
                 });
               }),
             );

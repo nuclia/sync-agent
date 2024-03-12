@@ -1,3 +1,7 @@
+# 1.1.0 (2024-03-11)
+
+- Support filtering options
+
 # 1.0.2 (2024-02-26)
 
 - Fix npm package

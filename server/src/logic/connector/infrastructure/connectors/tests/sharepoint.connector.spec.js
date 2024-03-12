@@ -9,9 +9,9 @@ const data = [
     title: 'PO6300590983',
     originalId: '1v8WV_aNM5qB_642saVlPhOkN1xI0NtQo',
     modifiedGMT: '2023-11-29T12:49:27.539Z',
+    mimeType: 'application/pdf',
     metadata: {
       needsPdfConversion: 'yes',
-      mimeType: 'application/pdf',
     },
     status: 'PENDING',
   },
@@ -20,9 +20,9 @@ const data = [
     title: 'PO6300604892',
     originalId: '19QJOCaOY4R8EQZ7VDrmmu2FBkeOlRAxJ',
     modifiedGMT: '2023-11-27T12:48:06.061Z',
+    mimeType: 'application/pdf',
     metadata: {
       needsPdfConversion: 'yes',
-      mimeType: 'application/pdf',
     },
     status: 'PENDING',
   },
@@ -31,9 +31,9 @@ const data = [
     title: 'PO4550970006',
     originalId: '1-5mIXJuiLTFxTO4mmVdXGNdf-Da-EzgA',
     modifiedGMT: '2023-11-27T12:46:08.712Z',
+    mimeType: 'application/pdf',
     metadata: {
       needsPdfConversion: 'yes',
-      mimeType: 'application/pdf',
     },
     status: 'PENDING',
   },

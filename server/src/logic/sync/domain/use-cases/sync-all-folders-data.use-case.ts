@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { concatMap, delay, lastValueFrom, map, of, switchMap, tap, toArray } from 'rxjs';
+import { concatMap, delay, filter, lastValueFrom, map, of, switchMap, tap, toArray } from 'rxjs';
 
 import { EVENTS } from '../../../../events/events';
 import { eventEmitter } from '../../../../server';
@@ -10,6 +10,7 @@ import { ISyncRepository } from '../sync.repository';
 import { RefreshAccessToken } from './refresh-access-token.use-case';
 import { SyncSingleFile } from './sync-single-file.use-case';
 import { UpdateSync } from './update-sync.use-case';
+import { lookup } from 'mime-types';
 
 require('localstorage-polyfill');
 
@@ -66,7 +67,32 @@ export class SyncAllFolders implements SyncAllFoldersUseCase {
   }
 
   processItems(syncEntity: SyncEntity, items: SyncItem[]) {
+    const filteredMimetypes = (syncEntity.filters?.fileExtensions?.extensions || '')
+      .split(',')
+      .map((ext) => lookup(ext.trim()) || '')
+      .filter((ext) => ext);
     return of(...items).pipe(
+      filter((item) => {
+        let isExtensionOk = true;
+        if (!item.mimeType) {
+          isExtensionOk = false;
+        } else {
+          if (filteredMimetypes.length > 0) {
+            const isFiltered = filteredMimetypes.includes(item.mimeType);
+            isExtensionOk = syncEntity.filters?.fileExtensions?.exclude ? !isFiltered : isFiltered;
+          }
+        }
+        let isDateOk = true;
+        if (item.modifiedGMT && syncEntity.filters?.modified) {
+          if (syncEntity.filters.modified.from) {
+            isDateOk = item.modifiedGMT >= syncEntity.filters.modified.from;
+          }
+          if (syncEntity.filters.modified.to) {
+            isDateOk = isDateOk && item.modifiedGMT <= syncEntity.filters.modified.to;
+          }
+        }
+        return isDateOk && isExtensionOk;
+      }),
       concatMap((item) =>
         new SyncSingleFile(syncEntity, item).execute().pipe(
           map((res) => ({ id: item.originalId, success: res.success })),

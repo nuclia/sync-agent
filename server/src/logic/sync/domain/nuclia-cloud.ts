@@ -42,7 +42,7 @@ export class NucliaCloud {
   upload(
     originalId: string,
     filename: string,
-    data: { buffer?: ArrayBuffer; text?: TextField; metadata?: any },
+    data: { buffer?: ArrayBuffer; text?: TextField; metadata?: any; mimeType?: string },
   ): Observable<{ success: boolean; message?: string }> {
     const slug = sha256(originalId);
     const text = data.text;
@@ -94,7 +94,7 @@ export class NucliaCloud {
             try {
               return resource
                 .upload('file', buffer, false, {
-                  contentType: data.metadata.mimeType || lookup(filename) || 'application/octet-stream',
+                  contentType: data.mimeType || lookup(filename) || 'application/octet-stream',
                   filename,
                 })
                 .pipe(

@@ -42,6 +42,22 @@ export type NucliaOptions = z.infer<typeof NucliaOptionsValidator>;
 
 export type Classification = {};
 
+export const FiltersValidator = z.object({
+  fileExtensions: z
+    .object({
+      extensions: z.string(),
+      exclude: z.boolean().optional(),
+    })
+    .optional(),
+  modified: z
+    .object({
+      from: z.string().optional(),
+      to: z.string().optional(),
+    })
+    .optional(),
+});
+export type Filters = z.infer<typeof FiltersValidator>;
+
 export interface ISyncEntity {
   connector: Connector;
   kb: NucliaOptions;
@@ -50,6 +66,7 @@ export interface ISyncEntity {
   id: string;
   lastSyncGMT?: string;
   foldersToSync?: SyncItem[];
+  filters?: Filters;
 }
 
 export class SyncEntity {
@@ -61,9 +78,10 @@ export class SyncEntity {
   public sourceConnector?: IConnector;
   public lastSyncGMT?: string;
   public foldersToSync?: SyncItem[] = [];
+  public filters?: Filters;
 
   constructor(options: ISyncEntity) {
-    const { connector, kb, labels, title, id, lastSyncGMT, foldersToSync } = options;
+    const { connector, kb, labels, title, id, lastSyncGMT, foldersToSync, filters } = options;
     this.connector = connector;
     this.kb = kb;
     this.labels = labels;
@@ -71,6 +89,7 @@ export class SyncEntity {
     this.id = id;
     this.lastSyncGMT = lastSyncGMT;
     this.foldersToSync = foldersToSync;
+    this.filters = filters;
     this.setConnectorDefinition();
   }
 

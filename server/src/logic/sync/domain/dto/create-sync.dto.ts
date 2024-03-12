@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { MakeOptional } from '../../../../types/server';
 import { getConnector } from '../../../connector/infrastructure/factory';
-import { ISyncEntity, NucliaOptionsValidator } from '../sync.entity';
+import { FiltersValidator, ISyncEntity, NucliaOptionsValidator } from '../sync.entity';
 import { validateZodSchema } from './validate';
 
 export class CreateSyncDto {
@@ -13,6 +13,7 @@ export class CreateSyncDto {
       kb: this.options.kb,
       title: this.options.title,
       id: this.options.id,
+      filters: this.options.filters,
     };
 
     if (this.options.labels) returnObj.labels = this.options.labels;
@@ -44,6 +45,14 @@ export class CreateSyncDto {
 
     if (props.foldersToSync) {
       return ['You can not create a sync with foldersToSync'];
+    }
+
+    if (props.filters) {
+      try {
+        validateZodSchema(FiltersValidator, props.filters);
+      } catch (error) {
+        return [`Invalid format for filters: ${error}`];
+      }
     }
 
     return [undefined, new CreateSyncDto({ ...props, id })];

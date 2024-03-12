@@ -81,6 +81,7 @@ class SitemapImpl implements IConnector {
           status: FileStatus.PENDING,
           uuid: `${new Date().getTime()}`,
           originalId: parsedUrl.loc,
+          mimeType: 'text/html',
           metadata: {
             uri: parsedUrl.loc,
             path: parsedUrl.loc.replace(/https?:\/\//, ''),

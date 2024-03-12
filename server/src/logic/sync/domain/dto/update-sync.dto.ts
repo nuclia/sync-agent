@@ -1,6 +1,6 @@
 import { SyncItemValidator } from '../../../connector/domain/connector';
 import { getConnector } from '../../../connector/infrastructure/factory';
-import { ISyncEntity } from '../sync.entity';
+import { FiltersValidator, ISyncEntity } from '../sync.entity';
 import { validateZodSchema } from './validate';
 
 type Values = Partial<ISyncEntity> & { id: string };
@@ -18,12 +18,13 @@ export class UpdateSyncDto {
     if (this.options.title) returnObj.title = this.options.title;
     if (this.options.lastSyncGMT) returnObj.lastSyncGMT = this.options.lastSyncGMT;
     if (this.options.foldersToSync) returnObj.foldersToSync = this.options.foldersToSync;
+    if (this.options.filters) returnObj.filters = this.options.filters;
 
     return returnObj;
   }
 
   static create(props: Values): [string?, UpdateSyncDto?] {
-    const { id, connector, kb, foldersToSync } = props;
+    const { id, connector, kb, foldersToSync, filters } = props;
 
     if (!id) {
       return ['id is mandatory'];
@@ -48,6 +49,14 @@ export class UpdateSyncDto {
       }
       if (isDefined(backend) && !backend) {
         return ['Invalid format for kb: Error: backend is required'];
+      }
+    }
+
+    if (filters) {
+      try {
+        validateZodSchema(FiltersValidator, filters);
+      } catch (error) {
+        return [`Invalid format for filters: ${error}`];
       }
     }
 
