@@ -1,4 +1,4 @@
-import { catchError, firstValueFrom, forkJoin, map, Observable, of, switchMap } from 'rxjs';
+import { catchError, firstValueFrom, forkJoin, map, Observable, of } from 'rxjs';
 
 import { z } from 'zod';
 import { FileStatus, IConnector, SearchResults, SyncItem } from '../../connector/domain/connector';
@@ -166,6 +166,10 @@ export class SyncEntity {
   }
 
   async checkNucliaAuth(token: string) {
+    // If there is no zone, it is a local NucliaDB or a unit test, we do not check the auth
+    if (!this.kb.zone) {
+      return Promise.resolve(true);
+    }
     try {
       const nuclia = new Nuclia({ ...this.kb, apiKey: '' });
       nuclia.auth.authenticate({ access_token: token, refresh_token: '' });
