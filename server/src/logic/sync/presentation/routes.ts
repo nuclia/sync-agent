@@ -44,10 +44,17 @@ export class SyncFileSystemRoutes {
       next();
     });
 
-    router.get('/', async (_req, res) => {
+    router.get('/kb/:kb', async (_req, res) => {
       try {
-        const data = await new GetAllSync(syncRepository).execute();
-        res.status(200).send(data);
+        const allSyncs = await new GetAllSync(syncRepository).execute();
+        const kbSyncs = Object.values(allSyncs)
+          .filter((sync) => sync.kb.knowledgeBox === _req.params.kb)
+          .map((sync) => ({
+            id: sync.id,
+            title: sync.title,
+            connector: sync.connector.name,
+          }));
+        res.status(200).send(kbSyncs);
       } catch (error) {
         this.handleError(res, error);
       }
