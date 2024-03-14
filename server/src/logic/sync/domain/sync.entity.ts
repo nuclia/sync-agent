@@ -1,8 +1,10 @@
-import { catchError, forkJoin, map, Observable, of } from 'rxjs';
+import { catchError, firstValueFrom, forkJoin, map, Observable, of } from 'rxjs';
 
 import { z } from 'zod';
 import { FileStatus, IConnector, SearchResults, SyncItem } from '../../connector/domain/connector';
 import { getConnector } from '../../connector/infrastructure/factory';
+import { Nuclia } from '@nuclia/core';
+import { CustomError } from '../../errors';
 
 export type Connector = {
   name: 'gdrive' | 'folder';
@@ -161,5 +163,25 @@ export class SyncEntity {
 
   hasAuthData() {
     return this.sourceConnector!.hasAuthData();
+  }
+
+  async checkNucliaAuth(token: string) {
+    // If there is no zone, it is a local NucliaDB or a unit test, we do not check the auth
+    if (!this.kb.zone) {
+      return Promise.resolve(true);
+    }
+    try {
+      const nuclia = new Nuclia({ ...this.kb, apiKey: '' });
+      nuclia.auth.authenticate({ access_token: token, refresh_token: '' });
+      const req = await firstValueFrom(
+        nuclia.knowledgeBox.getConfiguration().pipe(
+          map(() => true),
+          catchError(() => of(false)),
+        ),
+      );
+      return req;
+    } catch (err) {
+      return new CustomError('Error checking Nuclia auth', 500);
+    }
   }
 }

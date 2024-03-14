@@ -36,19 +36,20 @@ describe('Test Sync object', () => {
   });
 
   serverTest('Add new sync', async ({ serverWithSync }) => {
-    let response = await request(serverWithSync.app).get('/sync');
+    let response = await request(serverWithSync.app).get('/sync/kb/test');
     expect(response.status).toBe(200);
-    expect(Object.keys(response.body).length).toEqual(1);
+    expect(response.body.length).toEqual(1);
   });
 
   serverTest('Update a sync', async ({ serverWithSync }) => {
-    const response = await request(serverWithSync.app).get('/sync');
+    const response = await request(serverWithSync.app).get('/sync/kb/test');
     expect(response.status).toBe(200);
-    expect(Object.keys(response.body).length).toEqual(1);
+    expect(response.body.length).toEqual(1);
 
-    const id = Object.keys(response.body)[0];
+    const id = response.body[0].id;
     const responsePatch = await request(serverWithSync.app)
       .patch(`/sync/${id}`)
+      .set('token', 'fake-token')
       .send({
         title: 'Sync1',
         kb: {
@@ -57,12 +58,11 @@ describe('Test Sync object', () => {
       });
     expect(responsePatch.status).toBe(204);
 
-    const responseGet = await request(serverWithSync.app).get(`/sync/${id}`);
+    const responseGet = await request(serverWithSync.app).get(`/sync/${id}`).set('token', 'fake-token');
     expect(responseGet.status).toBe(200);
     expect(responseGet.body['title']).toBe('Sync1');
     expect(responseGet.body['kb']).toEqual({
       knowledgeBox: 'test',
-      zone: 'local',
       backend: 'http://localhost:9000',
       apiKey: 'apiKey',
     });
@@ -81,16 +81,16 @@ describe('Test Sync object', () => {
   });
 
   serverTest('Delete a sync', async ({ serverWithSync }) => {
-    let response = await request(serverWithSync.app).get('/sync');
+    let response = await request(serverWithSync.app).get('/sync/kb/test');
     expect(response.status).toBe(200);
-    expect(Object.keys(response.body).length).toEqual(3);
+    expect(response.body.length).toEqual(3);
 
-    const id = Object.keys(response.body)[0];
-    const responseDelete = await request(serverWithSync.app).delete(`/sync/${id}`);
+    const id = response.body[0].id;
+    const responseDelete = await request(serverWithSync.app).delete(`/sync/${id}`).set('token', 'fake-token');
     expect(responseDelete.status).toBe(200);
 
-    response = await request(serverWithSync.app).get('/sync');
+    response = await request(serverWithSync.app).get('/sync/kb/test');
     expect(response.status).toBe(200);
-    expect(Object.keys(response.body).length).toEqual(2);
+    expect(response.body.length).toEqual(2);
   });
 });

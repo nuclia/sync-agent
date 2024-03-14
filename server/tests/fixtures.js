@@ -33,7 +33,6 @@ export const serverTest = test.extend({
         },
         kb: {
           knowledgeBox: 'test',
-          zone: 'local',
           backend: 'http://localhost:8000',
           apiKey: 'apiKey',
         },
@@ -56,7 +55,6 @@ export const serverTest = test.extend({
         },
         kb: {
           knowledgeBox: 'test',
-          zone: 'local',
           backend: 'http://localhost:8000',
           apiKey: 'apiKey',
         },
@@ -75,7 +73,6 @@ export const serverTest = test.extend({
         },
         kb: {
           knowledgeBox: 'test',
-          zone: 'local',
           backend: 'http://localhost:8000',
           apiKey: 'apiKey',
         },

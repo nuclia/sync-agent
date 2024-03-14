@@ -13,7 +13,6 @@ const props: any = {
   },
   kb: {
     knowledgeBox: 'knowledgeBox',
-    zone: 'zone',
     backend: 'backend',
     apiKey: 'apiKey',
   },
@@ -93,7 +92,6 @@ describe('Create Sync dto tests', () => {
       id: undefined,
       kb: {
         knowledgeBox: 'knowledgeBox',
-        zone: '',
       },
     });
 
@@ -105,7 +103,6 @@ describe('Create Sync dto tests', () => {
       id: undefined,
       kb: {
         knowledgeBox: 'knowledgeBox',
-        zone: 'zone',
       },
     });
 

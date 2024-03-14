@@ -1,3 +1,7 @@
+# 1.2.0 (2024-03-13)
+
+- Secure endpoints by validating the dashboard user token
+
 # 1.1.0 (2024-03-11)
 
 - Support filtering options
