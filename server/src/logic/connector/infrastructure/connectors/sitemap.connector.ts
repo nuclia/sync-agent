@@ -2,6 +2,7 @@ import { from, map, Observable, of, switchMap } from 'rxjs';
 import { ConnectorParameters, FileStatus, IConnector, Link, SearchResults, SyncItem } from '../../domain/connector';
 import { SourceConnectorDefinition } from '../factory';
 import * as cheerio from 'cheerio';
+import { TO_BE_CHECKED } from '../../../sync/domain/sync.entity';
 
 interface SiteMapModel {
   loc: string;
@@ -81,7 +82,7 @@ class SitemapImpl implements IConnector {
           status: FileStatus.PENDING,
           uuid: `${new Date().getTime()}`,
           originalId: parsedUrl.loc,
-          mimeType: 'text/html',
+          mimeType: TO_BE_CHECKED,
           metadata: {
             uri: parsedUrl.loc,
             path: parsedUrl.loc.replace(/https?:\/\//, ''),
