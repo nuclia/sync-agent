@@ -22,7 +22,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@nuclia/core": "^1.11.6",
+    "@nuclia/core": "^1.14.2",
     "cheerio": "^1.0.0-rc.12",
     "commander": "^11.1.0",
     "compression": "^1.7.4",
