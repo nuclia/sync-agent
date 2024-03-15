@@ -1,3 +1,7 @@
+# 1.2.1 (2024-03-15)
+
+- Use `checkAuthorization` to validate token
+
 # 1.2.0 (2024-03-13)
 
 - Secure endpoints by validating the dashboard user token
