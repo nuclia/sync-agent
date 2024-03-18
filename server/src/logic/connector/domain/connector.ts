@@ -11,6 +11,7 @@ export enum FileStatus {
 export interface Link {
   uri: string;
   extra_headers: { [key: string]: string };
+  cssSelector?: string;
 }
 
 export interface ConnectorParameters {
