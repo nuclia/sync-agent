@@ -106,7 +106,7 @@ export class SyncAllFolders implements SyncAllFoldersUseCase {
 
   async execute() {
     const syncObjects = await this.repository.getAllSync();
-    const syncObjectValues = Object.values(syncObjects);
+    const syncObjectValues = Object.values(syncObjects).filter((sync) => !sync.disabled);
     if (syncObjectValues.length > 0) {
       await lastValueFrom(
         of(...syncObjectValues).pipe(

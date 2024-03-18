@@ -14,6 +14,7 @@ export class CreateSyncDto {
       title: this.options.title,
       id: this.options.id,
       filters: this.options.filters,
+      disabled: this.options.disabled,
     };
 
     if (this.options.labels) returnObj.labels = this.options.labels;

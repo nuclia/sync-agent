@@ -19,6 +19,7 @@ export class UpdateSyncDto {
     if (this.options.lastSyncGMT) returnObj.lastSyncGMT = this.options.lastSyncGMT;
     if (this.options.foldersToSync) returnObj.foldersToSync = this.options.foldersToSync;
     if (this.options.filters) returnObj.filters = this.options.filters;
+    if (this.options.disabled !== undefined) returnObj.disabled = this.options.disabled;
 
     return returnObj;
   }
