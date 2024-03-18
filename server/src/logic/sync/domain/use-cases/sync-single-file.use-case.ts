@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { TextField } from '@nuclia/core';
-import { Observable, from, map, of, switchMap, tap } from 'rxjs';
+import { Observable, catchError, from, map, of, switchMap, tap } from 'rxjs';
 
 import { EVENTS } from '../../../../events/events';
 import { eventEmitter } from '../../../../server';
@@ -107,6 +107,7 @@ export class SyncSingleFile implements SyncSingleFileUseCase {
     try {
       return from(fetch(url, { method: 'HEAD' })).pipe(
         map((response) => (response.headers.get('content-type') || 'text/html').split(';')[0]),
+        catchError(() => of('text/html')),
       );
     } catch (err) {
       return of('text/html');
