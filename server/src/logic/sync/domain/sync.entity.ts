@@ -6,6 +6,8 @@ import { getConnector } from '../../connector/infrastructure/factory';
 import { Nuclia } from '@nuclia/core';
 import { CustomError } from '../../errors';
 
+export const TO_BE_CHECKED = '_to_be_checked_';
+
 export type Connector = {
   name: 'gdrive' | 'folder';
   // logo: string;

@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { TextField } from '@nuclia/core';
-import { Observable, from, map, of, switchMap, tap } from 'rxjs';
+import { Observable, catchError, from, map, of, switchMap, tap } from 'rxjs';
 
 import { EVENTS } from '../../../../events/events';
 import { eventEmitter } from '../../../../server';
 import { SyncItem } from '../../../connector/domain/connector';
 import { NucliaCloud } from '../nuclia-cloud';
-import { SyncEntity } from '../sync.entity';
+import { SyncEntity, TO_BE_CHECKED } from '../sync.entity';
 
 require('localstorage-polyfill');
 
@@ -62,9 +62,16 @@ export class SyncSingleFile implements SyncSingleFileUseCase {
               metadata: { labels: sync.labels },
             });
           } else if (data.type === 'link' && data.link) {
-            return nucliaConnector
-              .uploadLink(item.originalId, item.title, data.link, { labels: sync.labels })
-              .pipe(map(() => ({ success: true, message: '' })));
+            const mimeType =
+              item.mimeType !== TO_BE_CHECKED ? of(item.mimeType || 'text/html') : this.checkMimetype(data.link.uri);
+            return mimeType.pipe(
+              switchMap((type) =>
+                nucliaConnector.uploadLink(item.originalId, item.title, data.link, type, {
+                  labels: sync.labels,
+                }),
+              ),
+              map(() => ({ success: true, message: '' })),
+            );
           } else {
             return of({ success: false, message: '' });
           }
@@ -94,5 +101,16 @@ export class SyncSingleFile implements SyncSingleFileUseCase {
         }
       }),
     );
+  }
+
+  private checkMimetype(url: string): Observable<string> {
+    try {
+      return from(fetch(url, { method: 'HEAD' })).pipe(
+        map((response) => (response.headers.get('content-type') || 'text/html').split(';')[0]),
+        catchError(() => of('text/html')),
+      );
+    } catch (err) {
+      return of('text/html');
+    }
   }
 }

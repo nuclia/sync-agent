@@ -158,15 +158,20 @@ export class NucliaCloud {
     }
   }
 
-  uploadLink(originalId: string, filename: string, data: Link, metadata?: any): Observable<void> {
+  uploadLink(originalId: string, filename: string, data: Link, mimeType: string, metadata?: any): Observable<void> {
     const slug = sha256(originalId);
     const payload: ICreateResource = {
       title: filename,
       slug,
-      links: { link: { uri: data.uri } },
       origin: { url: data.uri },
-      icon: 'application/stf-link',
     };
+    if (!mimeType.startsWith('text/html')) {
+      payload.files = { file: { file: { uri: data.uri, filename: filename } } };
+      payload.icon = mimeType;
+    } else {
+      payload.links = { link: { uri: data.uri } };
+      payload.icon = 'application/stf-link';
+    }
     if (metadata.labels) {
       payload.usermetadata = { classifications: metadata.labels };
     }

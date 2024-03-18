@@ -1,3 +1,7 @@
+# 1.2.2 (2024-03-15)
+
+- Check mimetype of the uploaded links to create either a link or a file
+
 # 1.2.1 (2024-03-15)
 
 - Use `checkAuthorization` to validate token
