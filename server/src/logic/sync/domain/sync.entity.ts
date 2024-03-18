@@ -71,6 +71,7 @@ export interface ISyncEntity {
   lastSyncGMT?: string;
   foldersToSync?: SyncItem[];
   filters?: Filters;
+  disabled?: boolean;
 }
 
 export class SyncEntity {
@@ -83,9 +84,10 @@ export class SyncEntity {
   public lastSyncGMT?: string;
   public foldersToSync?: SyncItem[] = [];
   public filters?: Filters;
+  public disabled?: boolean;
 
   constructor(options: ISyncEntity) {
-    const { connector, kb, labels, title, id, lastSyncGMT, foldersToSync, filters } = options;
+    const { connector, kb, labels, title, id, lastSyncGMT, foldersToSync, filters, disabled } = options;
     this.connector = connector;
     this.kb = kb;
     this.labels = labels;
@@ -94,6 +96,7 @@ export class SyncEntity {
     this.lastSyncGMT = lastSyncGMT;
     this.foldersToSync = foldersToSync;
     this.filters = filters;
+    this.disabled = disabled;
     this.setConnectorDefinition();
   }
 

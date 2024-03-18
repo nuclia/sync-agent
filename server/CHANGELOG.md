@@ -1,3 +1,7 @@
+# 1.2.3 (2024-03-18)
+
+- Allow to activate/deactivate a sync
+
 # 1.2.2 (2024-03-15)
 
 - Check mimetype of the uploaded links to create either a link or a file
