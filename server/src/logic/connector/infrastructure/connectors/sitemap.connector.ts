@@ -99,7 +99,11 @@ class SitemapImpl implements IConnector {
   }
 
   getLink(resource: SyncItem): Observable<Link> {
-    const newLink: Link = { uri: resource.metadata['uri'], extra_headers: {} };
+    const newLink: Link = {
+      uri: resource.metadata['uri'],
+      extra_headers: {},
+      cssSelector: this.getParameters().cssSelector,
+    };
     return of(newLink);
   }
 

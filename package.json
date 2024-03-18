@@ -1,7 +1,7 @@
 {
   "name": "nuclia-sync-agent-app",
-  "version": "1.2.3",
-  "description": "\"This is a Nuclia Sync Agent App\"",
+  "version": "1.2.4",
+  "description": "This is a Nuclia Sync Agent App",
   "main": "build/index.js",
   "scripts": {
     "copy-server-to-electron": "rm -rf electron-app/src/sync-agent && cp -r server/src electron-app/src/sync-agent",

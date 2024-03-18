@@ -1,3 +1,7 @@
+# 1.2.4 (2024-03-18)
+
+- Support CSS selectors in sitemap component
+
 # 1.2.3 (2024-03-18)
 
 - Allow to activate/deactivate a sync

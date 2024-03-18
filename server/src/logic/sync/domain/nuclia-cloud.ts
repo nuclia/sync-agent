@@ -169,7 +169,7 @@ export class NucliaCloud {
       payload.files = { file: { file: { uri: data.uri, filename: filename } } };
       payload.icon = mimeType;
     } else {
-      payload.links = { link: { uri: data.uri } };
+      payload.links = { link: { uri: data.uri, css_selector: data.cssSelector } };
       payload.icon = 'application/stf-link';
     }
     if (metadata.labels) {
