@@ -6,6 +6,7 @@ import { GDriveConnector } from './connectors/gdrive.connector';
 import { OneDriveConnector } from './connectors/onedrive.connector';
 import { SharepointConnector } from './connectors/sharepoint.connector';
 import { SitemapConnector } from './connectors/sitemap.connector';
+import { RSSConnector } from './connectors/rss.connector';
 
 export interface ConnectorDefinition {
   id: string;
@@ -27,6 +28,7 @@ const connectors: { [id: string]: SourceConnectorDefinition } = {
   sharepoint: SharepointConnector,
   sitemap: SitemapConnector,
   confluence: ConfluenceConnector,
+  rss: RSSConnector,
 };
 
 // TODO: add the dynamic connectors
