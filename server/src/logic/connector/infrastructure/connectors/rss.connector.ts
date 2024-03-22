@@ -29,7 +29,7 @@ export function parseRSS(rss: string): RSSItem[] {
       return {
         link: $(item).find('link').text(),
         pubDate: validDate ? date.toISOString() : '',
-      }
+      };
     })
     .filter((item) => item.link && item.pubDate);
 }
@@ -108,9 +108,7 @@ class RSSImpl implements IConnector {
     return this.getFiles().pipe(
       map((searchResults) => ({
         ...searchResults,
-        items: searchResults.items.filter(
-          (item) => item.modifiedGMT && item.modifiedGMT > since,
-        ),
+        items: searchResults.items.filter((item) => item.modifiedGMT && item.modifiedGMT > since),
       })),
     );
   }
