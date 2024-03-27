@@ -1,3 +1,7 @@
+# 1.2.6 (2024-03-27)
+
+- Fix path when retrieving folders.
+
 # 1.2.5 (2024-03-22)
 
 - Add RSS connector
