@@ -1,3 +1,7 @@
+# 1.2.7 (2024-03-28)
+
+- Fix file type filtering
+
 # 1.2.6 (2024-03-27)
 
 - Fix path when retrieving folders.
