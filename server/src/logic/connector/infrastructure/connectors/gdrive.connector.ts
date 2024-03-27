@@ -92,7 +92,49 @@ export class GDriveImpl extends OAuthBaseConnector implements IConnector {
   }
 
   getFolders(query?: string | undefined): Observable<SearchResults> {
-    return this._getItems(query, '', true);
+    return this._getItems(query, '', true).pipe(
+      map((results) => {
+        const folders = results.items;
+        const getFolder = (folderId: string) => {
+          return folders.find((folder) => folder.originalId === folderId);
+        };
+        const parents = folders.reduce(
+          (acc, folder) => {
+            if (folder.parents) {
+              acc[folder.originalId] = folder.parents[0];
+            }
+            return acc;
+          },
+          {} as { [key: string]: string },
+        );
+        const getFolderPath = (folderId: string | undefined) => {
+          if (!folderId) {
+            return [];
+          }
+          let path: string[] = [];
+          let currentFolder = getFolder(folderId);
+          while (currentFolder) {
+            path = [currentFolder.title, ...path];
+            if (!parents[currentFolder.originalId]) {
+              break;
+            }
+            currentFolder = getFolder(parents[currentFolder.originalId]);
+          }
+          return path;
+        };
+        const foldersWithPath = folders.map((folder) => ({
+          ...folder,
+          metadata: {
+            ...folder.metadata,
+            path: getFolderPath(folder.parents?.[0]).join('/'),
+          },
+        }));
+        return {
+          ...results,
+          items: foldersWithPath,
+        };
+      }),
+    );
   }
 
   getFiles(query?: string): Observable<SearchResults> {
