@@ -74,13 +74,9 @@ export class SyncAllFolders implements SyncAllFoldersUseCase {
     return of(...items).pipe(
       filter((item) => {
         let isExtensionOk = true;
-        if (!item.mimeType) {
-          isExtensionOk = false;
-        } else {
-          if (filteredMimetypes.length > 0) {
-            const isFiltered = filteredMimetypes.includes(item.mimeType);
-            isExtensionOk = syncEntity.filters?.fileExtensions?.exclude ? !isFiltered : isFiltered;
-          }
+        if (filteredMimetypes.length > 0) {
+          const isFiltered = filteredMimetypes.includes(item.mimeType || '');
+          isExtensionOk = syncEntity.filters?.fileExtensions?.exclude ? !isFiltered : isFiltered;
         }
         let isDateOk = true;
         if (item.modifiedGMT && syncEntity.filters?.modified) {
