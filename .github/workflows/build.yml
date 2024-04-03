@@ -45,8 +45,8 @@ jobs:
 
       - name: Set version in source
         run: |-
-          sed -i "s#99999.99999.99999#${{ env.PACKAGE_VERSION }}#" electron-app/src/index.ts
-          sed -i "4s/.*/{{ env.PACKAGE_VERSION }}/" electron-app/package.json
+          sed -i "s#99999\.99999\.99999#${{ env.PACKAGE_VERSION }}#" electron-app/src/index.ts
+          sed -i "4s/0\.0\.0/{{ env.PACKAGE_VERSION }}/" electron-app/package.json
 
       - name: Tag if new version
         uses: pkgdeps/git-tag-action@v2.0.5
