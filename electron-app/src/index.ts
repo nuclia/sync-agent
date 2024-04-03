@@ -73,6 +73,9 @@ const createWindow = async () => {
   tray.setToolTip('Nuclia sync');
   tray.setContextMenu(contextMenu);
   server.start();
+  dialog.showMessageBoxSync({
+    message: 'The Nuclia Sync Agent is running. You can manage your syncs from the online Nuclia Dashboard.',
+  });
 };
 
 // This method will be called when Electron has finished
