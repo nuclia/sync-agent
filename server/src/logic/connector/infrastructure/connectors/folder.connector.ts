@@ -1,7 +1,7 @@
 import { Blob as FSBlob } from 'buffer';
 import * as fs from 'fs';
 import path from 'path';
-import { forkJoin, map, Observable, of, switchMap } from 'rxjs';
+import { forkJoin, from, map, Observable, of, switchMap } from 'rxjs';
 import { ConnectorParameters, FileStatus, IConnector, Link, SearchResults, SyncItem } from '../../domain/connector';
 import { SourceConnectorDefinition } from '../factory';
 import { lookup } from 'mime-types';
@@ -40,10 +40,6 @@ class FolderImpl implements IConnector {
     throw new Error('Method not supported by Folder connector.');
   }
 
-  getFiles(query?: string): Observable<SearchResults> {
-    return this._getFiles(this.params.path, query);
-  }
-
   getFilesFromFolders(folders: SyncItem[]): Observable<SearchResults> {
     if ((folders ?? []).length === 0) {
       return of({
@@ -80,25 +76,42 @@ class FolderImpl implements IConnector {
       return forkJoin(
         (folders || []).map((folder) =>
           this._getFiles(folder.originalId).pipe(
-            switchMap((results) => this.getFilesModifiedSince(results.items, since)),
+            switchMap((results) =>
+              from(this.getFilesModifiedSince(results.items, since)).pipe(
+                map((items) => ({ items, error: results.error })),
+              ),
+            ),
           ),
         ),
       ).pipe(
         map((results) => {
-          const items = results.reduce((acc, result) => acc.concat(result), [] as SyncItem[]);
+          const items = results.reduce((acc, result) => acc.concat(result.items), [] as SyncItem[]);
+          const errors = results
+            .map((result) => result.error)
+            .filter((error) => !!error)
+            .join('. ');
           return {
             items,
+            error: errors,
           };
         }),
       );
     } catch (err) {
       return of({
         items: [],
+        error: 'Error getting last modified files.',
       });
     }
   }
 
   private _getFiles(path: string, query?: string): Observable<SearchResults> {
+    if (!fs.existsSync(path)) {
+      console.error(`Folder ${path} does not exist.`);
+      return of({
+        items: [],
+        error: `Folder ${path} does not exist.`,
+      });
+    }
     return of({
       items: this.mapFSFiles(this.listAllFiles(path)).filter((item) =>
         query ? item.title.toLocaleLowerCase().includes(query?.toLocaleLowerCase()) : true,

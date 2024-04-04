@@ -61,6 +61,7 @@ export class OneDriveImpl extends OAuthBaseConnector implements IConnector {
     } catch (err) {
       return of({
         items: [],
+        error: `Error fetching last modified files: ${err}`,
       });
     }
   }
@@ -86,16 +87,13 @@ export class OneDriveImpl extends OAuthBaseConnector implements IConnector {
     } catch (err) {
       return of({
         items: [],
+        error: `Error fetching files: ${err}`,
       });
     }
   }
 
   getFolders(query?: string | undefined): Observable<SearchResults> {
     return this._getItems(query, '', true);
-  }
-
-  getFiles(query?: string): Observable<SearchResults> {
-    return this._getItems(query);
   }
 
   isAccessTokenValid(): Observable<boolean> {

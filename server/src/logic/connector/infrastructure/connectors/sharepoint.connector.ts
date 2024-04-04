@@ -58,6 +58,7 @@ export class SharepointImpl extends OAuthBaseConnector implements IConnector {
     } catch (err) {
       return of({
         items: [],
+        error: `Error fetching last modified files: ${err}`,
       });
     }
   }
@@ -65,11 +66,6 @@ export class SharepointImpl extends OAuthBaseConnector implements IConnector {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getFolders(query?: string | undefined): Observable<SearchResults> {
     return this._getItems('', true);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getFiles(query?: string): Observable<SearchResults> {
-    return this._getItems();
   }
 
   getFilesFromFolders(folders: SyncItem[]): Observable<SearchResults> {
@@ -93,6 +89,7 @@ export class SharepointImpl extends OAuthBaseConnector implements IConnector {
     } catch (err) {
       return of({
         items: [],
+        error: `Error fetching files: ${err}`,
       });
     }
   }

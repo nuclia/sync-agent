@@ -34,6 +34,7 @@ export type SyncItem = z.infer<typeof SyncItemValidator>;
 export interface SearchResults {
   items: SyncItem[];
   nextPage?: Observable<SearchResults>;
+  error?: string;
 }
 
 export interface Field {
@@ -52,7 +53,6 @@ export interface IConnector {
   areParametersValid(params: ConnectorParameters): boolean;
   getParameters(): ConnectorParameters;
   getFolders(query?: string): Observable<SearchResults>;
-  getFiles(query?: string): Observable<SearchResults>;
   getFilesFromFolders(folders: SyncItem[]): Observable<SearchResults>;
   getLastModified(since: string, folders?: SyncItem[]): Observable<SearchResults>;
   // we cannot use the TextField from the SDK because we want to keep connectors independant

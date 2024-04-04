@@ -118,15 +118,6 @@ export class SyncEntity {
     return this.sourceConnector.getFolders();
   }
 
-  get files(): Observable<SearchResults> {
-    if (!this.sourceConnector) {
-      return of({
-        items: [],
-      });
-    }
-    return this.sourceConnector.getFiles();
-  }
-
   getLastModified(): Observable<{ success: boolean; results: SyncItem[]; error?: string }> {
     const foldersToSyncPending: SyncItem[] = (this.foldersToSync ?? []).filter(
       (folder) => folder.status === FileStatus.PENDING || folder.status === undefined,
@@ -137,15 +128,19 @@ export class SyncEntity {
     const getFilesFoldersUpdated =
       foldersToSyncUpdated.length > 0
         ? this.sourceConnector!.getLastModified(this.lastSyncGMT || '2000-01-01T00:00:00.000Z', foldersToSyncUpdated)
-        : of({ items: [] });
+        : of({ items: [] } as SearchResults);
 
     const getFilesFolderPending =
       foldersToSyncPending.length > 0
         ? this.sourceConnector!.getFilesFromFolders(foldersToSyncPending)
-        : of({ items: [] });
+        : of({ items: [] } as SearchResults);
     return forkJoin([getFilesFoldersUpdated, getFilesFolderPending]).pipe(
       map(([updated, pending]) => {
-        return { success: true, results: [...updated.items, ...pending.items] };
+        return {
+          success: !updated.error && !pending.error,
+          results: [...updated.items, ...pending.items],
+          error: [updated.error, pending.error].filter((err) => err).join('. '),
+        };
       }),
       catchError((err) => {
         console.error(`Error on ${this.id}: ${err.message}`);

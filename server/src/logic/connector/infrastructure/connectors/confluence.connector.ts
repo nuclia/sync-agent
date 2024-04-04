@@ -41,10 +41,6 @@ export class ConfluenceImpl implements IConnector {
     return this._getFiles('', true);
   }
 
-  getFiles(query?: string): Observable<SearchResults> {
-    return this._getFiles(query);
-  }
-
   getFilesFromFolders(folders: SyncItem[]): Observable<SearchResults> {
     if ((folders ?? []).length === 0) {
       return of({
@@ -67,6 +63,7 @@ export class ConfluenceImpl implements IConnector {
       console.error(err);
       return of({
         items: [],
+        error: `Error fetching files: ${err}`,
       });
     }
   }
@@ -85,6 +82,7 @@ export class ConfluenceImpl implements IConnector {
         console.error(err);
         return of({
           items: [],
+          error: `Error fetching last modified files: ${err}`,
         });
       }
     }
