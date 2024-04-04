@@ -161,7 +161,7 @@ jobs:
           node-version: 20
 
       - name: Get package version
-        run: node -p -e '`PACKAGE_VERSION=${require("./package.json").version}`' >> $GITHUB_ENV
+        run: node -p -e "`PACKAGE_VERSION=${require('./package.json').version}`" >> $GITHUB_ENV
 
       - name: install dependencies electron-app
         run: npm install
