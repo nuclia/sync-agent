@@ -1,3 +1,7 @@
+# 1.2.13 (2024-04-04)
+
+- Report errors from the different connectors
+
 # 1.2.7 (2024-03-28)
 
 - Fix file type filtering
