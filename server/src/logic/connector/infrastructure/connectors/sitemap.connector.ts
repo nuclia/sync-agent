@@ -72,7 +72,7 @@ class SitemapImpl implements IConnector {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getFiles(query?: string | undefined): Observable<SearchResults> {
+  private _getFiles(query?: string | undefined): Observable<SearchResults> {
     const sitemapUrl = this.params['sitemap'];
 
     return this._getSiteMap(sitemapUrl).pipe(
@@ -109,12 +109,12 @@ class SitemapImpl implements IConnector {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getFilesFromFolders(folders: SyncItem[]): Observable<SearchResults> {
-    return this.getFiles();
+    return this._getFiles();
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getLastModified(since: string, folders?: SyncItem[]): Observable<SearchResults> {
-    return this.getFiles().pipe(
+    return this._getFiles().pipe(
       map((searchResults) => ({
         ...searchResults,
         items: searchResults.items.filter(

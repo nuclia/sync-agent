@@ -56,8 +56,8 @@ export function initFileSystemSubscribers(basePath: string) {
     const saveLog = new SaveLogs(new LogRepository(new FileSystemLogDatasource(basePath)));
     saveLog.execute(
       new LogEntity({
-        message: 'Synchronization finished',
-        level: LogSeverityLevel.low,
+        message: payload['error'] || 'Synchronization finished',
+        level: payload['error'] ? LogSeverityLevel.high : LogSeverityLevel.low,
         action: EVENTS.FINISH_SYNCHRONIZATION_SYNC_OBJECT,
         payload,
       }),

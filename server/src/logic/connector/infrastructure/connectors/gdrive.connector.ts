@@ -137,10 +137,6 @@ export class GDriveImpl extends OAuthBaseConnector implements IConnector {
     );
   }
 
-  getFiles(query?: string): Observable<SearchResults> {
-    return this._getFileItems(query);
-  }
-
   isAccessTokenValid(): Observable<boolean> {
     return from(
       fetch('https://www.googleapis.com/drive/v3/about?fields=user', {

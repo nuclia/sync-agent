@@ -67,11 +67,6 @@ export class SharepointImpl extends OAuthBaseConnector implements IConnector {
     return this._getItems('', true);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getFiles(query?: string): Observable<SearchResults> {
-    return this._getItems();
-  }
-
   getFilesFromFolders(folders: SyncItem[]): Observable<SearchResults> {
     if ((folders ?? []).length === 0) {
       return of({

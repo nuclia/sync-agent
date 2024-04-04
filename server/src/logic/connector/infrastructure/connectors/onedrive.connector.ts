@@ -94,10 +94,6 @@ export class OneDriveImpl extends OAuthBaseConnector implements IConnector {
     return this._getItems(query, '', true);
   }
 
-  getFiles(query?: string): Observable<SearchResults> {
-    return this._getItems(query);
-  }
-
   isAccessTokenValid(): Observable<boolean> {
     return from(
       fetch('https://graph.microsoft.com/v1.0/me/drive', {

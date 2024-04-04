@@ -41,10 +41,6 @@ export class ConfluenceImpl implements IConnector {
     return this._getFiles('', true);
   }
 
-  getFiles(query?: string): Observable<SearchResults> {
-    return this._getFiles(query);
-  }
-
   getFilesFromFolders(folders: SyncItem[]): Observable<SearchResults> {
     if ((folders ?? []).length === 0) {
       return of({

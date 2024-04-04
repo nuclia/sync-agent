@@ -94,10 +94,6 @@ export class DropboxImpl extends OAuthBaseConnector implements IConnector {
     return this._getFiles(query, true, '');
   }
 
-  getFiles(query?: string): Observable<SearchResults> {
-    return this._getFiles(query);
-  }
-
   isAccessTokenValid(): Observable<boolean> {
     return from(
       fetch('https://api.dropboxapi.com/2/users/get_current_account ', {
