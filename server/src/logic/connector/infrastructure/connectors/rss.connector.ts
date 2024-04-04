@@ -1,4 +1,4 @@
-import { from, map, Observable, of } from 'rxjs';
+import { catchError, from, map, Observable, of } from 'rxjs';
 import { ConnectorParameters, FileStatus, IConnector, Link, SearchResults, SyncItem } from '../../domain/connector';
 import { SourceConnectorDefinition } from '../factory';
 import * as cheerio from 'cheerio';
@@ -82,6 +82,7 @@ class RSSImpl implements IConnector {
           },
         })),
       })),
+      catchError((err) => of({ items: [], error: `Error fetching RSS feed: ${err}` })),
     );
   }
 

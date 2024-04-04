@@ -58,6 +58,7 @@ export class SharepointImpl extends OAuthBaseConnector implements IConnector {
     } catch (err) {
       return of({
         items: [],
+        error: `Error fetching last modified files: ${err}`,
       });
     }
   }
@@ -88,6 +89,7 @@ export class SharepointImpl extends OAuthBaseConnector implements IConnector {
     } catch (err) {
       return of({
         items: [],
+        error: `Error fetching files: ${err}`,
       });
     }
   }

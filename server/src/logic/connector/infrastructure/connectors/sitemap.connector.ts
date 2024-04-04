@@ -1,4 +1,4 @@
-import { from, map, Observable, of, switchMap } from 'rxjs';
+import { catchError, from, map, Observable, of, switchMap } from 'rxjs';
 import { ConnectorParameters, FileStatus, IConnector, Link, SearchResults, SyncItem } from '../../domain/connector';
 import { SourceConnectorDefinition } from '../factory';
 import * as cheerio from 'cheerio';
@@ -16,7 +16,7 @@ async function fetchSitemap(url: string): Promise<string> {
     return response.text();
   } catch (error) {
     console.error('Error fetching sitemap', error);
-    return Promise.resolve('');
+    return Promise.reject('Error fetching sitemap');
   }
 }
 
@@ -90,6 +90,7 @@ class SitemapImpl implements IConnector {
           },
         })),
       })),
+      catchError((err) => of({ items: [], error: `${err}` })),
     );
   }
 

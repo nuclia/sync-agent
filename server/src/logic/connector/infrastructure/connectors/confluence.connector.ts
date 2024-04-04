@@ -63,6 +63,7 @@ export class ConfluenceImpl implements IConnector {
       console.error(err);
       return of({
         items: [],
+        error: `Error fetching files: ${err}`,
       });
     }
   }
@@ -81,6 +82,7 @@ export class ConfluenceImpl implements IConnector {
         console.error(err);
         return of({
           items: [],
+          error: `Error fetching last modified files: ${err}`,
         });
       }
     }

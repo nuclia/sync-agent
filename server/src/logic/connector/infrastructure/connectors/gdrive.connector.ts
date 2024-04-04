@@ -62,6 +62,7 @@ export class GDriveImpl extends OAuthBaseConnector implements IConnector {
     } catch (err) {
       return of({
         items: [],
+        error: `Error fetching last modified files: ${err}`,
       });
     }
   }
@@ -87,6 +88,7 @@ export class GDriveImpl extends OAuthBaseConnector implements IConnector {
     } catch (err) {
       return of({
         items: [],
+        error: `Error fetching files: ${err}`,
       });
     }
   }

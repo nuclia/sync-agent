@@ -61,6 +61,7 @@ export class DropboxImpl extends OAuthBaseConnector implements IConnector {
     } catch (err) {
       return of({
         items: [],
+        error: `Error fetching last modified files: ${err}`,
       });
     }
   }
@@ -86,6 +87,7 @@ export class DropboxImpl extends OAuthBaseConnector implements IConnector {
     } catch (err) {
       return of({
         items: [],
+        error: `Error fetching files: ${err}`,
       });
     }
   }
