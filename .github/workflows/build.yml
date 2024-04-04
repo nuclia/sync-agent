@@ -94,8 +94,8 @@ jobs:
 
       - name: Set version in source
         run: |-
-          sed -i "s#99999\.99999\.99999#${{ env.PACKAGE_VERSION }}#" electron-app/src/index.ts
-          sed -i "4s/0\.0\.0/${{ env.PACKAGE_VERSION }}/" electron-app/package.json
+          node utils/set-version.js electron-app/package.json ${{ env.PACKAGE_VERSION }}
+          node utils/set-version.js electron-app/src/index.ts ${{ env.PACKAGE_VERSION }}
 
       - name: install dependencies electron-app
         run: npm install
@@ -163,11 +163,6 @@ jobs:
       - name: Get package version
         run: node -p -e '`PACKAGE_VERSION=${require("./package.json").version}`' >> $GITHUB_ENV
 
-      - name: Set version in source
-        run: |-
-          sed -i "s#99999\.99999\.99999#${{ env.PACKAGE_VERSION }}#" electron-app/src/index.ts
-          sed -i "4s/0\.0\.0/${{ env.PACKAGE_VERSION }}/" electron-app/package.json
-
       - name: install dependencies electron-app
         run: npm install
         working-directory: electron-app
@@ -175,6 +170,11 @@ jobs:
       - name: install dependencies server
         run: npm install
         working-directory: server
+
+      - name: Set version in source
+        run: |-
+          node utils/set-version.js electron-app/package.json ${{ env.PACKAGE_VERSION }}
+          node utils/set-version.js electron-app/src/index.ts ${{ env.PACKAGE_VERSION }}
 
       - name: compile server
         env:
