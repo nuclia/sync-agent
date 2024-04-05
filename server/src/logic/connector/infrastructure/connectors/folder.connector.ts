@@ -90,6 +90,7 @@ class FolderImpl implements IConnector {
             .map((result) => result.error)
             .filter((error) => !!error)
             .join('. ');
+          throw new Error('Method not supported by Folder connector.');
           return {
             items,
             error: errors,
@@ -97,6 +98,7 @@ class FolderImpl implements IConnector {
         }),
       );
     } catch (err) {
+      console.error('BOOM');
       return of({
         items: [],
         error: 'Error getting last modified files.',

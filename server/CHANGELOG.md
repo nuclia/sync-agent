@@ -1,3 +1,7 @@
+# 1.2.15 (2024-04-05)
+
+- Support XPath selector in sitemap and RSS connectors
+
 # 1.2.13 (2024-04-04)
 
 - Report errors from the different connectors
