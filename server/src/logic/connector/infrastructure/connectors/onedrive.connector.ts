@@ -46,24 +46,17 @@ export class OneDriveImpl extends OAuthBaseConnector implements IConnector {
         items: [],
       });
     }
-    try {
-      return forkJoin((folders || []).map((folder) => this._getItems('', folder.uuid))).pipe(
-        map((results) => {
-          const items = results.reduce(
-            (acc, result) => acc.concat(result.items.filter((item) => item.modifiedGMT && item.modifiedGMT > since)),
-            [] as SyncItem[],
-          );
-          return {
-            items,
-          };
-        }),
-      );
-    } catch (err) {
-      return of({
-        items: [],
-        error: `Error fetching last modified files: ${err}`,
-      });
-    }
+    return forkJoin((folders || []).map((folder) => this._getItems('', folder.uuid))).pipe(
+      map((results) => {
+        const items = results.reduce(
+          (acc, result) => acc.concat(result.items.filter((item) => item.modifiedGMT && item.modifiedGMT > since)),
+          [] as SyncItem[],
+        );
+        return {
+          items,
+        };
+      }),
+    );
   }
 
   getFilesFromFolders(folders: SyncItem[]): Observable<SearchResults> {
@@ -72,24 +65,17 @@ export class OneDriveImpl extends OAuthBaseConnector implements IConnector {
         items: [],
       });
     }
-    try {
-      return forkJoin((folders || []).map((folder) => this._getItems('', folder.uuid))).pipe(
-        map((results) => {
-          const result: { items: SyncItem[] } = {
-            items: [],
-          };
-          results.forEach((res) => {
-            result.items = [...result.items, ...res.items];
-          });
-          return result;
-        }),
-      );
-    } catch (err) {
-      return of({
-        items: [],
-        error: `Error fetching files: ${err}`,
-      });
-    }
+    return forkJoin((folders || []).map((folder) => this._getItems('', folder.uuid))).pipe(
+      map((results) => {
+        const result: { items: SyncItem[] } = {
+          items: [],
+        };
+        results.forEach((res) => {
+          result.items = [...result.items, ...res.items];
+        });
+        return result;
+      }),
+    );
   }
 
   getFolders(query?: string | undefined): Observable<SearchResults> {

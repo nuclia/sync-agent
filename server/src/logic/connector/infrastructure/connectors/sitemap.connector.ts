@@ -104,6 +104,7 @@ class SitemapImpl implements IConnector {
       uri: resource.metadata['uri'],
       extra_headers: {},
       cssSelector: this.getParameters().cssSelector,
+      xpathSelector: this.getParameters().xpathSelector,
     };
     return of(newLink);
   }
