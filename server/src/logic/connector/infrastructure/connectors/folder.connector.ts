@@ -46,23 +46,17 @@ class FolderImpl implements IConnector {
         items: [],
       });
     }
-    try {
-      return forkJoin((folders || []).map((folder) => this._getFiles(folder.originalId))).pipe(
-        map((results) => {
-          const result: { items: SyncItem[] } = {
-            items: [],
-          };
-          results.forEach((res) => {
-            result.items = [...result.items, ...res.items];
-          });
-          return result;
-        }),
-      );
-    } catch (err) {
-      return of({
-        items: [],
-      });
-    }
+    return forkJoin((folders || []).map((folder) => this._getFiles(folder.originalId))).pipe(
+      map((results) => {
+        const result: { items: SyncItem[] } = {
+          items: [],
+        };
+        results.forEach((res) => {
+          result.items = [...result.items, ...res.items];
+        });
+        return result;
+      }),
+    );
   }
 
   getLastModified(since: string, folders?: SyncItem[]): Observable<SearchResults> {
@@ -72,38 +66,29 @@ class FolderImpl implements IConnector {
       });
     }
 
-    try {
-      return forkJoin(
-        (folders || []).map((folder) =>
-          this._getFiles(folder.originalId).pipe(
-            switchMap((results) =>
-              from(this.getFilesModifiedSince(results.items, since)).pipe(
-                map((items) => ({ items, error: results.error })),
-              ),
+    return forkJoin(
+      (folders || []).map((folder) =>
+        this._getFiles(folder.originalId).pipe(
+          switchMap((results) =>
+            from(this.getFilesModifiedSince(results.items, since)).pipe(
+              map((items) => ({ items, error: results.error })),
             ),
           ),
         ),
-      ).pipe(
-        map((results) => {
-          const items = results.reduce((acc, result) => acc.concat(result.items), [] as SyncItem[]);
-          const errors = results
-            .map((result) => result.error)
-            .filter((error) => !!error)
-            .join('. ');
-          throw new Error('Method not supported by Folder connector.');
-          return {
-            items,
-            error: errors,
-          };
-        }),
-      );
-    } catch (err) {
-      console.error('BOOM');
-      return of({
-        items: [],
-        error: 'Error getting last modified files.',
-      });
-    }
+      ),
+    ).pipe(
+      map((results) => {
+        const items = results.reduce((acc, result) => acc.concat(result.items), [] as SyncItem[]);
+        const errors = results
+          .map((result) => result.error)
+          .filter((error) => !!error)
+          .join('. ');
+        return {
+          items,
+          error: errors,
+        };
+      }),
+    );
   }
 
   private _getFiles(path: string, query?: string): Observable<SearchResults> {

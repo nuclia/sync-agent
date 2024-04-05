@@ -47,25 +47,17 @@ export class ConfluenceImpl implements IConnector {
         items: [],
       });
     }
-    try {
-      return forkJoin((folders || []).map((folder) => this._getFiles('', false, folder.originalId))).pipe(
-        map((results) => {
-          const result: { items: SyncItem[] } = {
-            items: [],
-          };
-          results.forEach((res) => {
-            result.items = [...result.items, ...res.items];
-          });
-          return result;
-        }),
-      );
-    } catch (err) {
-      console.error(err);
-      return of({
-        items: [],
-        error: `Error fetching files: ${err}`,
-      });
-    }
+    return forkJoin((folders || []).map((folder) => this._getFiles('', false, folder.originalId))).pipe(
+      map((results) => {
+        const result: { items: SyncItem[] } = {
+          items: [],
+        };
+        results.forEach((res) => {
+          result.items = [...result.items, ...res.items];
+        });
+        return result;
+      }),
+    );
   }
 
   getLastModified(since: string, folders?: SyncItem[]): Observable<SearchResults> {
@@ -74,17 +66,9 @@ export class ConfluenceImpl implements IConnector {
         items: [],
       });
     } else {
-      try {
-        return forkJoin((folders || []).map((folder) => this._getFiles('', false, folder.originalId, since))).pipe(
-          map((results) => ({ items: results.reduce((acc, result) => acc.concat(result.items), [] as SyncItem[]) })),
-        );
-      } catch (err) {
-        console.error(err);
-        return of({
-          items: [],
-          error: `Error fetching last modified files: ${err}`,
-        });
-      }
+      return forkJoin((folders || []).map((folder) => this._getFiles('', false, folder.originalId, since))).pipe(
+        map((results) => ({ items: results.reduce((acc, result) => acc.concat(result.items), [] as SyncItem[]) })),
+      );
     }
   }
 
