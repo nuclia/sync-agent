@@ -1,5 +1,7 @@
 const fs = require('fs');
-function replaceStringInFile(filePath, version) {
+const { version } = require('../package.json');
+
+function replaceStringInFile(filePath) {
   const content = fs.readFileSync(filePath, 'utf8');
   const version0 = /"version": "0\.0\.0"/;
   const firstPass = content.replace(version0, `"version": "${version}"`);
@@ -9,5 +11,4 @@ function replaceStringInFile(filePath, version) {
 }
 
 const filePath = process.argv[2];
-const version = process.argv[3];
-replaceStringInFile(filePath, version);
+replaceStringInFile(filePath);
