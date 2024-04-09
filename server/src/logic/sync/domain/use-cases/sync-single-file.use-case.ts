@@ -6,7 +6,7 @@ import { EVENTS } from '../../../../events/events';
 import { eventEmitter } from '../../../../server';
 import { SyncItem } from '../../../connector/domain/connector';
 import { NucliaCloud } from '../nuclia-cloud';
-import { SyncEntity, TO_BE_CHECKED } from '../sync.entity';
+import { ContentType, SyncEntity, TO_BE_CHECKED } from '../sync.entity';
 
 require('localstorage-polyfill');
 
@@ -17,14 +17,37 @@ export interface SyncSingleFileUseCase {
 function downloadFileOrLink(
   sync: SyncEntity,
   item: SyncItem,
-): Observable<{ type: 'blob' | 'link' | 'text'; blob?: Blob; link?: any; text?: TextField }> {
+): Observable<{
+  type: ContentType;
+  blob?: Blob;
+  link?: any;
+  text?: TextField;
+  extra?: { groups?: string[] };
+}> {
   const connector = sync.sourceConnector;
-  if (connector?.isExternal) {
-    return connector.getLink(item).pipe(map((link) => ({ type: 'link', link })));
+  if (!connector) {
+    throw new Error('No connector found');
   } else {
-    return connector!
-      .download(item)
-      .pipe(map((res) => (res instanceof Blob ? { type: 'blob', blob: res } : { type: 'text', text: res })));
+    if (connector?.isExternal) {
+      return connector.getLink(item).pipe(map((link) => ({ type: ContentType.link, link })));
+    } else {
+      return connector.download(item).pipe(
+        map((res) =>
+          res instanceof Blob ? { type: ContentType.blob, blob: res } : { type: ContentType.text, text: res },
+        ),
+        switchMap((res) => {
+          if (sync.syncSecurityGroups && connector.getGroups) {
+            return connector.getGroups(item).pipe(
+              map((groups) => {
+                return { ...res, extra: { groups } };
+              }),
+            );
+          } else {
+            return of(res);
+          }
+        }),
+      );
+    }
   }
 }
 
@@ -46,22 +69,22 @@ export class SyncSingleFile implements SyncSingleFileUseCase {
     return downloadFileOrLink(sync, item).pipe(
       switchMap((data) => {
         try {
-          if (data.type === 'blob' && data.blob) {
+          if (data.type === ContentType.blob && data.blob) {
             return from(data.blob.arrayBuffer()).pipe(
               switchMap((arrayBuffer) => {
                 return nucliaConnector.upload(item.originalId, item.title, {
                   buffer: arrayBuffer,
-                  metadata: { ...item.metadata, labels: sync.labels },
+                  metadata: { ...item.metadata, labels: sync.labels, groups: data.extra?.groups },
                   mimeType: item.mimeType,
                 });
               }),
             );
-          } else if (data.type === 'text' && data.text) {
+          } else if (data.type === ContentType.text && data.text) {
             return nucliaConnector.upload(item.originalId, item.title, {
               text: data.text,
-              metadata: { labels: sync.labels },
+              metadata: { labels: sync.labels, groups: data.extra?.groups },
             });
-          } else if (data.type === 'link' && data.link) {
+          } else if (data.type === ContentType.link && data.link) {
             const mimeType =
               item.mimeType !== TO_BE_CHECKED ? of(item.mimeType || 'text/html') : this.checkMimetype(data.link.uri);
             return mimeType.pipe(

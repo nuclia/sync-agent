@@ -132,7 +132,13 @@ export class GDriveImpl extends OAuthBaseConnector implements IConnector {
           Authorization: `Bearer ${this.params.token || ''}`,
         },
       }).then(
-        (res) => res.json(),
+        (res) => {
+          if (res.status === 401) {
+            return { error: { status: 'UNAUTHENTICATED' } };
+          } else {
+            return res.json();
+          }
+        },
         (err) => {
           console.error(`Error fetching about: ${err}`);
           throw new Error(err);
@@ -315,5 +321,24 @@ export class GDriveImpl extends OAuthBaseConnector implements IConnector {
           observer.complete();
         });
     });
+  }
+
+  getGroups(resource: SyncItem): Observable<string[]> {
+    return from(
+      fetch(
+        `https://www.googleapis.com/drive/v3/files/${resource.originalId}?fields=permissions&corpora=allDrives&supportsAllDrives=true&includeItemsFromAllDrives=true`,
+        {
+          headers: { Authorization: `Bearer ${this.params.token}` },
+        },
+      ),
+    ).pipe(
+      switchMap((res) => res.json()),
+      map((res) => {
+        const groups = (res.permissions || [])
+          .filter((perm: { type: string }) => perm.type === 'group')
+          .map((perm: { emailAddress: string }) => perm.emailAddress);
+        return groups;
+      }),
+    );
   }
 }

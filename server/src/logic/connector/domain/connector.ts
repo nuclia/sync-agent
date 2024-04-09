@@ -62,4 +62,5 @@ export interface IConnector {
   hasAuthData(): boolean;
   refreshAuthentication(): Observable<boolean>;
   isAccessTokenValid(): Observable<boolean>;
+  getGroups?: (resource: SyncItem) => Observable<string[]>;
 }
