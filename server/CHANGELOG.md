@@ -1,3 +1,7 @@
+# 1.2.16 (2024-04-09)
+
+- Sync the security groups
+
 # 1.2.15 (2024-04-05)
 
 - Support XPath selector in sitemap and RSS connectors

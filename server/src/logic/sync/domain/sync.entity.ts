@@ -62,6 +62,12 @@ export const FiltersValidator = z.object({
 });
 export type Filters = z.infer<typeof FiltersValidator>;
 
+export enum ContentType {
+  blob = 'blob',
+  link = 'link',
+  text = 'text',
+}
+
 export interface ISyncEntity {
   connector: Connector;
   kb: NucliaOptions;
@@ -72,6 +78,7 @@ export interface ISyncEntity {
   foldersToSync?: SyncItem[];
   filters?: Filters;
   disabled?: boolean;
+  syncSecurityGroups?: boolean;
 }
 
 export class SyncEntity {
@@ -85,9 +92,11 @@ export class SyncEntity {
   public foldersToSync?: SyncItem[] = [];
   public filters?: Filters;
   public disabled?: boolean;
+  public syncSecurityGroups?: boolean;
 
   constructor(options: ISyncEntity) {
-    const { connector, kb, labels, title, id, lastSyncGMT, foldersToSync, filters, disabled } = options;
+    const { connector, kb, labels, title, id, lastSyncGMT, foldersToSync, filters, disabled, syncSecurityGroups } =
+      options;
     this.connector = connector;
     this.kb = kb;
     this.labels = labels;
@@ -97,6 +106,7 @@ export class SyncEntity {
     this.foldersToSync = foldersToSync;
     this.filters = filters;
     this.disabled = disabled;
+    this.syncSecurityGroups = syncSecurityGroups;
     this.setConnectorDefinition();
   }
 

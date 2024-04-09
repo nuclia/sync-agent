@@ -47,32 +47,34 @@ export class NucliaCloud {
     const slug = sha256(originalId);
     const text = data.text;
     const buffer = data.buffer;
+    const resourceData: Partial<ICreateResource> = { title: filename };
+    if (data.metadata.labels) {
+      resourceData.usermetadata = { classifications: data.metadata?.labels };
+    }
+    if (data.metadata.path) {
+      let path = data.metadata.path;
+      if (path && !path.startsWith('/')) {
+        path = `/${path}`;
+      }
+      resourceData.origin = { path };
+    }
+    if (data.metadata?.groups) {
+      resourceData.security = { access_groups: data.metadata.groups };
+    }
     if (buffer || text) {
       return this.getKb().pipe(
         switchMap((kb) =>
           kb.getResourceBySlug(slug, [], []).pipe(
             switchMap((resource) => {
               if (data.metadata?.labels) {
-                return resource
-                  .modify({ usermetadata: { classifications: data.metadata.labels } })
-                  .pipe(map(() => resource));
+                return resource.modify(resourceData).pipe(map(() => resource));
               } else {
                 return of(resource);
               }
             }),
             catchError((error) => {
               if (error.status === 404) {
-                const resourceData: ICreateResource = { slug, title: filename };
-                if (data.metadata.labels) {
-                  resourceData.usermetadata = { classifications: data.metadata?.labels };
-                }
-                if (data.metadata.path) {
-                  let path = data.metadata.path;
-                  if (path && !path.startsWith('/')) {
-                    path = `/${path}`;
-                  }
-                  resourceData.origin = { path };
-                }
+                resourceData.slug = slug;
                 return kb.createResource(resourceData, true).pipe(
                   retry(RETRY_CONFIG),
                   map((data) => kb.getResourceFromData({ id: data.uuid })),
