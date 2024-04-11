@@ -89,9 +89,20 @@ export class SyncSingleFile implements SyncSingleFileUseCase {
               item.mimeType !== TO_BE_CHECKED ? of(item.mimeType || 'text/html') : this.checkMimetype(data.link.uri);
             return mimeType.pipe(
               switchMap((type) =>
-                nucliaConnector.uploadLink(item.originalId, item.title, data.link, type, {
-                  labels: sync.labels,
-                }),
+                nucliaConnector.uploadLink(
+                  item.originalId,
+                  item.title,
+                  data.link,
+                  type,
+                  {
+                    labels: sync.labels,
+                  },
+                  {
+                    headers: sync.connector.parameters.headers,
+                    cookies: sync.connector.parameters.cookies,
+                    localstorage: sync.connector.parameters.localstorage,
+                  },
+                ),
               ),
               map(() => ({ success: true, message: '' })),
             );

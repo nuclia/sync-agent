@@ -68,6 +68,12 @@ export enum ContentType {
   text = 'text',
 }
 
+export interface LinkExtraParams {
+  cookies?: { key: string; value: string; secret: boolean }[];
+  headers?: { key: string; value: string; secret: boolean }[];
+  localstorage?: { key: string; value: string; secret: boolean }[];
+}
+
 export interface ISyncEntity {
   connector: Connector;
   kb: NucliaOptions;

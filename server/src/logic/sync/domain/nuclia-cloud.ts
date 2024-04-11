@@ -16,6 +16,7 @@ import {
   WritableKnowledgeBox,
 } from '@nuclia/core';
 import { Link } from '../../connector/domain/connector';
+import { LinkExtraParams } from './sync.entity';
 
 function sha256(message: string): string {
   return createHash('sha256').update(message).digest('hex');
@@ -160,7 +161,14 @@ export class NucliaCloud {
     }
   }
 
-  uploadLink(originalId: string, filename: string, data: Link, mimeType: string, metadata?: any): Observable<void> {
+  uploadLink(
+    originalId: string,
+    filename: string,
+    data: Link,
+    mimeType: string,
+    metadata?: any,
+    linkExtraParams?: LinkExtraParams,
+  ): Observable<void> {
     const slug = sha256(originalId);
     const payload: ICreateResource = {
       title: filename,
@@ -168,11 +176,20 @@ export class NucliaCloud {
       origin: { url: data.uri },
     };
     if (!mimeType.startsWith('text/html')) {
-      payload.files = { file: { file: { uri: data.uri, filename: filename } } };
+      payload.files = {
+        file: { file: { uri: data.uri, filename: filename, extra_headers: this.listToDict(linkExtraParams?.headers) } },
+      };
       payload.icon = mimeType;
     } else {
       payload.links = {
-        link: { uri: data.uri, css_selector: data.cssSelector || undefined, xpath: data.xpathSelector || undefined },
+        link: {
+          uri: data.uri,
+          css_selector: data.cssSelector || undefined,
+          xpath: data.xpathSelector || undefined,
+          headers: this.listToDict(linkExtraParams?.headers),
+          cookies: this.listToDict(linkExtraParams?.cookies),
+          localstorage: this.listToDict(linkExtraParams?.localstorage),
+        },
       };
       payload.icon = 'application/stf-link';
     }
@@ -205,5 +222,9 @@ export class NucliaCloud {
         }),
       );
     }
+  }
+
+  private listToDict(list: { key: string; value: string }[] | undefined): { [key: string]: string } {
+    return (list || []).reduce((acc, curr) => ({ ...acc, [curr.key]: curr.value }), {} as { [key: string]: string });
   }
 }
