@@ -1,3 +1,7 @@
+# 1.2.18 (2024-04-11)
+
+- Fix: do not send empty headers
+
 # 1.2.17 (2024-04-11)
 
 - Support HTTP headers, cookies and localstorage when uploading links
