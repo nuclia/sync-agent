@@ -1,3 +1,7 @@
+# 1.2.17 (2024-04-11)
+
+- Support HTTP headers, cookies and localstorage when uploading links
+
 # 1.2.16 (2024-04-09)
 
 - Sync the security groups
