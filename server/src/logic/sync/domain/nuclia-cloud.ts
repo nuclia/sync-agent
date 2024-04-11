@@ -225,6 +225,8 @@ export class NucliaCloud {
   }
 
   private listToDict(list: { key: string; value: string }[] | undefined): { [key: string]: string } {
-    return (list || []).reduce((acc, curr) => ({ ...acc, [curr.key]: curr.value }), {} as { [key: string]: string });
+    return (list || [])
+      .filter((item) => item.key && item.value)
+      .reduce((acc, curr) => ({ ...acc, [curr.key]: curr.value }), {} as { [key: string]: string });
   }
 }
