@@ -119,6 +119,9 @@ export class DropboxImpl extends OAuthBaseConnector implements IConnector {
     nextPage?: string | number,
     previous?: SearchResults,
   ): Observable<SearchResults> {
+    if (path === '/') {
+      path = '';
+    }
     const success = (url: string) => {
       /* eslint-disable  @typescript-eslint/no-explicit-any */
       return (res: any) => {

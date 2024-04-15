@@ -36,12 +36,16 @@ export class SyncAllFolders implements SyncAllFoldersUseCase {
       return folder;
     });
 
-    const [, updateSyncDto] = UpdateSyncDto.create({
+    const [message, updateSyncDto] = UpdateSyncDto.create({
       lastSyncGMT: new Date().toISOString(),
       id: syncEntity.id,
       foldersToSync: foldersToSyncCopy,
     });
-    new UpdateSync(this.repository).execute(updateSyncDto!);
+    if (updateSyncDto) {
+      new UpdateSync(this.repository).execute(updateSyncDto);
+    } else {
+      throw new Error(`Error updating sync: ${message}`);
+    }
   };
 
   processSyncEntity(syncEntity: SyncEntity) {
