@@ -49,19 +49,7 @@ export class NucliaCloud {
     const text = data.text;
     const buffer = data.buffer;
     const resourceData: Partial<ICreateResource> = { title: filename };
-    if (data.metadata.labels) {
-      resourceData.usermetadata = { classifications: data.metadata?.labels };
-    }
-    if (data.metadata.path) {
-      let path = data.metadata.path;
-      if (path && !path.startsWith('/')) {
-        path = `/${path}`;
-      }
-      resourceData.origin = { path };
-    }
-    if (data.metadata?.groups) {
-      resourceData.security = { access_groups: data.metadata.groups };
-    }
+    data = this.setMetadata(data, data.metadata);
     if (buffer || text) {
       return this.getKb().pipe(
         switchMap((kb) =>
@@ -170,7 +158,7 @@ export class NucliaCloud {
     linkExtraParams?: LinkExtraParams,
   ): Observable<void> {
     const slug = sha256(originalId);
-    const payload: ICreateResource = {
+    let payload: ICreateResource = {
       title: filename,
       slug,
       origin: { url: data.uri },
@@ -193,9 +181,8 @@ export class NucliaCloud {
       };
       payload.icon = 'application/stf-link';
     }
-    if (metadata.labels) {
-      payload.usermetadata = { classifications: metadata.labels };
-    }
+    payload = this.setMetadata(payload, metadata);
+
     return this.getKb().pipe(
       switchMap((kb) =>
         kb.createOrUpdateResource(payload).pipe(
@@ -228,5 +215,22 @@ export class NucliaCloud {
     return (list || [])
       .filter((item) => item.key && item.value)
       .reduce((acc, curr) => ({ ...acc, [curr.key]: curr.value }), {} as { [key: string]: string });
+  }
+
+  private setMetadata(resource: Partial<ICreateResource>, metadata: any): Partial<ICreateResource> {
+    if (metadata.labels) {
+      resource.usermetadata = { classifications: metadata?.labels };
+    }
+    if (metadata.path) {
+      let path = metadata.path;
+      if (path && !path.startsWith('/')) {
+        path = `/${path}`;
+      }
+      resource.origin = { ...(resource.origin || {}), path };
+    }
+    if (metadata?.groups) {
+      resource.security = { access_groups: metadata.groups };
+    }
+    return resource;
   }
 }
