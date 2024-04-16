@@ -1,3 +1,7 @@
+# 1.2.19 (2024-04-15)
+
+- Support syncing of the root folder for the different connectors.
+
 # 1.2.18 (2024-04-11)
 
 - Fix: do not send empty headers

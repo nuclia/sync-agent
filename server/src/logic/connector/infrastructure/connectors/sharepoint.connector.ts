@@ -1,4 +1,4 @@
-import { catchError, concatMap, forkJoin, from, map, Observable, of } from 'rxjs';
+import { catchError, concatMap, forkJoin, from, map, Observable, of, switchMap } from 'rxjs';
 
 import { ConnectorParameters, FileStatus, IConnector, Link, SearchResults, SyncItem } from '../../domain/connector';
 import { SourceConnectorDefinition } from '../factory';
@@ -115,62 +115,83 @@ export class SharepointImpl extends OAuthBaseConnector implements IConnector {
     previous?: SearchResults,
   ): Observable<SearchResults> {
     let path = '';
-    return (siteId ? of(siteId) : this.getSiteId()).pipe(
-      concatMap((_siteId) => {
-        siteId = _siteId;
-        if (foldersOnly) {
-          path = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists`;
-        } else if (folder) {
-          path = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${folder}/items?expand=fields`;
-          if (since) {
-            path += `&$filter=fields/Modified gt '${since}'`;
-          }
-        } else {
-          throw new Error('One-shot import not implemented for Sharepoint.');
-        }
-        if (nextPage) {
-          path += `&$skiptoken=${nextPage}`;
-        }
-        return from(
-          fetch(path, {
-            headers: {
-              Authorization: `Bearer ${this.params.token}`,
-              Prefer: 'HonorNonIndexedQueriesWarningMayFailRandomly',
-            },
-          }).then(
-            (res) => res.json(),
-            (err) => {
-              console.error(`Error fetching ${path}: ${err}`);
-            },
-          ),
-        );
-      }),
-      concatMap((res) => {
-        if (res.error) {
-          console.error(`Error fetching ${path}: ${res.error}`);
-          if (res.error.code === 'InvalidAuthenticationToken') {
-            throw new Error('Unauthorized');
+    if (!foldersOnly && !folder) {
+      return this.getAllItems(since, siteId);
+    } else {
+      return (siteId ? of(siteId) : this.getSiteId()).pipe(
+        concatMap((_siteId) => {
+          siteId = _siteId;
+          if (foldersOnly) {
+            path = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists`;
+          } else if (folder) {
+            path = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${folder}/items?expand=fields`;
+            if (since) {
+              path += `&$filter=fields/Modified gt '${since}'`;
+            }
           } else {
-            throw new Error(res.error.message || 'Unknown error');
+            throw new Error('One-shot import not implemented for Sharepoint.');
           }
-        } else {
-          const nextPage =
-            res['@odata.nextLink'] && res['@odata.nextLink'].includes('&$skiptoken=')
-              ? res?.['@odata.nextLink'].split('&$skiptoken=')[1].split('&')[0]
-              : undefined;
-          const items = (res.value || [])
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .filter((item: any) => foldersOnly || item.fields?.ContentType === 'Document')
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .map((item: any) =>
-              foldersOnly ? this.mapToSyncItemFolder(item) : this.mapToSyncItem(item, siteId || '', folder),
-            );
-          const results = {
-            items: [...(previous?.items || []), ...items],
-            nextPage,
-          };
-          return nextPage ? this._getItems(folder, foldersOnly, since, siteId, nextPage, results) : of(results);
-        }
+          if (nextPage) {
+            path += `&$skiptoken=${nextPage}`;
+          }
+          return from(
+            fetch(path, {
+              headers: {
+                Authorization: `Bearer ${this.params.token}`,
+                Prefer: 'HonorNonIndexedQueriesWarningMayFailRandomly',
+              },
+            }).then(
+              (res) => res.json(),
+              (err) => {
+                console.error(`Error fetching ${path}: ${err}`);
+              },
+            ),
+          );
+        }),
+        concatMap((res) => {
+          if (res.error) {
+            console.error(`Error fetching ${path}: ${res.error}`);
+            if (res.error.code === 'InvalidAuthenticationToken') {
+              throw new Error('Unauthorized');
+            } else {
+              throw new Error(res.error.message || 'Unknown error');
+            }
+          } else {
+            const nextPage =
+              res['@odata.nextLink'] && res['@odata.nextLink'].includes('&$skiptoken=')
+                ? res?.['@odata.nextLink'].split('&$skiptoken=')[1].split('&')[0]
+                : undefined;
+            const items = (res.value || [])
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              .filter((item: any) => foldersOnly || item.fields?.ContentType === 'Document')
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              .map((item: any) =>
+                foldersOnly ? this.mapToSyncItemFolder(item) : this.mapToSyncItem(item, siteId || '', folder),
+              );
+            const results = {
+              items: [...(previous?.items || []), ...items],
+              nextPage,
+            };
+            return nextPage ? this._getItems(folder, foldersOnly, since, siteId, nextPage, results) : of(results);
+          }
+        }),
+      );
+    }
+  }
+
+  private getAllItems(since?: string, siteId?: string): Observable<SearchResults> {
+    return this._getItems('', true, undefined, siteId).pipe(
+      switchMap((res) =>
+        forkJoin((res.items || []).map((folder) => this._getItems(folder.uuid, false, since, siteId))),
+      ),
+      map((results) => {
+        const result: { items: SyncItem[] } = {
+          items: [],
+        };
+        results.forEach((res) => {
+          result.items = [...result.items, ...res.items];
+        });
+        return result;
       }),
     );
   }

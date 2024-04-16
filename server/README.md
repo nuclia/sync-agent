@@ -10,3 +10,16 @@ To install and run the Nuclia Sync Agent server, run the following commands:
 npm install -g @nuclia/sync-agent
 nuclia-sync-agent
 ```
+
+## Note
+
+The Nuclia Sync Agent stores the configuration and the files in the `.nuclia/sync.json` file.
+
+To sync a root folder, we use a specific format:
+
+```json
+{
+  "uuid": "",
+  "originalId": "/"
+}
+```

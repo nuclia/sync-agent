@@ -106,7 +106,7 @@ export class ConfluenceImpl implements IConnector {
     if (loadFolders) {
       endpoint += '/rest/api/space?';
     } else {
-      if (folder) {
+      if (folder && folder !== '/') {
         endpoint += `/rest/api/content/search?cql=space="${folder}" and lastModified > "${
           lastModified ? lastModified.slice(0, 16).replace('T', ' ') : '1970-01-01'
         }"`;
