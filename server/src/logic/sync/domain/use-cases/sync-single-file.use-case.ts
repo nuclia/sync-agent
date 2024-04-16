@@ -82,7 +82,7 @@ export class SyncSingleFile implements SyncSingleFileUseCase {
           } else if (data.type === ContentType.text && data.text) {
             return nucliaConnector.upload(item.originalId, item.title, {
               text: data.text,
-              metadata: { labels: sync.labels, groups: data.extra?.groups },
+              metadata: { ...item.metadata, labels: sync.labels, groups: data.extra?.groups },
             });
           } else if (data.type === ContentType.link && data.link) {
             const mimeType =
@@ -94,9 +94,7 @@ export class SyncSingleFile implements SyncSingleFileUseCase {
                   item.title,
                   data.link,
                   type,
-                  {
-                    labels: sync.labels,
-                  },
+                  { ...item.metadata, labels: sync.labels, groups: data.extra?.groups },
                   {
                     headers: sync.connector.parameters.headers,
                     cookies: sync.connector.parameters.cookies,
