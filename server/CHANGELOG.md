@@ -1,3 +1,7 @@
+# 1.2.21 (2024-04-18)
+
+- Do not override title on existing resource
+
 # 1.2.20 (2024-04-16)
 
 - Fix metadata for links

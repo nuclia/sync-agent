@@ -185,7 +185,13 @@ export class NucliaCloud {
 
     return this.getKb().pipe(
       switchMap((kb) =>
-        kb.createOrUpdateResource(payload).pipe(
+        kb.hasResource(slug).pipe(
+          switchMap((exists) => {
+            if (exists) {
+              delete payload.title;
+            }
+            return kb.createOrUpdateResource(payload);
+          }),
           retry(RETRY_CONFIG),
           delay(500), // do not overload the server
           catchError((error) => {
