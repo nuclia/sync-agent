@@ -53,6 +53,8 @@ export class SyncFileSystemRoutes {
             id: sync.id,
             title: sync.title,
             connector: sync.connector.name,
+            lastSyncGMT: sync.lastSyncGMT,
+            disabled: sync.disabled,
           }));
         res.status(200).send(kbSyncs);
       } catch (error) {
