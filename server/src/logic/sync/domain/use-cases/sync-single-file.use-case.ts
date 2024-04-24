@@ -74,7 +74,7 @@ export class SyncSingleFile implements SyncSingleFileUseCase {
               switchMap((arrayBuffer) => {
                 return nucliaConnector.upload(item.originalId, item.title, {
                   buffer: arrayBuffer,
-                  metadata: { ...item.metadata, labels: sync.labels, groups: data.extra?.groups },
+                  metadata: { ...item.metadata, labels: sync.labels, groups: data.extra?.groups, sourceId: sync.id },
                   mimeType: item.mimeType,
                 });
               }),
@@ -82,7 +82,7 @@ export class SyncSingleFile implements SyncSingleFileUseCase {
           } else if (data.type === ContentType.text && data.text) {
             return nucliaConnector.upload(item.originalId, item.title, {
               text: data.text,
-              metadata: { ...item.metadata, labels: sync.labels, groups: data.extra?.groups },
+              metadata: { ...item.metadata, labels: sync.labels, groups: data.extra?.groups, sourceId: sync.id },
             });
           } else if (data.type === ContentType.link && data.link) {
             const mimeType =
@@ -94,7 +94,7 @@ export class SyncSingleFile implements SyncSingleFileUseCase {
                   item.title,
                   data.link,
                   type,
-                  { ...item.metadata, labels: sync.labels, groups: data.extra?.groups },
+                  { ...item.metadata, labels: sync.labels, groups: data.extra?.groups, sourceId: sync.id },
                   {
                     headers: sync.connector.parameters.headers,
                     cookies: sync.connector.parameters.cookies,

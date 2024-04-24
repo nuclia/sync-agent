@@ -237,6 +237,9 @@ export class NucliaCloud {
     if (metadata?.groups) {
       resource.security = { access_groups: metadata.groups };
     }
+    if (metadata?.sourceId) {
+      resource.origin = { ...(resource.origin || {}), source_id: metadata.sourceId };
+    }
     return resource;
   }
 }
