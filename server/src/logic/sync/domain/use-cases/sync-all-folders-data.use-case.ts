@@ -110,8 +110,8 @@ export class SyncAllFolders implements SyncAllFoldersUseCase {
     if (syncObjectValues.length > 0) {
       await lastValueFrom(
         of(...syncObjectValues).pipe(
-          switchMap((syncObj) => new RefreshAccessToken(this.repository).execute(new SyncEntity(syncObj))),
-          switchMap((syncEntity) =>
+          concatMap((syncObj) => new RefreshAccessToken(this.repository).execute(new SyncEntity(syncObj))),
+          concatMap((syncEntity) =>
             this.processSyncEntity(syncEntity).pipe(
               tap((result) => {
                 if (result) {
