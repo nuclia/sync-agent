@@ -60,14 +60,31 @@ export class ConfluenceImpl implements IConnector {
     );
   }
 
-  getLastModified(since: string, folders?: SyncItem[]): Observable<SearchResults> {
+  getLastModified(since: string, folders?: SyncItem[], existings?: string[]): Observable<SearchResults> {
     if (!folders || folders.length === 0) {
       return of({
         items: [],
       });
     } else {
-      return forkJoin((folders || []).map((folder) => this._getFiles('', false, folder.originalId, since))).pipe(
+      const newFiles = forkJoin(
+        (folders || []).map((folder) => this._getFiles('', false, folder.originalId, since)),
+      ).pipe(
         map((results) => ({ items: results.reduce((acc, result) => acc.concat(result.items), [] as SyncItem[]) })),
+      );
+      const deletedFiles = forkJoin(
+        (folders || []).map((folder) => this._getFiles('', false, folder.originalId, since, true)),
+      ).pipe(
+        map((results) => ({ items: results.reduce((acc, result) => acc.concat(result.items), [] as SyncItem[]) })),
+      );
+      return forkJoin([newFiles, deletedFiles]).pipe(
+        map(([newFiles, deletedFiles]) => {
+          const deleted = deletedFiles.items
+            .filter((item) => existings?.includes(item.originalId))
+            .map((item) => ({ ...item, deleted: true }));
+          return {
+            items: [...newFiles.items, ...deleted],
+          };
+        }),
       );
     }
   }
@@ -77,6 +94,7 @@ export class ConfluenceImpl implements IConnector {
     loadFolders = false,
     folder = '',
     lastModified?: string,
+    deleted = false,
     start?: number,
     previous?: SearchResults,
   ): Observable<SearchResults> {
@@ -115,6 +133,9 @@ export class ConfluenceImpl implements IConnector {
       } else {
         endpoint += '/rest/api/content?';
       }
+      if (deleted) {
+        endpoint += '&status=trashed';
+      }
     }
     return from(
       fetch(`${endpoint}&limit=${BATCH_SIZE}&start=${start || 0}`, {
@@ -132,7 +153,7 @@ export class ConfluenceImpl implements IConnector {
         const items = [...(previous?.items || []), ...newItems];
         const next = (start || 0) + BATCH_SIZE;
         return result._links.next
-          ? this._getFiles(query, loadFolders, folder, lastModified, next, { items })
+          ? this._getFiles(query, loadFolders, folder, lastModified, deleted, next, { items })
           : of({ items });
       }),
     );
@@ -141,7 +162,8 @@ export class ConfluenceImpl implements IConnector {
   /* eslint-disable  @typescript-eslint/no-explicit-any */
   private mapResults(raw: any, isFolder = false): SyncItem {
     const isAttachment = raw.type === 'attachment';
-    const itemOriginalId = isAttachment ? raw._links?.webui?.split('pageId=')[1]?.split('&')[0] || '' : raw.id;
+    const pageId = raw._links?.webui?.split('pageId=')[1]?.split('&')[0] || '';
+    const itemOriginalId = isAttachment ? `${pageId}|${raw.id}` || '' : raw.id;
     return {
       title: (isFolder ? raw.name : raw.title) || '',
       originalId: (isFolder ? raw.key : itemOriginalId) || '',
@@ -157,8 +179,9 @@ export class ConfluenceImpl implements IConnector {
   ): Observable<{ body: string; format?: 'PLAIN' | 'MARKDOWN' | 'HTML' } | Blob | undefined> {
     try {
       if (resource.metadata.type === 'attachment') {
+        const id = resource.originalId.split('|')[0];
         return from(
-          fetch(`${this.params.url}/download/attachments/${resource.originalId}/${resource.title}`, {
+          fetch(`${this.params.url}/download/attachments/${id}/${resource.title}`, {
             method: 'GET',
             headers: {
               Authorization: `Basic ${btoa(this.params.user + ':' + this.params.token)}`,

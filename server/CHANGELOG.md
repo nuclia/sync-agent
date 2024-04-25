@@ -1,3 +1,7 @@
+# 1.3.0 (2024-04-25)
+
+- Support deletion syncing
+
 # 1.2.21 (2024-04-18)
 
 - Do not override title on existing resource

@@ -41,7 +41,7 @@ export class GDriveImpl extends OAuthBaseConnector implements IConnector {
     return true;
   }
 
-  getLastModified(since: string, folders?: SyncItem[] | undefined): Observable<SearchResults> {
+  getLastModified(since: string, folders?: SyncItem[] | undefined, existings?: string[]): Observable<SearchResults> {
     if ((folders ?? []).length === 0) {
       return of({
         items: [],
@@ -49,12 +49,14 @@ export class GDriveImpl extends OAuthBaseConnector implements IConnector {
     }
     return forkJoin((folders || []).map((folder) => this._getFileItems('', folder.uuid))).pipe(
       map((results) => {
-        const items = results.reduce(
-          (acc, result) => acc.concat(result.items.filter((item) => item.modifiedGMT && item.modifiedGMT > since)),
-          [] as SyncItem[],
-        );
+        const items = results.reduce((acc, result) => acc.concat(result.items), [] as SyncItem[]);
+        const currentIds = items.map((item) => item.originalId);
+        const newItems = items.filter((item) => item.modifiedGMT && item.modifiedGMT > since);
+        const toDelete = (existings || [])
+          .filter((id) => !currentIds?.includes(id))
+          .map((id) => ({ uuid: id, originalId: id, title: '', metadata: {}, deleted: true }));
         return {
-          items,
+          items: [...newItems, ...toDelete],
         };
       }),
     );
@@ -237,7 +239,7 @@ export class GDriveImpl extends OAuthBaseConnector implements IConnector {
     previous?: SearchResults,
   ): Observable<SearchResults> {
     let path =
-      'https://www.googleapis.com/drive/v3/files?pageSize=50&fields=nextPageToken,files(id,name,mimeType,modifiedTime,parents)';
+      'https://www.googleapis.com/drive/v3/files?pageSize=50&fields=nextPageToken,files(id,name,mimeType,modifiedTime,createdTime,trashed,parents)';
     const allDrives = '&corpora=allDrives&supportsAllDrives=true&includeItemsFromAllDrives=true';
     path += allDrives;
     if (query) {
@@ -272,7 +274,9 @@ export class GDriveImpl extends OAuthBaseConnector implements IConnector {
           }
         } else {
           const nextPage = res['nextPageToken'];
-          const items = (res.files || []).map((item: unknown) => this.mapToSyncItem(item));
+          const items = (res.files || [])
+            .filter((item: any) => !item.trashed)
+            .map((item: unknown) => this.mapToSyncItem(item));
           const results = {
             items: [...(previous?.items || []), ...items],
             nextPage,
@@ -290,7 +294,7 @@ export class GDriveImpl extends OAuthBaseConnector implements IConnector {
       uuid: item.id,
       title: item.name,
       originalId: item.id,
-      modifiedGMT: item.modifiedTime,
+      modifiedGMT: item.modifiedTime > item.createdTime ? item.modifiedTime : item.createdTime,
       parents: item.parents,
       mimeType: needsPdfConversion ? 'application/pdf' : item.mimeType,
       metadata: {

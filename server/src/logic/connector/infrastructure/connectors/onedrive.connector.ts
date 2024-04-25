@@ -40,7 +40,7 @@ export class OneDriveImpl extends OAuthBaseConnector implements IConnector {
     return true;
   }
 
-  getLastModified(since: string, folders?: SyncItem[] | undefined): Observable<SearchResults> {
+  getLastModified(since: string, folders?: SyncItem[] | undefined, existings?: string[]): Observable<SearchResults> {
     if ((folders ?? []).length === 0) {
       return of({
         items: [],
@@ -48,12 +48,14 @@ export class OneDriveImpl extends OAuthBaseConnector implements IConnector {
     }
     return forkJoin((folders || []).map((folder) => this._getItems('', folder.uuid))).pipe(
       map((results) => {
-        const items = results.reduce(
-          (acc, result) => acc.concat(result.items.filter((item) => item.modifiedGMT && item.modifiedGMT > since)),
-          [] as SyncItem[],
-        );
+        const items = results.reduce((acc, result) => acc.concat(result.items), [] as SyncItem[]);
+        const currentIds = items.map((item) => item.originalId);
+        const newItems = items.filter((item) => item.modifiedGMT && item.modifiedGMT > since);
+        const toDelete = (existings || [])
+          .filter((id) => !currentIds?.includes(id))
+          .map((id) => ({ uuid: id, originalId: id, title: '', metadata: {}, deleted: true }));
         return {
-          items,
+          items: [...newItems, ...toDelete],
         };
       }),
     );
