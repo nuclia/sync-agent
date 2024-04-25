@@ -148,7 +148,7 @@ class FolderImpl implements IConnector {
       originalId: file,
       mimeType: lookup(file) || 'application/octet-stream',
       metadata: {
-        path: file.split('/').slice(0, -1).join('/'),
+        path: file,
       },
       status: FileStatus.PENDING,
       uid: '',
