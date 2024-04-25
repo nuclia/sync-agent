@@ -204,6 +204,11 @@ export class NucliaCloud {
     );
   }
 
+  delete(originalId: string): Observable<void> {
+    const slug = sha256(originalId);
+    return this.getKb().pipe(switchMap((kb) => kb.getResourceFromData({ id: '', slug }).delete()));
+  }
+
   private getKb(): Observable<WritableKnowledgeBox> {
     if (this.kb) {
       return of(this.kb);
@@ -236,6 +241,9 @@ export class NucliaCloud {
     }
     if (metadata?.groups) {
       resource.security = { access_groups: metadata.groups };
+    }
+    if (metadata?.sourceId) {
+      resource.origin = { ...(resource.origin || {}), source_id: metadata.sourceId };
     }
     return resource;
   }

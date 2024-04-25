@@ -115,14 +115,22 @@ class SitemapImpl implements IConnector {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getLastModified(since: string, folders?: SyncItem[]): Observable<SearchResults> {
+  getLastModified(since: string, folders?: SyncItem[], existings?: string[]): Observable<SearchResults> {
     return this._getFiles().pipe(
-      map((searchResults) => ({
-        ...searchResults,
-        items: searchResults.items.filter(
+      map((searchResults) => {
+        const currentIds = searchResults.items.map((item) => item.originalId);
+        const toSync = searchResults.items.filter(
           (item) => !item.metadata['lastModified'] || item.metadata['lastModified'] > since,
-        ),
-      })),
+        );
+        const toDelete = existings?.filter((id) => !currentIds.includes(id)) ?? [];
+        return {
+          ...searchResults,
+          items: [
+            ...toSync,
+            ...toDelete.map((id) => ({ uuid: id, originalId: id, title: '', metadata: {}, deleted: true })),
+          ],
+        };
+      }),
     );
   }
 

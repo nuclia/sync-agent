@@ -106,7 +106,8 @@ class RSSImpl implements IConnector {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getLastModified(since: string, folders?: SyncItem[]): Observable<SearchResults> {
+  getLastModified(since: string, folders?: SyncItem[], existings?: string[]): Observable<SearchResults> {
+    // we do not manage deletions in this connectors as RSS will only push recent items
     return this._getFiles().pipe(
       map((searchResults) => ({
         ...searchResults,

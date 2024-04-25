@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { concatMap, delay, filter, lastValueFrom, map, of, switchMap, tap, toArray } from 'rxjs';
+import { concatMap, delay, filter, from, lastValueFrom, map, of, switchMap, toArray } from 'rxjs';
 
 import { EVENTS } from '../../../../events/events';
 import { eventEmitter } from '../../../../server';
@@ -21,12 +21,18 @@ export interface SyncAllFoldersUseCase {
 export class SyncAllFolders implements SyncAllFoldersUseCase {
   constructor(private readonly repository: ISyncRepository) {}
 
-  callbackFinishSync = (syncEntity: SyncEntity, processed: string[], successCount: number, error?: string) => {
+  callbackFinishSync = (
+    syncEntity: SyncEntity,
+    processed: string[],
+    deleted: string[],
+    successCount: number,
+    error?: string,
+  ) => {
     eventEmitter.emit(EVENTS.FINISH_SYNCHRONIZATION_SYNC_OBJECT, {
       from: syncEntity.id,
       to: syncEntity.kb?.knowledgeBox || 'Unknown kb',
       date: new Date().toISOString(),
-      processed,
+      processed: [...processed, ...deleted],
       successCount,
       error,
     });
@@ -36,20 +42,22 @@ export class SyncAllFolders implements SyncAllFoldersUseCase {
       return folder;
     });
 
+    const ids = new Set([...(syncEntity.originalIds || []).filter((id) => !deleted.includes(id)), ...processed]);
     const [message, updateSyncDto] = UpdateSyncDto.create({
       lastSyncGMT: new Date().toISOString(),
       id: syncEntity.id,
       foldersToSync: foldersToSyncCopy,
+      originalIds: [...ids],
     });
     if (updateSyncDto) {
-      new UpdateSync(this.repository).execute(updateSyncDto);
+      return from(new UpdateSync(this.repository).execute(updateSyncDto));
     } else {
       throw new Error(`Error updating sync: ${message}`);
     }
   };
 
   processSyncEntity(syncEntity: SyncEntity) {
-    return syncEntity.getLastModified().pipe(
+    return syncEntity.getLastModified(syncEntity.originalIds).pipe(
       map((result) => {
         return { result, syncEntity };
       }),
@@ -62,8 +70,7 @@ export class SyncAllFolders implements SyncAllFoldersUseCase {
         });
 
         if (!result.success || result.results.length === 0) {
-          this.callbackFinishSync(syncEntity, [], 0, result.error);
-          return of(undefined);
+          return this.callbackFinishSync(syncEntity, [], [], 0, result.error);
         }
         return this.processItems(syncEntity, result.results);
       }),
@@ -95,7 +102,7 @@ export class SyncAllFolders implements SyncAllFoldersUseCase {
       }),
       concatMap((item) =>
         new SyncSingleFile(syncEntity, item).execute().pipe(
-          map((res) => ({ id: item.originalId, success: res.success })),
+          map((res) => ({ id: item.originalId, success: res.success, action: item.deleted ? 'delete' : 'upload' })),
           // do not overwhelm the source
           delay(500),
         ),
@@ -110,17 +117,21 @@ export class SyncAllFolders implements SyncAllFoldersUseCase {
     if (syncObjectValues.length > 0) {
       await lastValueFrom(
         of(...syncObjectValues).pipe(
-          switchMap((syncObj) => new RefreshAccessToken(this.repository).execute(new SyncEntity(syncObj))),
-          switchMap((syncEntity) =>
+          concatMap((syncObj) => new RefreshAccessToken(this.repository).execute(new SyncEntity(syncObj))),
+          concatMap((syncEntity) =>
             this.processSyncEntity(syncEntity).pipe(
-              tap((result) => {
+              concatMap((result) => {
                 if (result) {
-                  const processed = result.map((res) => res.id);
+                  const processed = result.filter((res) => res.success && res.action === 'upload').map((res) => res.id);
+                  const deleted = result.filter((res) => res.success && res.action === 'delete').map((res) => res.id);
                   const successCount = result.filter((res) => res.success).length;
 
                   console.log('processed', processed);
+                  console.log('deleted', deleted);
                   console.log('successCount', successCount);
-                  this.callbackFinishSync(syncEntity, processed, successCount, '');
+                  return this.callbackFinishSync(syncEntity, processed, deleted, successCount, '');
+                } else {
+                  return of(undefined);
                 }
               }),
             ),

@@ -1,7 +1,7 @@
 import { Blob as FSBlob } from 'buffer';
 import * as fs from 'fs';
 import path from 'path';
-import { forkJoin, from, map, Observable, of, switchMap } from 'rxjs';
+import { forkJoin, from, map, Observable, of, switchMap, tap } from 'rxjs';
 import { ConnectorParameters, FileStatus, IConnector, Link, SearchResults, SyncItem } from '../../domain/connector';
 import { SourceConnectorDefinition } from '../factory';
 import { lookup } from 'mime-types';
@@ -59,16 +59,18 @@ class FolderImpl implements IConnector {
     );
   }
 
-  getLastModified(since: string, folders?: SyncItem[]): Observable<SearchResults> {
+  getLastModified(since: string, folders?: SyncItem[], existings?: string[]): Observable<SearchResults> {
     if ((folders ?? []).length === 0) {
       return of({
         items: [],
       });
     }
+    let currentIds: string[] = [];
 
     return forkJoin(
       (folders || []).map((folder) =>
         this._getFiles(folder.originalId).pipe(
+          tap((result) => (currentIds = [...currentIds, ...result.items.map((item) => item.originalId)])),
           switchMap((results) =>
             from(this.getFilesModifiedSince(results.items, since)).pipe(
               map((items) => ({ items, error: results.error })),
@@ -83,6 +85,10 @@ class FolderImpl implements IConnector {
           .map((result) => result.error)
           .filter((error) => !!error)
           .join('. ');
+        if (existings && existings.length > 0) {
+          const toDelete = existings.filter((id) => !currentIds.includes(id));
+          items.push(...toDelete.map((id) => ({ uuid: id, originalId: id, title: '', metadata: {}, deleted: true })));
+        }
         return {
           items,
           error: errors,
