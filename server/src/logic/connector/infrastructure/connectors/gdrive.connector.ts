@@ -114,7 +114,7 @@ export class GDriveImpl extends OAuthBaseConnector implements IConnector {
           ...folder,
           metadata: {
             ...folder.metadata,
-            path: getFolderPath(folder.parents?.[0]).join('/'),
+            path: ['', ...getFolderPath(folder.parents?.[0]), folder.title].join('/'),
           },
         }));
         return {
@@ -217,7 +217,7 @@ export class GDriveImpl extends OAuthBaseConnector implements IConnector {
           ...item,
           metadata: {
             ...item.metadata,
-            path: getFolderPath(item.parents?.[0]).join('/'),
+            path: ['', ...getFolderPath(item.parents?.[0])].join('/'),
           },
         }));
         return {
