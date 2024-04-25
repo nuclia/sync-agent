@@ -275,6 +275,7 @@ export class GDriveImpl extends OAuthBaseConnector implements IConnector {
         } else {
           const nextPage = res['nextPageToken'];
           const items = (res.files || [])
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .filter((item: any) => !item.trashed)
             .map((item: unknown) => this.mapToSyncItem(item));
           const results = {

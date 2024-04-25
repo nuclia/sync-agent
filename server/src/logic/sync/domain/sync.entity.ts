@@ -155,15 +155,14 @@ export class SyncEntity {
     const foldersToSyncUpdated: SyncItem[] = (this.foldersToSync ?? []).filter(
       (folder) => folder.status === FileStatus.UPLOADED,
     );
-    const getFilesFoldersUpdated =
-      foldersToSyncUpdated.length > 0
-        ? this.sourceConnector!.getLastModified(
-            this.lastSyncGMT || '2000-01-01T00:00:00.000Z',
-            foldersToSyncUpdated,
-            existings,
-          )
-        : of({ items: [] } as SearchResults);
-
+    let getFilesFoldersUpdated = of({ items: [] } as SearchResults);
+    if (foldersToSyncUpdated.length > 0) {
+      getFilesFoldersUpdated = this.sourceConnector!.getLastModified(
+        this.lastSyncGMT || '2000-01-01T00:00:00.000Z',
+        foldersToSyncUpdated,
+        existings,
+      );
+    }
     const getFilesFolderPending =
       foldersToSyncPending.length > 0
         ? this.sourceConnector!.getFilesFromFolders(foldersToSyncPending)

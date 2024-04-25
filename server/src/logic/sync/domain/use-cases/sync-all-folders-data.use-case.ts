@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { concatMap, delay, filter, from, lastValueFrom, map, of, switchMap, tap, toArray } from 'rxjs';
+import { concatMap, delay, filter, from, lastValueFrom, map, of, switchMap, toArray } from 'rxjs';
 
 import { EVENTS } from '../../../../events/events';
 import { eventEmitter } from '../../../../server';

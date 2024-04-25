@@ -1,6 +1,6 @@
 # 1.3.0 (2024-04-25)
 
-- Support deletion syncing
+- Support deletion syncing (when a file is deleted in a source, the corresponding resource is deleted in the Nuclia Knowledge Box)
 
 # 1.2.21 (2024-04-18)
 
