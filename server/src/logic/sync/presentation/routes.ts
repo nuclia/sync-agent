@@ -89,6 +89,8 @@ export class SyncFileSystemRoutes {
       try {
         await this.checkAuth(id, req.headers.token as string, syncRepository);
         const data = await new GetSync(syncRepository).execute(id);
+        // remove originalIds from response (too big)
+        delete data.originalIds;
         res.status(200).send(data);
       } catch (error) {
         this.handleError(res, error);

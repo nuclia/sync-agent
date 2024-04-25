@@ -65,64 +65,23 @@ export class SyncSingleFile implements SyncSingleFileUseCase {
     if (!sync.kb) {
       return of({ success: false });
     }
-    const nucliaConnector = new NucliaCloud(sync.kb);
-    return downloadFileOrLink(sync, item).pipe(
-      switchMap((data) => {
-        try {
-          if (data.type === ContentType.blob && data.blob) {
-            return from(data.blob.arrayBuffer()).pipe(
-              switchMap((arrayBuffer) => {
-                return nucliaConnector.upload(item.originalId, item.title, {
-                  buffer: arrayBuffer,
-                  metadata: { ...item.metadata, labels: sync.labels, groups: data.extra?.groups, sourceId: sync.id },
-                  mimeType: item.mimeType,
-                });
-              }),
-            );
-          } else if (data.type === ContentType.text && data.text) {
-            return nucliaConnector.upload(item.originalId, item.title, {
-              text: data.text,
-              metadata: { ...item.metadata, labels: sync.labels, groups: data.extra?.groups, sourceId: sync.id },
-            });
-          } else if (data.type === ContentType.link && data.link) {
-            const mimeType =
-              item.mimeType !== TO_BE_CHECKED ? of(item.mimeType || 'text/html') : this.checkMimetype(data.link.uri);
-            return mimeType.pipe(
-              switchMap((type) =>
-                nucliaConnector.uploadLink(
-                  item.originalId,
-                  item.title,
-                  data.link,
-                  type,
-                  { ...item.metadata, labels: sync.labels, groups: data.extra?.groups, sourceId: sync.id },
-                  {
-                    headers: sync.connector.parameters.headers,
-                    cookies: sync.connector.parameters.cookies,
-                    localstorage: sync.connector.parameters.localstorage,
-                  },
-                ),
-              ),
-              map(() => ({ success: true, message: '' })),
-            );
-          } else {
-            return of({ success: false, message: '' });
-          }
-        } catch (err) {
-          return of({ success: false, message: `${err}` });
-        }
-      }),
+    return this.uploadOrDelete(item, sync).pipe(
       tap((res) => {
         if (res.success) {
-          console.log(`Uploaded ${item.originalId} with success`);
+          const message =
+            res.action === 'delete'
+              ? `Deleted ${item.originalId} with success`
+              : `Uploaded ${item.originalId} with success`;
+          console.log(message);
           eventEmitter.emit(EVENTS.FINISH_SYNCHRONIZATION_SINGLE_FILE, {
             from: sync.id,
             to: sync.kb?.knowledgeBox || 'Unknown kb',
             date: new Date().toISOString(),
             status: 'success',
-            message: `Uploaded ${item.originalId} with success`,
+            message,
           });
         } else {
-          console.warn(`Failed to upload ${item.originalId}`);
+          console.warn(`Failed to ${res.action} ${item.originalId}`);
           eventEmitter.emit(EVENTS.FINISH_SYNCHRONIZATION_SINGLE_FILE, {
             from: sync.id,
             to: sync.kb?.knowledgeBox || 'Unknown kb',
@@ -133,6 +92,74 @@ export class SyncSingleFile implements SyncSingleFileUseCase {
         }
       }),
     );
+  }
+
+  private uploadOrDelete(
+    item: SyncItem,
+    sync: SyncEntity,
+  ): Observable<{ success: boolean; message?: string; action: string }> {
+    const nucliaConnector = new NucliaCloud(sync.kb);
+    if (item.deleted) {
+      return nucliaConnector.delete(item.originalId).pipe(
+        map(() => ({ success: true, message: '', action: 'delete' })),
+        catchError((err) => of({ success: false, message: `${err}`, action: 'delete' })),
+      );
+    } else {
+      return downloadFileOrLink(sync, item).pipe(
+        switchMap((data) => {
+          try {
+            if (data.type === ContentType.blob && data.blob) {
+              return from(data.blob.arrayBuffer()).pipe(
+                switchMap((arrayBuffer) => {
+                  return nucliaConnector.upload(item.originalId, item.title, {
+                    buffer: arrayBuffer,
+                    metadata: {
+                      ...item.metadata,
+                      labels: sync.labels,
+                      groups: data.extra?.groups,
+                      sourceId: sync.id,
+                    },
+                    mimeType: item.mimeType,
+                  });
+                }),
+                map((res) => ({ ...res, action: 'upload' })),
+              );
+            } else if (data.type === ContentType.text && data.text) {
+              return nucliaConnector
+                .upload(item.originalId, item.title, {
+                  text: data.text,
+                  metadata: { ...item.metadata, labels: sync.labels, groups: data.extra?.groups, sourceId: sync.id },
+                })
+                .pipe(map((res) => ({ ...res, action: 'upload' })));
+            } else if (data.type === ContentType.link && data.link) {
+              const mimeType =
+                item.mimeType !== TO_BE_CHECKED ? of(item.mimeType || 'text/html') : this.checkMimetype(data.link.uri);
+              return mimeType.pipe(
+                switchMap((type) =>
+                  nucliaConnector.uploadLink(
+                    item.originalId,
+                    item.title,
+                    data.link,
+                    type,
+                    { ...item.metadata, labels: sync.labels, groups: data.extra?.groups, sourceId: sync.id },
+                    {
+                      headers: sync.connector.parameters.headers,
+                      cookies: sync.connector.parameters.cookies,
+                      localstorage: sync.connector.parameters.localstorage,
+                    },
+                  ),
+                ),
+                map(() => ({ success: true, message: '', action: 'upload' })),
+              );
+            } else {
+              return of({ success: false, message: '', action: 'upload' });
+            }
+          } catch (err) {
+            return of({ success: false, message: `${err}`, action: 'upload' });
+          }
+        }),
+      );
+    }
   }
 
   private checkMimetype(url: string): Observable<string> {

@@ -21,6 +21,7 @@ export class UpdateSyncDto {
     if (this.options.filters) returnObj.filters = this.options.filters;
     if (this.options.disabled !== undefined) returnObj.disabled = this.options.disabled;
     if (this.options.syncSecurityGroups !== undefined) returnObj.syncSecurityGroups = this.options.syncSecurityGroups;
+    if (this.options.originalIds !== undefined) returnObj.originalIds = this.options.originalIds;
 
     return returnObj;
   }

@@ -204,6 +204,11 @@ export class NucliaCloud {
     );
   }
 
+  delete(originalId: string): Observable<void> {
+    const slug = sha256(originalId);
+    return this.getKb().pipe(switchMap((kb) => kb.getResourceFromData({ id: '', slug }).delete()));
+  }
+
   private getKb(): Observable<WritableKnowledgeBox> {
     if (this.kb) {
       return of(this.kb);

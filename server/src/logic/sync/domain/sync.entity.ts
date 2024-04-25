@@ -85,6 +85,7 @@ export interface ISyncEntity {
   filters?: Filters;
   disabled?: boolean;
   syncSecurityGroups?: boolean;
+  originalIds?: string[];
 }
 
 export class SyncEntity {
@@ -99,10 +100,22 @@ export class SyncEntity {
   public filters?: Filters;
   public disabled?: boolean;
   public syncSecurityGroups?: boolean;
+  public originalIds?: string[];
 
   constructor(options: ISyncEntity) {
-    const { connector, kb, labels, title, id, lastSyncGMT, foldersToSync, filters, disabled, syncSecurityGroups } =
-      options;
+    const {
+      connector,
+      kb,
+      labels,
+      title,
+      id,
+      lastSyncGMT,
+      foldersToSync,
+      filters,
+      disabled,
+      syncSecurityGroups,
+      originalIds,
+    } = options;
     this.connector = connector;
     this.kb = kb;
     this.labels = labels;
@@ -113,6 +126,7 @@ export class SyncEntity {
     this.filters = filters;
     this.disabled = disabled;
     this.syncSecurityGroups = syncSecurityGroups;
+    this.originalIds = originalIds;
     this.setConnectorDefinition();
   }
 
@@ -134,7 +148,7 @@ export class SyncEntity {
     return this.sourceConnector.getFolders();
   }
 
-  getLastModified(): Observable<{ success: boolean; results: SyncItem[]; error?: string }> {
+  getLastModified(existings?: string[]): Observable<{ success: boolean; results: SyncItem[]; error?: string }> {
     const foldersToSyncPending: SyncItem[] = (this.foldersToSync ?? []).filter(
       (folder) => folder.status === FileStatus.PENDING || folder.status === undefined,
     );
@@ -143,7 +157,11 @@ export class SyncEntity {
     );
     const getFilesFoldersUpdated =
       foldersToSyncUpdated.length > 0
-        ? this.sourceConnector!.getLastModified(this.lastSyncGMT || '2000-01-01T00:00:00.000Z', foldersToSyncUpdated)
+        ? this.sourceConnector!.getLastModified(
+            this.lastSyncGMT || '2000-01-01T00:00:00.000Z',
+            foldersToSyncUpdated,
+            existings,
+          )
         : of({ items: [] } as SearchResults);
 
     const getFilesFolderPending =
