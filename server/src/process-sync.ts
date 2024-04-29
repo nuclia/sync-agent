@@ -5,5 +5,5 @@ import { SyncRepository } from './logic/sync/infrastructure/sync.repository';
 export const syncAllFoldersFileSystemProcess = (basePath: string): Promise<void> => {
   const datasource = new FileSystemSyncDatasource(basePath);
   const syncRepository = new SyncRepository(datasource);
-  return new SyncAllFolders(syncRepository).execute();
+  return new SyncAllFolders(syncRepository).executeAll();
 };

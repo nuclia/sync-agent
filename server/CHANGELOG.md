@@ -1,3 +1,7 @@
+# 1.4.0 (2024-04-29)
+
+- Endpoint to execute a unique sync
+
 # 1.3.1 (2024-04-29)
 
 - Fix metadata for files
