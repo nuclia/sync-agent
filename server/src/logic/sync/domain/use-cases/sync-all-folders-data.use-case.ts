@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { concatMap, delay, filter, from, lastValueFrom, map, of, switchMap, toArray } from 'rxjs';
+import { Observable, concatMap, delay, filter, from, lastValueFrom, map, of, switchMap, toArray } from 'rxjs';
 
 import { EVENTS } from '../../../../events/events';
 import { eventEmitter } from '../../../../server';
 import { FileStatus, SyncItem } from '../../../connector/domain/connector';
 import { UpdateSyncDto } from '../dto/update-sync.dto';
-import { SyncEntity } from '../sync.entity';
+import { ISyncEntity, SyncEntity } from '../sync.entity';
 import { ISyncRepository } from '../sync.repository';
 import { RefreshAccessToken } from './refresh-access-token.use-case';
 import { SyncSingleFile } from './sync-single-file.use-case';
@@ -15,7 +15,8 @@ import { lookup } from 'mime-types';
 require('localstorage-polyfill');
 
 export interface SyncAllFoldersUseCase {
-  execute(since: Date | undefined): Promise<void>;
+  executeAll(): Promise<void>;
+  execute(syncObj: ISyncEntity): Promise<void>;
 }
 
 export class SyncAllFolders implements SyncAllFoldersUseCase {
@@ -111,34 +112,40 @@ export class SyncAllFolders implements SyncAllFoldersUseCase {
     );
   }
 
-  async execute() {
+  async executeAll() {
     const syncObjects = await this.repository.getAllSync();
     const syncObjectValues = Object.values(syncObjects).filter((sync) => !sync.disabled);
     if (syncObjectValues.length > 0) {
-      await lastValueFrom(
-        of(...syncObjectValues).pipe(
-          concatMap((syncObj) => new RefreshAccessToken(this.repository).execute(new SyncEntity(syncObj))),
-          concatMap((syncEntity) =>
-            this.processSyncEntity(syncEntity).pipe(
-              concatMap((result) => {
-                if (result) {
-                  const processed = result.filter((res) => res.success && res.action === 'upload').map((res) => res.id);
-                  const deleted = result.filter((res) => res.success && res.action === 'delete').map((res) => res.id);
-                  const successCount = result.filter((res) => res.success).length;
-
-                  console.log('processed', processed);
-                  console.log('deleted', deleted);
-                  console.log('successCount', successCount);
-                  return this.callbackFinishSync(syncEntity, processed, deleted, successCount, '');
-                } else {
-                  return of(undefined);
-                }
-              }),
-            ),
-          ),
-        ),
-      );
+      await lastValueFrom(of(...syncObjectValues).pipe(concatMap((syncObj) => this._execute(syncObj))));
       console.log('Finish sync folders data');
     }
+  }
+
+  execute(syncObj: ISyncEntity): Promise<void> {
+    return lastValueFrom(this._execute(syncObj));
+  }
+
+  private _execute(syncObj: ISyncEntity): Observable<void> {
+    console.log(`Syncing ${syncObj.id}`);
+    return new RefreshAccessToken(this.repository).execute(new SyncEntity(syncObj)).pipe(
+      concatMap((syncEntity) =>
+        this.processSyncEntity(syncEntity).pipe(
+          concatMap((result) => {
+            if (result) {
+              const processed = result.filter((res) => res.success && res.action === 'upload').map((res) => res.id);
+              const deleted = result.filter((res) => res.success && res.action === 'delete').map((res) => res.id);
+              const successCount = result.filter((res) => res.success).length;
+
+              console.log('processed', processed);
+              console.log('deleted', deleted);
+              console.log('successCount', successCount);
+              return this.callbackFinishSync(syncEntity, processed, deleted, successCount, '');
+            } else {
+              return of(undefined);
+            }
+          }),
+        ),
+      ),
+    );
   }
 }

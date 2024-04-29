@@ -65,7 +65,18 @@ export class SyncFileSystemRoutes {
 
     router.get('/execute', async (_req, res) => {
       try {
-        await new SyncAllFolders(syncRepository).execute();
+        await new SyncAllFolders(syncRepository).executeAll();
+        res.status(200).send({ success: true });
+      } catch (error) {
+        this.handleError(res, error);
+      }
+    });
+
+    router.get('/execute/:syncId', async (req, res) => {
+      try {
+        const { syncId } = req.params;
+        const sync = await new GetSync(syncRepository).execute(syncId);
+        await new SyncAllFolders(syncRepository).execute(sync);
         res.status(200).send({ success: true });
       } catch (error) {
         this.handleError(res, error);

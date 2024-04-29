@@ -95,6 +95,10 @@ export class FileSystemSyncDatasource implements ISyncDatasource {
     if (data === null) {
       throw new CustomError(`Update sync: Sync with id ${id} not found`, 404);
     }
+    // override filters (so missing values are removed)
+    if (sync.filters) {
+      data.filters = sync.filters;
+    }
     const newSync = deepMerge(data, sync);
     await this.loadSyncData();
     this.allSyncData[id] = newSync;
