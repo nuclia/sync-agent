@@ -48,19 +48,12 @@ export class NucliaCloud {
     const slug = sha256(originalId);
     const text = data.text;
     const buffer = data.buffer;
-    const resourceData: Partial<ICreateResource> = { title: filename };
-    data = this.setMetadata(data, data.metadata);
+    const resourceData: Partial<ICreateResource> = { title: filename, ...this.setMetadata(data, data.metadata) };
     if (buffer || text) {
       return this.getKb().pipe(
         switchMap((kb) =>
           kb.getResourceBySlug(slug, [], []).pipe(
-            switchMap((resource) => {
-              if (data.metadata?.labels) {
-                return resource.modify(resourceData).pipe(map(() => resource));
-              } else {
-                return of(resource);
-              }
-            }),
+            switchMap((resource) => resource.modify(resourceData).pipe(map(() => resource))),
             catchError((error) => {
               if (error.status === 404) {
                 resourceData.slug = slug;
