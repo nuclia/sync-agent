@@ -1,3 +1,7 @@
+# 1.3.1 (2024-04-29)
+
+- Fix metadata for files
+
 # 1.3.0 (2024-04-25)
 
 - Support deletion syncing (when a file is deleted in a source, the corresponding resource is deleted in the Nuclia Knowledge Box)
