@@ -1,3 +1,7 @@
+# 1.4.2 (2024-04-30)
+
+- When loading folders, expose `displayPath` when needed and possible, according the connector types.
+
 # 1.4.1 (2024-04-30)
 
 - Fix titles in sitemap and RSS connectors
