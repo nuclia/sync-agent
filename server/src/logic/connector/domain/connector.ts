@@ -27,7 +27,6 @@ export const SyncItemValidator = z.object({
   status: z.nativeEnum(FileStatus).optional(),
   modifiedGMT: z.string().optional(),
   mimeType: z.string().optional(),
-  isFolder: z.boolean().optional(),
   parents: z.array(z.string()).optional(),
   deleted: z.boolean().optional(),
 });

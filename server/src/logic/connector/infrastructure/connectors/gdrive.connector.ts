@@ -101,10 +101,10 @@ export class GDriveImpl extends OAuthBaseConnector implements IConnector {
           if (!folderId) {
             return [];
           }
-          let path: string[] = [];
+          let path: { id: string; title: string }[] = [];
           let currentFolder = getFolder(folderId);
           while (currentFolder) {
-            path = [currentFolder.title, ...path];
+            path = [{ id: currentFolder.originalId, title: currentFolder.title }, ...path];
             if (!parents[currentFolder.originalId]) {
               break;
             }
@@ -112,13 +112,17 @@ export class GDriveImpl extends OAuthBaseConnector implements IConnector {
           }
           return path;
         };
-        const foldersWithPath = folders.map((folder) => ({
-          ...folder,
-          metadata: {
-            ...folder.metadata,
-            path: ['', ...getFolderPath(folder.parents?.[0]), folder.title].join('/'),
-          },
-        }));
+        const foldersWithPath = folders.map((folder) => {
+          const folderPathData = getFolderPath(folder.parents?.[0]);
+          return {
+            ...folder,
+            metadata: {
+              ...folder.metadata,
+              path: ['', ...folderPathData.map((f) => f.id), folder.originalId].join('/'),
+              displayPath: ['', ...folderPathData.map((f) => f.title), folder.title].join('/'),
+            },
+          };
+        });
         return {
           ...results,
           items: foldersWithPath,

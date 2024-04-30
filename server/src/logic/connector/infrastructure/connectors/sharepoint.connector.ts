@@ -218,7 +218,6 @@ export class SharepointImpl extends OAuthBaseConnector implements IConnector {
       originalId: item.id,
       metadata: {},
       status: FileStatus.PENDING,
-      isFolder: true,
     };
   }
 
