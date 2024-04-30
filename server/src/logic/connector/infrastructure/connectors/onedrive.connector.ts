@@ -220,7 +220,6 @@ export class OneDriveImpl extends OAuthBaseConnector implements IConnector {
         path: `${item.parentReference.path}/${item.name}`,
       },
       status: FileStatus.PENDING,
-      isFolder: true,
     };
   }
 

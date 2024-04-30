@@ -170,7 +170,6 @@ export class ConfluenceImpl implements IConnector {
       metadata: { type: raw.type || '', path: raw._links?.webui || '' },
       status: FileStatus.PENDING,
       uuid: `${raw.id}` || '',
-      isFolder: false,
     };
   }
 
