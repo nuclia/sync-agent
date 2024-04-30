@@ -152,11 +152,11 @@ export class NucliaCloud {
   ): Observable<void> {
     const slug = sha256(originalId);
     let payload: ICreateResource = {
-      title: filename,
       slug,
       origin: { url: data.uri },
     };
     if (!mimeType.startsWith('text/html')) {
+      payload.title = filename;
       payload.files = {
         file: { file: { uri: data.uri, filename: filename, extra_headers: this.listToDict(linkExtraParams?.headers) } },
       };

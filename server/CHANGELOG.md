@@ -1,3 +1,7 @@
+# 1.4.1 (2024-04-30)
+
+- Fix titles in sitemap and RSS connectors
+
 # 1.4.0 (2024-04-29)
 
 - Endpoint to execute a unique sync
