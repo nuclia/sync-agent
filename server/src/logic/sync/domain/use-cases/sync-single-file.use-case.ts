@@ -10,7 +10,7 @@ import { ContentType, LinkExtraParams, SyncEntity, TO_BE_CHECKED } from '../sync
 
 require('localstorage-polyfill');
 
-const EXTRACTER_ENDPOINT = 'http://localhost:8091/extract';
+const EXTRACTOR_ENDPOINT = 'http://localhost:8091/extract';
 
 export interface SyncSingleFileUseCase {
   execute(): Observable<{ success: boolean; message?: string }>;
@@ -201,7 +201,7 @@ export class SyncSingleFile implements SyncSingleFileUseCase {
     extraLinkParams: LinkExtraParams,
   ): Observable<{ html: string; title: string; error?: string }> {
     return from(
-      fetch(EXTRACTER_ENDPOINT, {
+      fetch(EXTRACTOR_ENDPOINT, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
