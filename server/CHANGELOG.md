@@ -1,3 +1,7 @@
+# 1.5.0 (2024-05-07)
+
+- Supports local extraction of web pages
+
 # 1.4.2 (2024-04-30)
 
 - When loading folders, expose `displayPath` when needed and possible, according the connector types.
