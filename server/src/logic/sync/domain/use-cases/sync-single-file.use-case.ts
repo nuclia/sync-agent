@@ -4,11 +4,13 @@ import { Observable, catchError, from, map, of, switchMap, tap } from 'rxjs';
 
 import { EVENTS } from '../../../../events/events';
 import { eventEmitter } from '../../../../server';
-import { SyncItem } from '../../../connector/domain/connector';
+import { Link, SyncItem } from '../../../connector/domain/connector';
 import { NucliaCloud } from '../nuclia-cloud';
-import { ContentType, SyncEntity, TO_BE_CHECKED } from '../sync.entity';
+import { ContentType, LinkExtraParams, SyncEntity, TO_BE_CHECKED } from '../sync.entity';
 
 require('localstorage-polyfill');
+
+const EXTRACTER_ENDPOINT = 'http://localhost:8091/extract';
 
 export interface SyncSingleFileUseCase {
   execute(): Observable<{ success: boolean; message?: string }>;
@@ -20,7 +22,7 @@ function downloadFileOrLink(
 ): Observable<{
   type: ContentType;
   blob?: Blob;
-  link?: any;
+  link?: Link;
   text?: TextField;
   extra?: { groups?: string[] };
 }> {
@@ -132,23 +134,44 @@ export class SyncSingleFile implements SyncSingleFileUseCase {
                 })
                 .pipe(map((res) => ({ ...res, action: 'upload' })));
             } else if (data.type === ContentType.link && data.link) {
+              const link = data.link;
+              const extraLinkParams: LinkExtraParams = {
+                headers: sync.connector.parameters.headers,
+                cookies: sync.connector.parameters.cookies,
+                localstorage: sync.connector.parameters.localstorage,
+              };
               const mimeType =
                 item.mimeType !== TO_BE_CHECKED ? of(item.mimeType || 'text/html') : this.checkMimetype(data.link.uri);
               return mimeType.pipe(
-                switchMap((type) =>
-                  nucliaConnector.uploadLink(
-                    item.originalId,
-                    item.title,
-                    data.link,
-                    type,
-                    { ...item.metadata, labels: sync.labels, groups: data.extra?.groups, sourceId: sync.id },
-                    {
-                      headers: sync.connector.parameters.headers,
-                      cookies: sync.connector.parameters.cookies,
-                      localstorage: sync.connector.parameters.localstorage,
-                    },
-                  ),
-                ),
+                switchMap((type) => {
+                  const metadata = {
+                    ...item.metadata,
+                    labels: sync.labels,
+                    groups: data.extra?.groups,
+                    sourceId: sync.id,
+                    origin: {} as { url?: string },
+                  };
+                  if (type.startsWith('text/html') && sync.connector.parameters['localExtract']) {
+                    metadata.origin.url = link.uri;
+                    return this.extractWebContent(link, extraLinkParams).pipe(
+                      switchMap(({ html, title }) =>
+                        nucliaConnector.upload(item.originalId, title, {
+                          text: { body: html, format: 'HTML' },
+                          metadata,
+                        }),
+                      ),
+                    );
+                  } else {
+                    return nucliaConnector.uploadLink(
+                      item.originalId,
+                      item.title,
+                      link,
+                      type,
+                      metadata,
+                      extraLinkParams,
+                    );
+                  }
+                }),
                 map(() => ({ success: true, message: '', action: 'upload' })),
               );
             } else {
@@ -171,5 +194,28 @@ export class SyncSingleFile implements SyncSingleFileUseCase {
     } catch (err) {
       return of('text/html');
     }
+  }
+
+  private extractWebContent(
+    link: Link,
+    extraLinkParams: LinkExtraParams,
+  ): Observable<{ html: string; title: string; error?: string }> {
+    return from(
+      fetch(EXTRACTER_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          url: link.uri,
+          cssSelector: link.cssSelector,
+          xpathSelector: link.xpathSelector,
+          ...extraLinkParams,
+        }),
+      }),
+    ).pipe(
+      switchMap((response) => response.json()),
+      catchError((err) => of({ html: '', title: '', error: `${err}` })),
+    );
   }
 }
