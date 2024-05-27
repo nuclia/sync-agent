@@ -1,3 +1,7 @@
+# 1.5.1 (2024-05-28)
+
+- Fix: do not crash if oauth refresh is failing
+
 # 1.5.0 (2024-05-07)
 
 - Supports local extraction of web pages

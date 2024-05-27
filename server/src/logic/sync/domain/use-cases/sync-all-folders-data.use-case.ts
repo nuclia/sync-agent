@@ -1,5 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Observable, concatMap, delay, filter, from, lastValueFrom, map, of, switchMap, toArray } from 'rxjs';
+import {
+  Observable,
+  catchError,
+  concatMap,
+  delay,
+  filter,
+  from,
+  lastValueFrom,
+  map,
+  of,
+  switchMap,
+  toArray,
+} from 'rxjs';
 
 import { EVENTS } from '../../../../events/events';
 import { eventEmitter } from '../../../../server';
@@ -128,24 +140,40 @@ export class SyncAllFolders implements SyncAllFoldersUseCase {
   private _execute(syncObj: ISyncEntity): Observable<void> {
     console.log(`Syncing ${syncObj.id}`);
     return new RefreshAccessToken(this.repository).execute(new SyncEntity(syncObj)).pipe(
-      concatMap((syncEntity) =>
-        this.processSyncEntity(syncEntity).pipe(
-          concatMap((result) => {
-            if (result) {
-              const processed = result.filter((res) => res.success && res.action === 'upload').map((res) => res.id);
-              const deleted = result.filter((res) => res.success && res.action === 'delete').map((res) => res.id);
-              const successCount = result.filter((res) => res.success).length;
+      catchError(() => {
+        console.error(`Cannot refresh token for ${syncObj.id}`);
+        return of(undefined);
+      }),
+      concatMap((syncEntity) => {
+        if (!syncEntity) {
+          eventEmitter.emit(EVENTS.FINISH_SYNCHRONIZATION_SYNC_OBJECT, {
+            from: syncObj.id,
+            to: 'Unknown kb',
+            date: new Date().toISOString(),
+            processed: [],
+            successCount: 0,
+            error: 'Cannot refresh OAuth token',
+          });
+          return of(undefined);
+        } else {
+          return this.processSyncEntity(syncEntity).pipe(
+            concatMap((result) => {
+              if (result) {
+                const processed = result.filter((res) => res.success && res.action === 'upload').map((res) => res.id);
+                const deleted = result.filter((res) => res.success && res.action === 'delete').map((res) => res.id);
+                const successCount = result.filter((res) => res.success).length;
 
-              console.log('processed', processed);
-              console.log('deleted', deleted);
-              console.log('successCount', successCount);
-              return this.callbackFinishSync(syncEntity, processed, deleted, successCount, '');
-            } else {
-              return of(undefined);
-            }
-          }),
-        ),
-      ),
+                console.log('processed', processed);
+                console.log('deleted', deleted);
+                console.log('successCount', successCount);
+                return this.callbackFinishSync(syncEntity, processed, deleted, successCount, '');
+              } else {
+                return of(undefined);
+              }
+            }),
+          );
+        }
+      }),
     );
   }
 }
