@@ -180,6 +180,7 @@ export class DropboxImpl extends OAuthBaseConnector implements IConnector {
       originalId: (isFolder ? raw.path_lower : raw.id) || '',
       metadata: {
         path: raw.path_lower,
+        extension: raw.path_lower.split('.').pop() || '',
       },
       status: FileStatus.PENDING,
       uuid: (isFolder ? raw.path_lower : raw.id) || '',
@@ -194,6 +195,7 @@ export class DropboxImpl extends OAuthBaseConnector implements IConnector {
       originalId: raw.metadata?.metadata?.['id'] || '',
       metadata: {
         path: raw.path_lower.split('/').slice(0, -1).join('/'),
+        extension: raw.path_lower.split('.').pop() || '',
       },
       status: FileStatus.PENDING,
       uuid: raw.metadata?.metadata?.['uuid'] || '',
