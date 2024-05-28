@@ -91,15 +91,22 @@ export class SyncAllFolders implements SyncAllFoldersUseCase {
   }
 
   processItems(syncEntity: SyncEntity, items: SyncItem[]) {
-    const filteredMimetypes = (syncEntity.filters?.fileExtensions?.extensions || '')
-      .split(',')
-      .map((ext) => lookup(ext.trim()) || '')
-      .filter((ext) => ext);
+    const filteredExtensions = (syncEntity.filters?.fileExtensions?.extensions || '').split(',').filter((ext) => ext);
+    const filteredMimetypes = filteredExtensions.map((ext) => lookup(ext.trim()) || '').filter((ext) => ext);
     return of(...items).pipe(
       filter((item) => {
         let isExtensionOk = true;
         if (filteredMimetypes.length > 0) {
-          const isFiltered = filteredMimetypes.includes(item.mimeType || '');
+          let isFiltered = false;
+          if (item.mimeType) {
+            isFiltered = filteredMimetypes.includes(item.mimeType || '');
+          } else if (item.metadata['extension']) {
+            let extension = item.metadata['extension'];
+            if (!extension.startsWith('.')) {
+              extension = `.${extension}`;
+            }
+            isFiltered = filteredExtensions.includes(extension);
+          }
           isExtensionOk = syncEntity.filters?.fileExtensions?.exclude ? !isFiltered : isFiltered;
         }
         let isDateOk = true;
