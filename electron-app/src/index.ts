@@ -62,6 +62,7 @@ const createWindow = async () => {
     {
       label: 'Exit',
       click: () => {
+        server.close();
         app.quit();
       },
     },
