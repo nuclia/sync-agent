@@ -29,6 +29,7 @@
     "cors": "^2.8.5",
     "electron-squirrel-startup": "^1.0.0",
     "express": "^4.19.2",
+    "kill-port-process": "^3.2.1",
     "localstorage-polyfill": "^1.0.1",
     "mime-types": "^2.1.35",
     "rxjs": "^7.8.1",
