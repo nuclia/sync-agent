@@ -1,3 +1,7 @@
+# 1.5.2 (2024-08-14)
+
+- Electron app: kill previous process when starting a new one
+
 # 1.5.1 (2024-05-28)
 
 - Fix: do not crash if oauth refresh is failing
