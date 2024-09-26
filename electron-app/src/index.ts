@@ -1,6 +1,7 @@
-import { Menu, Tray, app, nativeImage, dialog } from 'electron';
+import { Menu, Tray, app, nativeImage, dialog, shell } from 'electron';
 import os from 'os';
 import path from 'path';
+import semver from 'semver';
 
 import { EVENTS, eventEmitter, initFileSystemServer } from './sync-agent';
 import { killPortProcess } from 'kill-port-process';
@@ -25,21 +26,21 @@ const updateTrayAfterStopServer = () => {
   contextMenu.items[1].visible = false;
 };
 
-// const checkUpdates = async () => {
-//   const data = await fetch('https://raw.githubusercontent.com/nuclia/sync-agent/main/package.json').then((response) =>
-//     response.json(),
-//   );
+const checkUpdates = async () => {
+  const data = await fetch('https://raw.githubusercontent.com/nuclia/sync-agent/main/package.json').then((response) =>
+    response.json(),
+  );
 
-//   if (semver.gt(data.version, VERSION)) {
-//     await dialog.showMessageBox({
-//       message: `A new version is available. Please download version ${data.version} and install it.`,
-//     });
-//     shell.openExternal(`https://github.com/nuclia/sync-agent/releases/tag/${data.version}`);
-//   }
-// };
+  if (semver.gt(data.version, VERSION)) {
+    await dialog.showMessageBox({
+      message: `A new version is available. Please download version ${data.version} and install it.`,
+    });
+    shell.openExternal(`https://github.com/nuclia/sync-agent/releases/tag/${data.version}`);
+  }
+};
 
 const createWindow = async () => {
-  // await checkUpdates();
+  await checkUpdates();
   const icon = nativeImage.createFromPath(path.join(__dirname, '../public/logo_16x16.png'));
   // kill any previous hanging process
   await killPortProcess(8090);
@@ -75,10 +76,13 @@ const createWindow = async () => {
   ]);
   tray.setToolTip('Nuclia sync');
   tray.setContextMenu(contextMenu);
-  server.start();
-  dialog.showMessageBoxSync({
-    message: 'The Nuclia Sync Agent is running. You can manage your syncs from the online Nuclia Dashboard.',
-  });
+  setTimeout(() => {
+    server.start();
+
+    dialog.showMessageBoxSync({
+      message: 'The Nuclia Sync Agent is running. You can manage your syncs from the online Nuclia Dashboard.',
+    });
+  }, 1000);
 };
 
 // This method will be called when Electron has finished
