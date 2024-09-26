@@ -42,8 +42,6 @@ const checkUpdates = async () => {
 const createWindow = async () => {
   await checkUpdates();
   const icon = nativeImage.createFromPath(path.join(__dirname, '../public/logo_16x16.png'));
-  // kill any previous hanging process
-  await killPortProcess(8090);
   const server = await initFileSystemServer({ basePath });
   tray = new Tray(icon);
   contextMenu = Menu.buildFromTemplate([
@@ -61,6 +59,12 @@ const createWindow = async () => {
       },
       visible: false,
       icon: nativeImage.createFromPath(path.join(__dirname, '../public/square.png')),
+    },
+    {
+      label: 'Kill server',
+      click: async () => {
+        await killPortProcess(8090);
+      },
     },
     {
       label: 'Exit',
