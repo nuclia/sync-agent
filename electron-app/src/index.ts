@@ -80,7 +80,7 @@ const createWindow = async () => {
   ]);
   tray.setToolTip('Nuclia sync');
   tray.setContextMenu(contextMenu);
-  // server.start();
+  server.start();
   dialog.showMessageBoxSync({
     message: 'The Nuclia Sync Agent is running. You can manage your syncs from the online Nuclia Dashboard.',
   });
