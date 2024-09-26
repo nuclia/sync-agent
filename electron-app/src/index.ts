@@ -1,7 +1,6 @@
-import { Menu, Tray, app, nativeImage, dialog, shell } from 'electron';
+import { Menu, Tray, app, nativeImage, dialog } from 'electron';
 import os from 'os';
 import path from 'path';
-import semver from 'semver';
 
 import { EVENTS, eventEmitter, initFileSystemServer } from './sync-agent';
 import { killPortProcess } from 'kill-port-process';
