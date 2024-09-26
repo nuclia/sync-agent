@@ -26,18 +26,18 @@ const updateTrayAfterStopServer = () => {
   contextMenu.items[1].visible = false;
 };
 
-const checkUpdates = async () => {
-  const data = await fetch('https://raw.githubusercontent.com/nuclia/sync-agent/main/package.json').then((response) =>
-    response.json(),
-  );
+// const checkUpdates = async () => {
+//   const data = await fetch('https://raw.githubusercontent.com/nuclia/sync-agent/main/package.json').then((response) =>
+//     response.json(),
+//   );
 
-  if (semver.gt(data.version, VERSION)) {
-    await dialog.showMessageBox({
-      message: `A new version is available. Please download version ${data.version} and install it.`,
-    });
-    shell.openExternal(`https://github.com/nuclia/sync-agent/releases/tag/${data.version}`);
-  }
-};
+//   if (semver.gt(data.version, VERSION)) {
+//     await dialog.showMessageBox({
+//       message: `A new version is available. Please download version ${data.version} and install it.`,
+//     });
+//     shell.openExternal(`https://github.com/nuclia/sync-agent/releases/tag/${data.version}`);
+//   }
+// };
 
 const createWindow = async () => {
   // await checkUpdates();
