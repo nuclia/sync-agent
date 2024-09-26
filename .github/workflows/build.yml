@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - ericbrehault/sc-11076/fix-sync-agent
 
 jobs:
   build:
