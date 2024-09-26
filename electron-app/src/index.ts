@@ -4,6 +4,7 @@ import path from 'path';
 import semver from 'semver';
 
 import { EVENTS, eventEmitter, initFileSystemServer } from './sync-agent';
+import { killPortProcess } from 'kill-port-process';
 
 let contextMenu: Electron.Menu;
 let tray = null;
@@ -42,7 +43,7 @@ const createWindow = async () => {
   await checkUpdates();
   const icon = nativeImage.createFromPath(path.join(__dirname, '../public/logo_16x16.png'));
   // kill any previous hanging process
-  // await killPortProcess(8090);
+  await killPortProcess(8090);
   const server = await initFileSystemServer({ basePath });
   tray = new Tray(icon);
   contextMenu = Menu.buildFromTemplate([
