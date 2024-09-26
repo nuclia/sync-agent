@@ -40,7 +40,7 @@ const checkUpdates = async () => {
 };
 
 const createWindow = async () => {
-  await checkUpdates();
+  // await checkUpdates();
   const icon = nativeImage.createFromPath(path.join(__dirname, '../public/logo_16x16.png'));
   // kill any previous hanging process
   await killPortProcess(8090);
