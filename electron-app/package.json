@@ -8,7 +8,7 @@
     "compile": "tsc",
     "start": "npm run compile && electron-forge start",
     "package": "electron-forge package",
-    "make": "npm run compile && electron-forge make --arch=arm64",
+    "make": "npm run compile && electron-forge make",
     "publish": "npm run compile && electron-forge publish",
     "lint": "eslint src/index.ts",
     "format:check": "prettier src/index.ts --check",
