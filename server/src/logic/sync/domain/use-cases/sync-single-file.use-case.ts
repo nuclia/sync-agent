@@ -151,16 +151,41 @@ export class SyncSingleFile implements SyncSingleFileUseCase {
                     sourceId: sync.id,
                     origin: {} as { url?: string },
                   };
-                  if (type.startsWith('text/html') && sync.connector.parameters['localExtract']) {
+                  if (sync.connector.parameters['localExtract']) {
                     metadata.origin.url = link.uri;
-                    return this.extractWebContent(link, extraLinkParams).pipe(
-                      switchMap(({ html, title }) =>
-                        nucliaConnector.upload(item.originalId, title, {
-                          text: { body: html, format: 'HTML' },
-                          metadata,
+                    if (type.startsWith('text/html')) {
+                      return this.extractWebContent(link, extraLinkParams).pipe(
+                        switchMap(({ html, title }) =>
+                          nucliaConnector.upload(item.originalId, title, {
+                            text: { body: html, format: 'HTML' },
+                            metadata,
+                          }),
+                        ),
+                      );
+                    } else {
+                      const headers = (extraLinkParams.headers || []).reduce(
+                        (acc, header) => {
+                          acc[header.key] = header.value;
+                          return acc;
+                        },
+                        {} as { [key: string]: string },
+                      );
+                      return from(
+                        fetch(link.uri, {
+                          method: 'POST',
+                          headers,
+                        }).then((res) => res.arrayBuffer()),
+                      ).pipe(
+                        switchMap((arrayBuffer) => {
+                          return nucliaConnector.upload(item.originalId, item.title, {
+                            buffer: arrayBuffer,
+                            metadata,
+                            mimeType: type,
+                          });
                         }),
-                      ),
-                    );
+                        map((res) => ({ ...res, action: 'upload' })),
+                      );
+                    }
                   } else {
                     return nucliaConnector.uploadLink(
                       item.originalId,

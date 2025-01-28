@@ -1,3 +1,7 @@
+# 1.6.0 (2025-01-28)
+
+- Support files download when using sitemap connector with local extraction
+
 # 1.5.2 (2024-08-14)
 
 - Electron app: kill previous process when starting a new one
