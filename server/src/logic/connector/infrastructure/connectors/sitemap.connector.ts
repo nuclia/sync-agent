@@ -26,7 +26,7 @@ export function parseSitemap(sitemapContent: string): Promise<SiteMapModel[]> {
     const $ = cheerio.load(sitemapContent, { xml: true });
 
     $('url').each((_, element) => {
-      const loc = $(element).find('loc').text();
+      const loc = $(element).find('loc').text().split('?')[0].split('#')[0];
       const lastmod = $(element).find('lastmod').text();
       urls.push({ loc, lastmod });
     });
