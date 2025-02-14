@@ -1,3 +1,7 @@
+# 1.6.1 (2025-02-14)
+
+- Exclude anchor and query strung from URLs in sitemap connector
+
 # 1.6.0 (2025-01-28)
 
 - Support files download when using sitemap connector with local extraction
