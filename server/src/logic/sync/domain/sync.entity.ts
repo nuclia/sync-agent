@@ -86,6 +86,7 @@ export interface ISyncEntity {
   disabled?: boolean;
   syncSecurityGroups?: boolean;
   originalIds?: string[];
+  extract_strategy?: string;
 }
 
 export class SyncEntity {
@@ -101,6 +102,7 @@ export class SyncEntity {
   public disabled?: boolean;
   public syncSecurityGroups?: boolean;
   public originalIds?: string[];
+  public extract_strategy?: string;
 
   constructor(options: ISyncEntity) {
     const {
@@ -115,6 +117,7 @@ export class SyncEntity {
       disabled,
       syncSecurityGroups,
       originalIds,
+      extract_strategy,
     } = options;
     this.connector = connector;
     this.kb = kb;
@@ -127,6 +130,7 @@ export class SyncEntity {
     this.disabled = disabled;
     this.syncSecurityGroups = syncSecurityGroups;
     this.originalIds = originalIds;
+    this.extract_strategy = extract_strategy;
     this.setConnectorDefinition();
   }
 

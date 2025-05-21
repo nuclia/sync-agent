@@ -43,7 +43,7 @@ export class NucliaCloud {
   upload(
     originalId: string,
     filename: string,
-    data: { buffer?: ArrayBuffer; text?: TextField; metadata?: any; mimeType?: string },
+    data: { buffer?: ArrayBuffer; text?: TextField; metadata?: any; mimeType?: string; extract_strategy?: string },
   ): Observable<{ success: boolean; message?: string }> {
     const slug = sha256(originalId);
     const text = data.text;
@@ -80,6 +80,7 @@ export class NucliaCloud {
                 .upload('file', buffer, false, {
                   contentType: data.mimeType || lookup(filename) || 'application/octet-stream',
                   filename,
+                  processing: data.extract_strategy,
                 })
                 .pipe(
                   catchError((error: any) => {
@@ -170,6 +171,7 @@ export class NucliaCloud {
           headers: this.listToDict(linkExtraParams?.headers),
           cookies: this.listToDict(linkExtraParams?.cookies),
           localstorage: this.listToDict(linkExtraParams?.localstorage),
+          extract_strategy: data.extract_strategy,
         },
       };
       payload.icon = 'application/stf-link';
