@@ -13,6 +13,7 @@ export interface Link {
   extra_headers: { [key: string]: string };
   cssSelector?: string;
   xpathSelector?: string;
+  extract_strategy?: string;
 }
 
 export interface ConnectorParameters {

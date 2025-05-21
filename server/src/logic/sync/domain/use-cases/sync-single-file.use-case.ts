@@ -122,6 +122,7 @@ export class SyncSingleFile implements SyncSingleFileUseCase {
                       sourceId: sync.id,
                     },
                     mimeType: item.mimeType,
+                    extract_strategy: sync.extract_strategy,
                   });
                 }),
                 map((res) => ({ ...res, action: 'upload' })),
@@ -159,6 +160,7 @@ export class SyncSingleFile implements SyncSingleFileUseCase {
                           nucliaConnector.upload(item.originalId, title, {
                             text: { body: html, format: 'HTML' },
                             metadata,
+                            extract_strategy: sync.extract_strategy,
                           }),
                         ),
                       );
@@ -181,6 +183,7 @@ export class SyncSingleFile implements SyncSingleFileUseCase {
                             buffer: arrayBuffer,
                             metadata,
                             mimeType: type,
+                            extract_strategy: sync.extract_strategy,
                           });
                         }),
                         map((res) => ({ ...res, action: 'upload' })),
@@ -190,7 +193,7 @@ export class SyncSingleFile implements SyncSingleFileUseCase {
                     return nucliaConnector.uploadLink(
                       item.originalId,
                       item.title,
-                      link,
+                      { ...link, extract_strategy: sync.extract_strategy },
                       type,
                       metadata,
                       extraLinkParams,
