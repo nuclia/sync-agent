@@ -10,7 +10,7 @@
   "keywords": [
     "Nuclia"
   ],
-  "license": "MIT",
+  "license": "Apache-2.0",
   "bin": {
     "nuclia-sync-agent": "build/start-file-system-server.js"
   },
