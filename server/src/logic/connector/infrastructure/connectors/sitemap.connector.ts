@@ -26,7 +26,7 @@ export function parseSitemap(sitemapContent: string): Promise<SiteMapModel[]> {
     const $ = cheerio.load(sitemapContent, { xml: true });
 
     $('url').each((_, element) => {
-      const loc = $(element).find('loc').text().split('?')[0].split('#')[0];
+      const loc = $(element).find('loc').text().split('#')[0];
       const lastmod = $(element).find('lastmod').text();
       urls.push({ loc, lastmod });
     });
@@ -74,21 +74,23 @@ class SitemapImpl implements IConnector {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private _getFiles(query?: string | undefined): Observable<SearchResults> {
     const sitemapUrl = this.params['sitemap'];
-
     return this._getSiteMap(sitemapUrl).pipe(
       map((parsedUrls) => ({
-        items: parsedUrls.map((parsedUrl) => ({
-          title: parsedUrl.loc,
-          status: FileStatus.PENDING,
-          uuid: `${new Date().getTime()}`,
-          originalId: parsedUrl.loc,
-          mimeType: TO_BE_CHECKED,
-          metadata: {
-            uri: parsedUrl.loc,
-            path: parsedUrl.loc.replace(/https?:\/\//, ''),
-            lastModified: parsedUrl.lastmod,
-          },
-        })),
+        items: parsedUrls.map((parsedUrl) => {
+          const url = this.params['keepQueryString'] ? parsedUrl.loc : parsedUrl.loc.split('?')[0];
+          return {
+            title: url,
+            status: FileStatus.PENDING,
+            uuid: `${new Date().getTime()}`,
+            originalId: url,
+            mimeType: TO_BE_CHECKED,
+            metadata: {
+              uri: url,
+              path: url.replace(/https?:\/\//, ''),
+              lastModified: parsedUrl.lastmod,
+            },
+          };
+        }),
       })),
       catchError((err) => of({ items: [], error: `${err}` })),
     );
