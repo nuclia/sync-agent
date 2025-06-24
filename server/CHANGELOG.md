@@ -1,10 +1,14 @@
+# 1.7.1 (2025-06-24)
+
+- Option to preserve query string in sitemap connector
+
 # 1.7.0 (2025-05-21)
 
 - Support extract strategies
 
 # 1.6.1 (2025-02-14)
 
-- Exclude anchor and query strung from URLs in sitemap connector
+- Exclude anchor and query string from URLs in sitemap connector
 
 # 1.6.0 (2025-01-28)
 
