@@ -25,7 +25,7 @@
     "@nuclia/core": "^1.26.0",
     "cheerio": "^1.0.0-rc.12",
     "commander": "^11.1.0",
-    "compression": "^1.7.4",
+    "compression": "^1.8.1",
     "cors": "^2.8.5",
     "electron-squirrel-startup": "^1.0.0",
     "express": "^4.21.2",
