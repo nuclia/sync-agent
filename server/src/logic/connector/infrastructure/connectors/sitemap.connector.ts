@@ -11,7 +11,9 @@ interface SiteMapModel {
 
 async function fetchSitemap(url: string): Promise<string> {
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:143.0) Gecko/20100101 Firefox/143.0' },
+    });
     // TODO: control whether it is zipped or plain
     return response.text();
   } catch (error) {

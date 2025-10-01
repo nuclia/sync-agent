@@ -1,3 +1,7 @@
+# 1.7.2 (2025-10-01)
+
+- Set User-Agent when loading sitemap to avoid error page
+
 # 1.7.1 (2025-06-24)
 
 - Option to preserve query string in sitemap connector
