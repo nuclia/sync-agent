@@ -1,3 +1,7 @@
+# 1.8.0 (2025-10-07)
+
+- Support .xml.gz sitemaps
+
 # 1.7.3 (2025-10-01)
 
 - New Windows pipeline release

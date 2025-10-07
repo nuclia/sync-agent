@@ -3,6 +3,9 @@ import { ConnectorParameters, FileStatus, IConnector, Link, SearchResults, SyncI
 import { SourceConnectorDefinition } from '../factory';
 import * as cheerio from 'cheerio';
 import { TO_BE_CHECKED } from '../../../sync/domain/sync.entity';
+import zlib from 'node:zlib';
+import fs from 'fs';
+import { pipeline, Readable, Writable } from 'node:stream';
 
 interface SiteMapModel {
   loc: string;
@@ -14,12 +17,42 @@ async function fetchSitemap(url: string): Promise<string> {
     const response = await fetch(url, {
       headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:143.0) Gecko/20100101 Firefox/143.0' },
     });
-    // TODO: control whether it is zipped or plain
-    return response.text();
+    if (response.headers.get('content-type') === 'application/x-gzip') {
+      const arrbuf = await response.arrayBuffer();
+      const buffer = Buffer.from(arrbuf);
+      return await unzipSitemap(buffer);
+    } else {
+      return response.text();
+    }
   } catch (error) {
     console.error('Error fetching sitemap', error);
     return Promise.reject('Error fetching sitemap');
   }
+}
+
+async function unzipSitemap(buffer: Buffer): Promise<string> {
+  const unzip = zlib.createUnzip();
+  const readable = new Readable();
+  readable._read = () => {}; // _read is required
+  readable.push(buffer);
+  readable.push(null);
+  const chunks: any = [];
+  const output = new Writable({
+    write: function (chunk, encoding, next) {
+      chunks.push(Buffer.from(chunk));
+      next();
+    },
+  });
+  return new Promise((resolve, reject) => {
+    pipeline(readable, unzip, output, (error) => {
+      if (error) {
+        reject(error);
+      } else {
+        output.end();
+        resolve(Buffer.concat(chunks).toString('utf8'));
+      }
+    });
+  });
 }
 
 export function parseSitemap(sitemapContent: string): Promise<SiteMapModel[]> {
