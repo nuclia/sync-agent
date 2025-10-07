@@ -4,7 +4,6 @@ import { SourceConnectorDefinition } from '../factory';
 import * as cheerio from 'cheerio';
 import { TO_BE_CHECKED } from '../../../sync/domain/sync.entity';
 import zlib from 'node:zlib';
-import fs from 'fs';
 import { pipeline, Readable, Writable } from 'node:stream';
 
 interface SiteMapModel {
@@ -36,7 +35,7 @@ async function unzipSitemap(buffer: Buffer): Promise<string> {
   readable._read = () => {}; // _read is required
   readable.push(buffer);
   readable.push(null);
-  const chunks: any = [];
+  const chunks: Buffer[] = [];
   const output = new Writable({
     write: function (chunk, encoding, next) {
       chunks.push(Buffer.from(chunk));
@@ -49,7 +48,7 @@ async function unzipSitemap(buffer: Buffer): Promise<string> {
         reject(error);
       } else {
         output.end();
-        resolve(Buffer.concat(chunks).toString('utf8'));
+        resolve(Buffer.concat(chunks as unknown as Uint8Array<ArrayBufferLike>[]).toString('utf8'));
       }
     });
   });
