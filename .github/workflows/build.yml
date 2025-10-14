@@ -147,6 +147,7 @@ jobs:
 
   build_job_windows:
     runs-on: ubuntu-latest
+    needs: pre-release
     steps:
       - name: Generate a token
         id: app-token
