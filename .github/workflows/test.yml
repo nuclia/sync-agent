@@ -64,4 +64,5 @@ jobs:
           ref: main
           token: ${{ steps.app-token.outputs.token }}
           wait-for-completion: true
-          inputs: '{"release_tag": "${{ needs.pre-release.outputs.release-tag }}"}'
+          inputs: '{"release_tag": "test"}'
+          # inputs: '{"release_tag": "${{ needs.pre-release.outputs.release-tag }}"}'
