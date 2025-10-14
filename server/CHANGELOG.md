@@ -1,3 +1,7 @@
+# 1.7.3 (2025-10-01)
+
+- New Windows pipeline release
+
 # 1.7.2 (2025-10-01)
 
 - Set User-Agent when loading sitemap to avoid error page
