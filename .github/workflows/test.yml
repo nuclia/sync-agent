@@ -59,7 +59,7 @@ jobs:
         uses: the-actions-org/workflow-dispatch@v4
         id: invoke-windows-release
         with:
-          workflow: windows-release
+          workflow: release-windows-sync-agent
           repo: nuclia/core-apps
           token: ${{ steps.app-token.outputs.token }}
           wait-for-completion: true
