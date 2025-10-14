@@ -52,7 +52,7 @@ jobs:
         uses: actions/create-github-app-token@v1
         with:
           app-id: ${{ secrets.GHAPP_ID_NUCLIABOT }}
-          private-key: ${{ secrets.PK_GHAPP_NUCLIABOT }}
+          private-key: ${{ secrets.PK_GHAPP_NUCLIABOT_ORG }}
           owner: nuclia
 
       - name: Trigger Windows Release
