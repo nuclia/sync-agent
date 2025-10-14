@@ -42,3 +42,25 @@ jobs:
           CI: false
         run: npm run test
         working-directory: server
+
+
+  build_job_windows:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate a token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.GHAPP_ID_NUCLIABOT }}
+          private-key: ${{ secrets.PK_GHAPP_NUCLIABOT }}
+          owner: nuclia
+
+      - name: Trigger Windows Release
+        uses: the-actions-org/workflow-dispatch@v4
+        id: invoke-windows-release
+        with:
+          workflow: windows-release
+          repo: nuclia/core-apps
+          token: ${{ steps.app-token.outputs.token }}
+          wait-for-completion: true
+          inputs: '{"release_tag": "${{ needs.pre-release.outputs.release-tag }}"}'
