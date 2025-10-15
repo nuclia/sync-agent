@@ -165,7 +165,7 @@ class FolderImpl implements IConnector {
     try {
       const buffer = fs.readFileSync(resource.originalId);
       const blob = new FSBlob([buffer], { type: 'application/octet-stream' });
-      return of(blob as Blob);
+      return of(blob as unknown as Blob);
     } catch (e) {
       console.error(e);
       return of(undefined);
