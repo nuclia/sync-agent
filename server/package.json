@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@nuclia/core": "^1.26.0",
+    "@types/node": "^22.18.10",
     "cheerio": "^1.0.0-rc.12",
     "commander": "^11.1.0",
     "compression": "^1.7.4",
@@ -34,7 +35,7 @@
     "localstorage-polyfill": "^1.0.1",
     "mime-types": "^2.1.35",
     "rxjs": "^7.8.1",
-    "typescript": "^5.3.3",
+    "typescript": "^5.9.3",
     "uuid": "^9.0.1",
     "zod": "^3.22.4"
   },
