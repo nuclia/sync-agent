@@ -150,7 +150,7 @@ class FolderImpl implements IConnector {
 
   private mapFSFiles(files: string[]): SyncItem[] {
     return files.map((file) => ({
-      title: file.split('/').pop() || '',
+      title: path.basename(file) || '',
       originalId: file,
       mimeType: lookup(file) || 'application/octet-stream',
       metadata: {
