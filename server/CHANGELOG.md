@@ -1,3 +1,7 @@
+# 1.8.1 (2025-10-21)
+
+- Fix resource title on Windows for Folder connector
+
 # 1.8.0 (2025-10-07)
 
 - Support .xml.gz sitemaps

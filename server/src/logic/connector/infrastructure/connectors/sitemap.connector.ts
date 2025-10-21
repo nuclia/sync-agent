@@ -48,7 +48,7 @@ async function unzipSitemap(buffer: Buffer): Promise<string> {
         reject(error);
       } else {
         output.end();
-        resolve(Buffer.concat(chunks as unknown as Uint8Array<ArrayBufferLike>[]).toString('utf8'));
+        resolve(Buffer.concat(chunks as unknown as Uint8Array[]).toString('utf8'));
       }
     });
   });
