@@ -13,6 +13,7 @@ export class CreateSyncDto {
       kb: this.options.kb,
       title: this.options.title,
       id: this.options.id,
+      preserveLabels: this.options.preserveLabels,
       filters: this.options.filters,
       disabled: this.options.disabled,
       syncSecurityGroups: this.options.syncSecurityGroups,

@@ -43,7 +43,14 @@ export class NucliaCloud {
   upload(
     originalId: string,
     filename: string,
-    data: { buffer?: ArrayBuffer; text?: TextField; metadata?: any; mimeType?: string; extract_strategy?: string },
+    data: {
+      buffer?: ArrayBuffer;
+      text?: TextField;
+      metadata?: any;
+      mimeType?: string;
+      extract_strategy?: string;
+      preserveLabels?: boolean;
+    },
   ): Observable<{ success: boolean; message?: string }> {
     const slug = sha256(originalId);
     const text = data.text;
@@ -53,7 +60,24 @@ export class NucliaCloud {
       return this.getKb().pipe(
         switchMap((kb) =>
           kb.getResourceBySlug(slug, [], []).pipe(
-            switchMap((resource) => resource.modify(resourceData).pipe(map(() => resource))),
+            switchMap((resource) =>
+              resource
+                .modify({
+                  ...resourceData,
+                  usermetadata: data.preserveLabels
+                    ? {
+                        ...resourceData.usermetadata,
+                        classifications: [
+                          ...new Set([
+                            ...(resource.usermetadata?.classifications || []),
+                            ...(resourceData.usermetadata?.classifications || []),
+                          ]),
+                        ],
+                      }
+                    : { ...resourceData.usermetadata },
+                })
+                .pipe(map(() => resource)),
+            ),
             catchError((error) => {
               if (error.status === 404) {
                 resourceData.slug = slug;
