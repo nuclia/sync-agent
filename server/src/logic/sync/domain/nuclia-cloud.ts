@@ -66,14 +66,14 @@ export class NucliaCloud {
                   ...resourceData,
                   usermetadata: data.preserveLabels
                     ? {
-                        ...resourceData.usermetadata,
-                        classifications: [
-                          ...new Set([
-                            ...(resource.usermetadata?.classifications || []),
-                            ...(resourceData.usermetadata?.classifications || []),
-                          ]),
-                        ],
-                      }
+                      ...resourceData.usermetadata,
+                      classifications: [
+                        ...new Set([
+                          ...(resource.usermetadata?.classifications || []),
+                          ...(resourceData.usermetadata?.classifications || []),
+                        ]),
+                      ],
+                    }
                     : { ...resourceData.usermetadata },
                 })
                 .pipe(map(() => resource)),
