@@ -13,6 +13,7 @@ import {
   Resource,
   TextField,
   UploadResponse,
+  UserMetadata,
   WritableKnowledgeBox,
 } from '@nuclia/core';
 import { Link } from '../../connector/domain/connector';
@@ -65,15 +66,7 @@ export class NucliaCloud {
                 .modify({
                   ...resourceData,
                   usermetadata: data.preserveLabels
-                    ? {
-                        ...resourceData.usermetadata,
-                        classifications: [
-                          ...new Set([
-                            ...(resource.usermetadata?.classifications || []),
-                            ...(resourceData.usermetadata?.classifications || []),
-                          ]),
-                        ],
-                      }
+                    ? this.mergeLabels(resourceData, resource)
                     : { ...resourceData.usermetadata },
                 })
                 .pipe(map(() => resource)),
@@ -245,6 +238,18 @@ export class NucliaCloud {
     return (list || [])
       .filter((item) => item.key && item.value)
       .reduce((acc, curr) => ({ ...acc, [curr.key]: curr.value }), {} as { [key: string]: string });
+  }
+
+  private mergeLabels(resourceData: Partial<ICreateResource>, resource: Resource): UserMetadata {
+    return {
+      ...resourceData.usermetadata,
+      classifications: [
+        ...new Set([
+          ...(resource.usermetadata?.classifications || []),
+          ...(resourceData.usermetadata?.classifications || []),
+        ]),
+      ],
+    };
   }
 
   private setMetadata(resource: Partial<ICreateResource>, metadata: any): Partial<ICreateResource> {
