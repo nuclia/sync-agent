@@ -123,6 +123,7 @@ export class SyncSingleFile implements SyncSingleFileUseCase {
                     },
                     mimeType: item.mimeType,
                     extract_strategy: sync.extract_strategy,
+                    preserveLabels: sync.preserveLabels,
                   });
                 }),
                 map((res) => ({ ...res, action: 'upload' })),
@@ -132,6 +133,7 @@ export class SyncSingleFile implements SyncSingleFileUseCase {
                 .upload(item.originalId, item.title, {
                   text: data.text,
                   metadata: { ...item.metadata, labels: sync.labels, groups: data.extra?.groups, sourceId: sync.id },
+                  preserveLabels: sync.preserveLabels,
                 })
                 .pipe(map((res) => ({ ...res, action: 'upload' })));
             } else if (data.type === ContentType.link && data.link) {
@@ -161,6 +163,7 @@ export class SyncSingleFile implements SyncSingleFileUseCase {
                             text: { body: html, format: 'HTML' },
                             metadata,
                             extract_strategy: sync.extract_strategy,
+                            preserveLabels: sync.preserveLabels,
                           }),
                         ),
                       );
@@ -184,6 +187,7 @@ export class SyncSingleFile implements SyncSingleFileUseCase {
                             metadata,
                             mimeType: type,
                             extract_strategy: sync.extract_strategy,
+                            preserveLabels: sync.preserveLabels,
                           });
                         }),
                         map((res) => ({ ...res, action: 'upload' })),
@@ -193,7 +197,7 @@ export class SyncSingleFile implements SyncSingleFileUseCase {
                     return nucliaConnector.uploadLink(
                       item.originalId,
                       item.title,
-                      { ...link, extract_strategy: sync.extract_strategy },
+                      { ...link, extract_strategy: sync.extract_strategy, preserveLabels: sync.preserveLabels },
                       type,
                       metadata,
                       extraLinkParams,

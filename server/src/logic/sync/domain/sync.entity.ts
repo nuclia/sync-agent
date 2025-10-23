@@ -78,6 +78,7 @@ export interface ISyncEntity {
   connector: Connector;
   kb: NucliaOptions;
   labels?: Classification[];
+  preserveLabels?: boolean;
   title: string;
   id: string;
   lastSyncGMT?: string;
@@ -93,6 +94,7 @@ export class SyncEntity {
   public connector: Connector;
   public kb: NucliaOptions;
   public labels?: Classification[];
+  public preserveLabels?: boolean;
   public title: string;
   public id: string;
   public sourceConnector?: IConnector;
@@ -109,6 +111,7 @@ export class SyncEntity {
       connector,
       kb,
       labels,
+      preserveLabels,
       title,
       id,
       lastSyncGMT,
@@ -122,6 +125,7 @@ export class SyncEntity {
     this.connector = connector;
     this.kb = kb;
     this.labels = labels;
+    this.preserveLabels = preserveLabels;
     this.title = title;
     this.id = id;
     this.lastSyncGMT = lastSyncGMT;

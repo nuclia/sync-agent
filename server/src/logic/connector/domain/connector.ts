@@ -14,6 +14,7 @@ export interface Link {
   cssSelector?: string;
   xpathSelector?: string;
   extract_strategy?: string;
+  preserveLabels?: boolean;
 }
 
 export interface ConnectorParameters {

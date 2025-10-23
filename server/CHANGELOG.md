@@ -1,3 +1,7 @@
+# 1.8.2 (2025-10-22)
+
+- Option to preserve existing labels
+
 # 1.8.1 (2025-10-21)
 
 - Fix resource title on Windows for Folder connector

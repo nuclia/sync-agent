@@ -15,6 +15,7 @@ export class UpdateSyncDto {
     if (this.options.connector) returnObj.connector = this.options.connector;
     if (this.options.kb) returnObj.kb = this.options.kb;
     if (this.options.labels) returnObj.labels = this.options.labels;
+    if (this.options.preserveLabels !== undefined) returnObj.preserveLabels = this.options.preserveLabels;
     if (this.options.title) returnObj.title = this.options.title;
     if (this.options.lastSyncGMT) returnObj.lastSyncGMT = this.options.lastSyncGMT;
     if (this.options.foldersToSync) returnObj.foldersToSync = this.options.foldersToSync;

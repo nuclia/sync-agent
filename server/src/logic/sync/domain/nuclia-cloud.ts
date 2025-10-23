@@ -13,6 +13,7 @@ import {
   Resource,
   TextField,
   UploadResponse,
+  UserMetadata,
   WritableKnowledgeBox,
 } from '@nuclia/core';
 import { Link } from '../../connector/domain/connector';
@@ -43,7 +44,14 @@ export class NucliaCloud {
   upload(
     originalId: string,
     filename: string,
-    data: { buffer?: ArrayBuffer; text?: TextField; metadata?: any; mimeType?: string; extract_strategy?: string },
+    data: {
+      buffer?: ArrayBuffer;
+      text?: TextField;
+      metadata?: any;
+      mimeType?: string;
+      extract_strategy?: string;
+      preserveLabels?: boolean;
+    },
   ): Observable<{ success: boolean; message?: string }> {
     const slug = sha256(originalId);
     const text = data.text;
@@ -53,7 +61,16 @@ export class NucliaCloud {
       return this.getKb().pipe(
         switchMap((kb) =>
           kb.getResourceBySlug(slug, [], []).pipe(
-            switchMap((resource) => resource.modify(resourceData).pipe(map(() => resource))),
+            switchMap((resource) =>
+              resource
+                .modify({
+                  ...resourceData,
+                  usermetadata: data.preserveLabels
+                    ? this.mergeLabels(resourceData, resource)
+                    : { ...resourceData.usermetadata },
+                })
+                .pipe(map(() => resource)),
+            ),
             catchError((error) => {
               if (error.status === 404) {
                 resourceData.slug = slug;
@@ -184,8 +201,19 @@ export class NucliaCloud {
           switchMap((exists) => {
             if (exists) {
               delete payload.title;
+              return kb.getResourceBySlug(slug).pipe(
+                switchMap((resource) =>
+                  resource.modify({
+                    ...payload,
+                    usermetadata: data.preserveLabels
+                      ? this.mergeLabels(payload, resource)
+                      : { ...payload.usermetadata },
+                  }),
+                ),
+              );
+            } else {
+              return kb.createOrUpdateResource(payload);
             }
-            return kb.createOrUpdateResource(payload);
           }),
           retry(RETRY_CONFIG),
           delay(500), // do not overload the server
@@ -221,6 +249,18 @@ export class NucliaCloud {
     return (list || [])
       .filter((item) => item.key && item.value)
       .reduce((acc, curr) => ({ ...acc, [curr.key]: curr.value }), {} as { [key: string]: string });
+  }
+
+  private mergeLabels(resourceData: Partial<ICreateResource>, resource: Resource): UserMetadata {
+    return {
+      ...resourceData.usermetadata,
+      classifications: [
+        ...new Set([
+          ...(resource.usermetadata?.classifications || []),
+          ...(resourceData.usermetadata?.classifications || []),
+        ]),
+      ],
+    };
   }
 
   private setMetadata(resource: Partial<ICreateResource>, metadata: any): Partial<ICreateResource> {
