@@ -197,7 +197,7 @@ export class SyncSingleFile implements SyncSingleFileUseCase {
                     return nucliaConnector.uploadLink(
                       item.originalId,
                       item.title,
-                      { ...link, extract_strategy: sync.extract_strategy },
+                      { ...link, extract_strategy: sync.extract_strategy, preserveLabels: sync.preserveLabels },
                       type,
                       metadata,
                       extraLinkParams,

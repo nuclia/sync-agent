@@ -201,8 +201,19 @@ export class NucliaCloud {
           switchMap((exists) => {
             if (exists) {
               delete payload.title;
+              return kb.getResourceBySlug(slug).pipe(
+                switchMap((resource) =>
+                  resource.modify({
+                    ...payload,
+                    usermetadata: data.preserveLabels
+                      ? this.mergeLabels(payload, resource)
+                      : { ...payload.usermetadata },
+                  }),
+                ),
+              );
+            } else {
+              return kb.createOrUpdateResource(payload);
             }
-            return kb.createOrUpdateResource(payload);
           }),
           retry(RETRY_CONFIG),
           delay(500), // do not overload the server
