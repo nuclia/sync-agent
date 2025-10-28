@@ -1,3 +1,7 @@
+# 1.8.3 (2025-10-28)
+
+- Set last modified date in origin metadata
+
 # 1.8.2 (2025-10-22)
 
 - Option to preserve existing labels
