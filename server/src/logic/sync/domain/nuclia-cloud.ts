@@ -272,13 +272,16 @@ export class NucliaCloud {
       if (path && !path.startsWith('/')) {
         path = `/${path}`;
       }
-      resource.origin = { ...(resource.origin || {}), path };
+      resource.origin = { ...resource.origin, path };
     }
     if (metadata?.groups) {
       resource.security = { access_groups: metadata.groups };
     }
     if (metadata?.sourceId) {
-      resource.origin = { ...(resource.origin || {}), source_id: metadata.sourceId };
+      resource.origin = { ...resource.origin, source_id: metadata.sourceId };
+    }
+    if (metadata?.lastModified) {
+      resource.origin = { ...resource.origin, modified: metadata.lastModified };
     }
     return resource;
   }
