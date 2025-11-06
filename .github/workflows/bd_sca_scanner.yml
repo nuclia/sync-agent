@@ -17,7 +17,7 @@ jobs:
   blackduck-sca-scan:
     runs-on: ubuntu-latest
     concurrency:
-      group: bd-sca-scan-nucliadb-${{ github.ref_name }}
+      group: bd-sca-scan-${{ github.ref_name }}
       cancel-in-progress: true
     steps:
       - name: Checkout code
