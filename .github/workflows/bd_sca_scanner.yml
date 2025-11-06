@@ -3,19 +3,22 @@ on:
   push:
     branches:
       - main
-    # paths:
-    #   - '**/package-lock.json'
-    #   - '**/package.json'
+    paths:
+      - '**/package-lock.json'
+      - '**/package.json'
   pull_request:
     branches:
       - main
-    # paths:
-    #   - '**/package-lock.json'
-    #   - '**/package.json'
+    paths:
+      - '**/package-lock.json'
+      - '**/package.json'
 
 jobs:
   blackduck-sca-scan:
     runs-on: ubuntu-latest
+    concurrency:
+      group: bd-sca-scan-nucliadb-${{ github.ref_name }}
+      cancel-in-progress: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
