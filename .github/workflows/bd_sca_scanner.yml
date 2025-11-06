@@ -3,15 +3,15 @@ on:
   push:
     branches:
       - main
-    paths:
-      - '**/package-lock.json'
-      - '**/package.json'
+    # paths:
+    #   - '**/package-lock.json'
+    #   - '**/package.json'
   pull_request:
     branches:
       - main
-    paths:
-      - '**/package-lock.json'
-      - '**/package.json'
+    # paths:
+    #   - '**/package-lock.json'
+    #   - '**/package.json'
 
 jobs:
   blackduck-sca-scan:
