@@ -1,3 +1,7 @@
+# 1.8.4 (2025-11-13)
+
+- Avoid duplicating labels
+
 # 1.8.3 (2025-10-28)
 
 - Set last modified date in origin metadata
