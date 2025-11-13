@@ -13,6 +13,7 @@ import {
   Resource,
   TextField,
   UploadResponse,
+  UserClassification,
   UserMetadata,
   WritableKnowledgeBox,
 } from '@nuclia/core';
@@ -31,6 +32,15 @@ const RETRY_CONFIG = {
     // retryDelays is an array containing the delay to wait before retrying
     return timer(retryDelays[retryCount <= retryDelays.length ? retryCount - 1 : retryDelays.length - 1]);
   },
+};
+
+export const deDuplicateLabels = (labels: UserClassification[]): UserClassification[] => {
+  return labels.reduce((acc, curr) => {
+    if (!acc.some((label) => label.labelset === curr.labelset && label.label === curr.label)) {
+      acc.push(curr);
+    }
+    return acc;
+  }, [] as UserClassification[]);
 };
 
 export class NucliaCloud {
@@ -254,12 +264,10 @@ export class NucliaCloud {
   private mergeLabels(resourceData: Partial<ICreateResource>, resource: Resource): UserMetadata {
     return {
       ...resourceData.usermetadata,
-      classifications: [
-        ...new Set([
-          ...(resource.usermetadata?.classifications || []),
-          ...(resourceData.usermetadata?.classifications || []),
-        ]),
-      ],
+      classifications: deDuplicateLabels([
+        ...(resource.usermetadata?.classifications || []),
+        ...(resourceData.usermetadata?.classifications || []),
+      ]),
     };
   }
 
