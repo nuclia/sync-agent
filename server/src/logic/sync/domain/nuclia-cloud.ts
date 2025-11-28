@@ -291,6 +291,9 @@ export class NucliaCloud {
     if (metadata?.lastModified) {
       resource.origin = { ...resource.origin, modified: metadata.lastModified };
     }
+    if (metadata?.uri && !resource.origin?.url) {
+      resource.origin = { ...resource.origin, url: metadata.uri };
+    }
     return resource;
   }
 }

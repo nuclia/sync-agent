@@ -1,6 +1,6 @@
 {
   "name": "nuclia-sync-agent-app",
-  "version": "1.8.4",
+  "version": "1.9.0",
   "description": "This is a Nuclia Sync Agent App",
   "main": "build/index.js",
   "scripts": {
