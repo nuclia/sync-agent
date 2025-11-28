@@ -1,3 +1,7 @@
+# 1.9.0 (2025-11-28)
+
+- Sitefinity connector
+
 # 1.8.4 (2025-11-13)
 
 - Avoid duplicating labels

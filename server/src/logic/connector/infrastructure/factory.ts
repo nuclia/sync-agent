@@ -7,6 +7,7 @@ import { OneDriveConnector } from './connectors/onedrive.connector';
 import { SharepointConnector } from './connectors/sharepoint.connector';
 import { SitemapConnector } from './connectors/sitemap.connector';
 import { RSSConnector } from './connectors/rss.connector';
+import { SitefinityConnector } from './connectors/sitefinity.connector';
 
 export interface ConnectorDefinition {
   id: string;
@@ -29,6 +30,7 @@ const connectors: { [id: string]: SourceConnectorDefinition } = {
   sitemap: SitemapConnector,
   confluence: ConfluenceConnector,
   rss: RSSConnector,
+  sitefinity: SitefinityConnector,
 };
 
 // TODO: add the dynamic connectors
