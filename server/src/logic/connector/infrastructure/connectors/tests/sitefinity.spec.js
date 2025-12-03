@@ -36,6 +36,7 @@ describe('Test validate sitefinity params', () => {
       sourceConnector.areParametersValid({
         url: 'http://somewhere',
         apikey: '123ABC',
+        siteId: 'qwerty',
       }),
     ).toBe(true);
   });
