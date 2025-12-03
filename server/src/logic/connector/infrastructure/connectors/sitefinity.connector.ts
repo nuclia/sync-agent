@@ -1,6 +1,7 @@
 import { catchError, forkJoin, from, map, Observable, of } from 'rxjs';
 import { ConnectorParameters, FileStatus, IConnector, Link, SearchResults, SyncItem } from '../../domain/connector';
 import { SourceConnectorDefinition } from '../factory';
+import { format } from 'node:path';
 
 interface SitefinityPage {
   Id: string;
@@ -63,45 +64,67 @@ class SitefinityImpl implements IConnector {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private _getFiles(lastModified?: string): Observable<SearchResults> {
     const siteUrl = this.params['url'];
+    const extraContentTypes = ((this.params['extraContentTypes'] as string) || '').split(',').map((v) => v.trim());
     return forkJoin([
       this._getContents<SitefinityPage>('pages', lastModified),
       this._getMediaAndDocs(lastModified),
+      ...extraContentTypes.map((ct) => this._getContents<SitefinityPage>(ct, lastModified)),
     ]).pipe(
-      map(([pages, files]) => ({
-        items: pages
-          .map((content) => {
-            return {
+      map(([pages, files, ...extra]) => {
+        const extraContents: SyncItem[] = extra.reduce((all, curr) => {
+          all = all.concat(
+            curr.map((content) => ({
               title: content.Title,
               status: FileStatus.PENDING,
               uuid: content.Id,
               originalId: content.Id,
-              mimeType: 'text/html',
+              mimeType: 'application/json',
               metadata: {
-                type: 'PAGE',
-                uri: siteUrl + content.RelativeUrlPath,
-                path: content.RelativeUrlPath,
+                type: 'CONTENT',
+                data: JSON.stringify(content),
                 lastModified: content.LastModified,
               },
-            };
-          })
-          .concat(
-            files.map((file) => {
+            })),
+          );
+          return all;
+        }, [] as SyncItem[]);
+        return {
+          items: pages
+            .map((content) => {
               return {
-                title: file.Title,
+                title: content.Title,
                 status: FileStatus.PENDING,
-                uuid: file.Id,
-                originalId: file.Id,
-                mimeType: file.MimeType,
+                uuid: content.Id,
+                originalId: content.Id,
+                mimeType: 'text/html',
                 metadata: {
-                  type: 'FILE',
-                  uri: siteUrl + file.Url,
-                  path: file.Url,
-                  lastModified: file.LastModified,
+                  type: 'PAGE',
+                  uri: siteUrl + content.RelativeUrlPath,
+                  path: content.RelativeUrlPath,
+                  lastModified: content.LastModified,
                 },
-              };
-            }),
-          ),
-      })),
+              } as SyncItem;
+            })
+            .concat(
+              files.map((file) => {
+                return {
+                  title: file.Title,
+                  status: FileStatus.PENDING,
+                  uuid: file.Id,
+                  originalId: file.Id,
+                  mimeType: file.MimeType,
+                  metadata: {
+                    type: 'FILE',
+                    uri: siteUrl + file.Url,
+                    path: file.Url,
+                    lastModified: file.LastModified,
+                  },
+                } as SyncItem;
+              }),
+            )
+            .concat(extraContents),
+        };
+      }),
       catchError((err) => of({ items: [], error: `${err}` })),
     );
   }
@@ -109,9 +132,11 @@ class SitefinityImpl implements IConnector {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   download(
     resource: SyncItem,
-  ): Observable<{ body: string; format?: 'PLAIN' | 'MARKDOWN' | 'HTML' } | Blob | undefined> {
+  ): Observable<{ body: string; format?: 'PLAIN' | 'MARKDOWN' | 'HTML' | 'JSON' } | Blob | undefined> {
     if (resource.metadata.type === 'PAGE') {
       return this.downloadPage(resource);
+    } else if (resource.metadata.type === 'CONTENT') {
+      return of({ body: resource.metadata.data, format: 'JSON' });
     } else {
       return this.downloadFile(resource);
     }
@@ -138,10 +163,15 @@ class SitefinityImpl implements IConnector {
         headers: {
           'X-SF-Access-Key': this.params['apikey'],
         },
-      }).then((res) => res.json()),
+      })
+        .then((res) => res.json())
+        .catch(() => {
+          console.error(`Could not parse ${pageEndpoint} content.`);
+          return undefined;
+        }),
     ).pipe(
       map((page) => {
-        const contents = ((page.ComponentContext.Components as SitefinityComponent[]) || []).reduce((all, comp) => {
+        const contents = ((page?.ComponentContext?.Components as SitefinityComponent[]) || []).reduce((all, comp) => {
           return [...all, ...getContent(comp)];
         }, [] as string[]);
         return {
@@ -182,7 +212,7 @@ class SitefinityImpl implements IConnector {
     ]).pipe(map(([documents, images, videos]) => documents.concat(images).concat(videos)));
   }
 
-  private _getContents<T>(type: 'documents' | 'videos' | 'images' | 'pages', lastModified?: string): Observable<T[]> {
+  private _getContents<T>(type: string, lastModified?: string): Observable<T[]> {
     let endpoint = `${this.params['url']}/api/default/${type}?sf_site=${this.params['siteId']}`;
     if (lastModified) {
       endpoint += `&$filter=LastModified gt ${lastModified}`;

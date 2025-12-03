@@ -1,4 +1,8 @@
-# 1.9.0 (2025-12-03)
+# 1.9.2 (2025-12-03)
+
+- Support extra content types in Sitefinity connector
+
+# 1.9.1 (2025-12-03)
 
 - Support siteID in Sitefinity connector
 
