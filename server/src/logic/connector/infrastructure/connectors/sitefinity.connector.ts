@@ -1,7 +1,6 @@
 import { catchError, forkJoin, from, map, Observable, of } from 'rxjs';
 import { ConnectorParameters, FileStatus, IConnector, Link, SearchResults, SyncItem } from '../../domain/connector';
 import { SourceConnectorDefinition } from '../factory';
-import { format } from 'node:path';
 
 interface SitefinityPage {
   Id: string;
