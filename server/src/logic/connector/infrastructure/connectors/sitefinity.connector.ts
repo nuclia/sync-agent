@@ -130,9 +130,9 @@ class SitefinityImpl implements IConnector {
   private downloadPage(
     resource: SyncItem,
   ): Observable<{ body: string; format?: 'PLAIN' | 'MARKDOWN' | 'HTML' } | undefined> {
-    const pageEndpoint = `${
-      this.params['url']
-    }/api/default/pages/Default.Model(url=@param)?@param='${encodeURIComponent(resource.metadata.path)}'`;
+    const pageEndpoint = `${this.params['url']}/api/default/pages/Default.Model(url=@param)?sf_site=${
+      this.params['siteId']
+    }&@param='${encodeURIComponent(resource.metadata.path)}'`;
     return from(
       fetch(pageEndpoint, {
         headers: {
@@ -183,9 +183,9 @@ class SitefinityImpl implements IConnector {
   }
 
   private _getContents<T>(type: 'documents' | 'videos' | 'images' | 'pages', lastModified?: string): Observable<T[]> {
-    let endpoint = `${this.params['url']}/api/default/${type}`;
+    let endpoint = `${this.params['url']}/api/default/${type}?sf_site=${this.params['siteId']}`;
     if (lastModified) {
-      endpoint += `?$filter=LastModified gt ${lastModified}`;
+      endpoint += `&$filter=LastModified gt ${lastModified}`;
     }
     return from(
       fetch(endpoint, {
