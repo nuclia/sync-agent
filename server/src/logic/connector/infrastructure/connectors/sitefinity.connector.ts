@@ -64,7 +64,10 @@ class SitefinityImpl implements IConnector {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private _getFiles(lastModified?: string): Observable<SearchResults> {
     const siteUrl = this.params['url'];
-    const extraContentTypes = ((this.params['extraContentTypes'] as string) || '').split(',').map((v) => v.trim());
+    const extraContentTypes = ((this.params['extraContentTypes'] as string) || '')
+      .split(',')
+      .map((v) => v.trim())
+      .filter((v) => !!v);
     return forkJoin([
       this._getContents<SitefinityPage>('pages', lastModified),
       this._getMediaAndDocs(lastModified),
