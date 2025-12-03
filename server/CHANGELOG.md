@@ -1,3 +1,7 @@
+# 1.9.0 (2025-12-03)
+
+- Support siteID in Sitefinity connector
+
 # 1.9.0 (2025-11-28)
 
 - Sitefinity connector
