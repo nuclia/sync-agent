@@ -44,6 +44,7 @@ interface SitefinityComponent {
 function getContent(component: SitefinityComponent): any[] {
   const childrenContents: string[] = (component.Children || []).reduce((all, curr) => {
     return [...all, ...getContent(curr)];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }, [] as any[]);
   return [{ ...component.Properties, Name: component.Name || '' }, ...childrenContents];
 }
@@ -200,6 +201,7 @@ class SitefinityImpl implements IConnector {
             if (prop.Content) {
               return of(prop.Content as string);
             } else if (prop.Name === 'SitefinityContentList') {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               let selectedItems: any;
               try {
                 selectedItems = JSON.parse(prop.SelectedItems || '{}');
@@ -322,6 +324,7 @@ class SitefinityImpl implements IConnector {
         map((data) => {
           const mapping = Object.entries(data?.entityContainer?.entitySets || {}).reduce(
             (all, [key, value]) => {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               const entityType = ((value as any)?.entityType?.$ref || '').replace('#/definitions/', '') as string;
               all[entityType] = key;
               return all;
