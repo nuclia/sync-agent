@@ -59,7 +59,9 @@ export interface IConnector {
   getFilesFromFolders(folders: SyncItem[]): Observable<SearchResults>;
   getLastModified(since: string, folders?: SyncItem[], existings?: string[]): Observable<SearchResults>;
   // we cannot use the TextField from the SDK because we want to keep connectors independant
-  download(resource: SyncItem): Observable<Blob | { body: string; format?: 'PLAIN' | 'MARKDOWN' | 'HTML' } | undefined>;
+  download(
+    resource: SyncItem,
+  ): Observable<Blob | { body: string; format?: 'PLAIN' | 'MARKDOWN' | 'HTML' | 'JSON' } | undefined>;
   getLink(resource: SyncItem): Observable<Link>;
   hasAuthData(): boolean;
   refreshAuthentication(): Observable<boolean>;
