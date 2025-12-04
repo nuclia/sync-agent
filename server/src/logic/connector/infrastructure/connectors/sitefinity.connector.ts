@@ -68,7 +68,7 @@ class SitefinityImpl implements IConnector {
   }
 
   areParametersValid(params: ConnectorParameters): boolean {
-    return !!params?.url && !!params?.apikey;
+    return !!params?.url && !!params?.apikey && !!params?.siteId;
   }
 
   getParameters(): ConnectorParameters {
@@ -87,8 +87,8 @@ class SitefinityImpl implements IConnector {
       .map((v) => v.trim())
       .filter((v) => !!v);
     return forkJoin([
-      this._getContents<SitefinityPage>('pages', lastModified),
-      this._getMediaAndDocs(lastModified),
+      this.params.extraContentTypesOnly ? of([]) : this._getContents<SitefinityPage>('pages', lastModified),
+      this.params.extraContentTypesOnly ? of([]) : this._getMediaAndDocs(lastModified),
       ...extraContentTypes.map((ct) => this._getContents<SitefinityPage>(ct, lastModified)),
     ]).pipe(
       map(([pages, files, ...extra]) => {
