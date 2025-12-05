@@ -21,13 +21,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          registry-url: "https://registry.npmjs.org"
-      
+          registry-url: 'https://registry.npmjs.org'
+
       - name: Bump NPM version
         run: |-
-          npm install -g npm@11.6.4          
-      
+          npm install -g npm@11.6.4
+
       - name: Build
+        env:
+          NPM_CONFIG_PROVENANCE: false
         run: |-
           cd server
           VERSION=`cat ../package.json| grep '"version":'`
