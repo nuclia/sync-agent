@@ -288,7 +288,13 @@ class SitefinityImpl implements IConnector {
     ]).pipe(map(([documents, images, videos]) => documents.concat(images).concat(videos)));
   }
 
-  private _getContents<T>(type: string, lastModified?: string, provider?: string): Observable<T[]> {
+  private _getContents<T>(
+    type: string,
+    lastModified?: string,
+    provider?: string,
+    nextUrl?: string,
+    values?: T[],
+  ): Observable<T[]> {
     let endpoint = `${this.params['url']}/api/default/${type}?sf_site=${this.params['siteId']}`;
     if (lastModified) {
       endpoint += `&$filter=LastModified gt ${lastModified}`;
@@ -297,12 +303,21 @@ class SitefinityImpl implements IConnector {
       endpoint += `&$sf_provider=${provider}`;
     }
     return from(
-      fetch(endpoint, {
+      fetch(nextUrl || endpoint, {
         headers: {
           'X-SF-Access-Key': this.params['apikey'],
         },
       }).then((res) => res.json()),
-    ).pipe(map((contents) => contents.value));
+    ).pipe(
+      switchMap((contents) => {
+        const allvalues = (values || []).concat(contents.value);
+        if (contents['@odata.nextLink']) {
+          return this._getContents(type, lastModified, provider, contents['@odata.nextLink'], allvalues);
+        } else {
+          return of(allvalues);
+        }
+      }),
+    );
   }
 
   private getType(entity: string): Observable<string> {

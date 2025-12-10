@@ -1,3 +1,7 @@
+# 1.9.3 (2025-12-10)
+
+- Support pagination when reading contents from Sitefinity
+
 # 1.9.2 (2025-12-03)
 
 - Support extra content types in Sitefinity connector
