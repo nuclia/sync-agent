@@ -177,7 +177,7 @@ export class NucliaCloud {
     mimeType: string,
     metadata?: any,
     linkExtraParams?: LinkExtraParams,
-  ): Observable<void> {
+  ): Observable<{ success: boolean; message: string }> {
     const slug = sha256(originalId);
     let payload: ICreateResource = {
       slug,
@@ -213,16 +213,18 @@ export class NucliaCloud {
               delete payload.title;
               return kb.getResourceBySlug(slug).pipe(
                 switchMap((resource) =>
-                  resource.modify({
-                    ...payload,
-                    usermetadata: data.preserveLabels
-                      ? this.mergeLabels(payload, resource)
-                      : { ...payload.usermetadata },
-                  }),
+                  resource
+                    .modify({
+                      ...payload,
+                      usermetadata: data.preserveLabels
+                        ? this.mergeLabels(payload, resource)
+                        : { ...payload.usermetadata },
+                    })
+                    .pipe(map(() => ({ success: true, message: '' }))),
                 ),
               );
             } else {
-              return kb.createOrUpdateResource(payload);
+              return kb.createOrUpdateResource(payload).pipe(map(() => ({ success: true, message: '' })));
             }
           }),
           retry(RETRY_CONFIG),
@@ -233,7 +235,6 @@ export class NucliaCloud {
           }),
         ),
       ),
-      map(() => undefined),
     );
   }
 
