@@ -31,6 +31,7 @@ export const SyncItemValidator = z.object({
   mimeType: z.string().optional(),
   parents: z.array(z.string()).optional(),
   deleted: z.boolean().optional(),
+  isExternal: z.boolean().optional(),
 });
 export type SyncItem = z.infer<typeof SyncItemValidator>;
 

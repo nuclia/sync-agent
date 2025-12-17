@@ -30,7 +30,7 @@ function downloadFileOrLink(
   if (!connector) {
     throw new Error('No connector found');
   } else {
-    if (connector?.isExternal) {
+    if (connector?.isExternal || item.isExternal) {
       return connector.getLink(item).pipe(map((link) => ({ type: ContentType.link, link })));
     } else {
       return connector.download(item).pipe(
@@ -158,14 +158,18 @@ export class SyncSingleFile implements SyncSingleFileUseCase {
                     metadata.origin.url = link.uri;
                     if (type.startsWith('text/html')) {
                       return this.extractWebContent(link, extraLinkParams).pipe(
-                        switchMap(({ html, title }) =>
-                          nucliaConnector.upload(item.originalId, title, {
-                            text: { body: html, format: 'HTML' },
-                            metadata,
-                            extract_strategy: sync.extract_strategy,
-                            preserveLabels: sync.preserveLabels,
-                          }),
-                        ),
+                        switchMap(({ html, title, error }) => {
+                          if (error) {
+                            return of({ success: false, message: error, action: 'update' });
+                          } else {
+                            return nucliaConnector.upload(item.originalId, title, {
+                              text: { body: html, format: 'HTML' },
+                              metadata,
+                              extract_strategy: sync.extract_strategy,
+                              preserveLabels: sync.preserveLabels,
+                            });
+                          }
+                        }),
                       );
                     } else {
                       const headers = (extraLinkParams.headers || []).reduce(
@@ -204,7 +208,7 @@ export class SyncSingleFile implements SyncSingleFileUseCase {
                     );
                   }
                 }),
-                map(() => ({ success: true, message: '', action: 'upload' })),
+                map((res) => ({ success: res.success, message: res.message, action: 'upload' })),
               );
             } else {
               return of({ success: false, message: '', action: 'upload' });
@@ -244,10 +248,18 @@ export class SyncSingleFile implements SyncSingleFileUseCase {
           xpathSelector: link.xpathSelector,
           ...extraLinkParams,
         }),
-      }),
-    ).pipe(
-      switchMap((response) => response.json()),
-      catchError((err) => of({ html: '', title: '', error: `${err}` })),
-    );
+      }).then(
+        (response) => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error('Something went wrong');
+          }
+        },
+        () => {
+          throw new Error('Something went wrong');
+        },
+      ),
+    ).pipe(catchError((err) => of({ html: '', title: '', error: `${err}` })));
   }
 }

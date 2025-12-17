@@ -1,3 +1,7 @@
+# 1.9.4 (2025-12-17)
+
+- Support web scraping for older versions of Sitefinity
+
 # 1.9.3 (2025-12-10)
 
 - Support pagination when reading contents from Sitefinity

@@ -6,14 +6,14 @@ interface SitefinityPage {
   Id: string;
   LastModified: string;
   Title: string;
-  RelativeUrlPath: string;
+  ViewUrl: string;
 }
 
 interface SitefinityContent {
   Id: string;
   LastModified: string;
   Title: string;
-  RelativeUrlPath: string;
+  ViewUrl: string;
   PublicationDate: string;
   DateCreated: string;
   IncludeInSitemap: boolean;
@@ -118,10 +118,11 @@ class SitefinityImpl implements IConnector {
                 uuid: content.Id,
                 originalId: content.Id,
                 mimeType: 'text/html',
+                isExternal: !!this.getParameters().webScraping,
                 metadata: {
                   type: 'PAGE',
-                  uri: siteUrl + content.RelativeUrlPath,
-                  path: content.RelativeUrlPath,
+                  uri: siteUrl + content.ViewUrl,
+                  path: content.ViewUrl,
                   lastModified: content.LastModified,
                 },
               } as SyncItem;
@@ -229,7 +230,7 @@ class SitefinityImpl implements IConnector {
                           'Id',
                           'LastModified',
                           'Title',
-                          'RelativeUrlPath',
+                          'ViewUrl',
                           'PublicationDate',
                           'DateCreated',
                           'IncludeInSitemap',
@@ -258,9 +259,12 @@ class SitefinityImpl implements IConnector {
     );
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getLink(resource: SyncItem): Observable<Link> {
-    throw new Error('Method "getLink" not implemented.');
+    return of({
+      uri: resource.metadata['uri'],
+      extra_headers: {},
+      cssSelector: this.getParameters().webScrapingCssSelector,
+    });
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
