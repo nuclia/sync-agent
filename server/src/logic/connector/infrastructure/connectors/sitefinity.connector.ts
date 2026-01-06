@@ -79,17 +79,20 @@ class SitefinityImpl implements IConnector {
     throw new Error('Method not implemented.');
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  private _getFiles(lastModified?: string): Observable<SearchResults> {
-    const siteUrl = this.params['url'];
-    const extraContentTypes = ((this.params['extraContentTypes'] as string) || '')
+  private getExtraContentTypes(): string[] {
+    return ((this.params['extraContentTypes'] as string) || '')
       .split(',')
       .map((v) => v.trim())
       .filter((v) => !!v);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private _getFiles(lastModified?: string): Observable<SearchResults> {
+    const siteUrl = this.params['url'];
     return forkJoin([
       this.params.extraContentTypesOnly ? of([]) : this._getContents<SitefinityPage>('pages', lastModified),
       this.params.extraContentTypesOnly ? of([]) : this._getMediaAndDocs(lastModified),
-      ...extraContentTypes.map((ct) => this._getContents<SitefinityPage>(ct, lastModified)),
+      ...this.getExtraContentTypes().map((ct) => this._getContents<SitefinityPage>(ct, lastModified)),
     ]).pipe(
       map(([pages, files, ...extra]) => {
         const extraContents: SyncItem[] = extra.reduce((all, curr) => {
@@ -274,7 +277,44 @@ class SitefinityImpl implements IConnector {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getLastModified(since: string, folders?: SyncItem[], existings?: string[]): Observable<SearchResults> {
-    return this._getFiles(since);
+    return this._getFiles(since).pipe(
+      switchMap((res) =>
+        this.getDeleted(existings).pipe(
+          map((deleted) => ({
+            ...res,
+            items: [
+              ...deleted.map((id) => ({ uuid: id, originalId: id, title: '', metadata: {}, deleted: true })),
+              ...res.items,
+            ],
+          })),
+        ),
+      ),
+    );
+  }
+
+  private getDeleted(existings?: string[]): Observable<string[]> {
+    if (!existings) {
+      return of([]);
+    } else {
+      return forkJoin([
+        this.params.extraContentTypesOnly
+          ? of([])
+          : this._getContents<SitefinityPage>('pages', undefined, undefined, undefined, undefined, 'Id'),
+        this.params.extraContentTypesOnly ? of([]) : this._getMediaAndDocs(),
+        ...this.getExtraContentTypes().map((ct) => this._getContents<SitefinityPage>(ct)),
+      ]).pipe(
+        map(([pages, files, ...extra]) => {
+          const existingOnSitefinity = [
+            ...pages.map((p) => p.Id),
+            ...files.map((p) => p.Id),
+            ...extra.reduce((all, curr) => {
+              return [...all, ...curr.map((p) => p.Id)];
+            }, [] as string[]),
+          ];
+          return existings.filter((id) => !existingOnSitefinity.includes(id));
+        }),
+      );
+    }
   }
 
   refreshAuthentication(): Observable<boolean> {
@@ -298,6 +338,7 @@ class SitefinityImpl implements IConnector {
     provider?: string,
     nextUrl?: string,
     values?: T[],
+    select?: string,
   ): Observable<T[]> {
     let endpoint = `${this.params['url']}/api/default/${type}?sf_site=${this.params['siteId']}`;
     if (lastModified) {
@@ -305,6 +346,9 @@ class SitefinityImpl implements IConnector {
     }
     if (provider) {
       endpoint += `&$sf_provider=${provider}`;
+    }
+    if (select) {
+      endpoint += `&$select=${select}`;
     }
     return from(
       fetch(nextUrl || endpoint, {
@@ -316,7 +360,7 @@ class SitefinityImpl implements IConnector {
       switchMap((contents) => {
         const allvalues = (values || []).concat(contents.value);
         if (contents['@odata.nextLink']) {
-          return this._getContents(type, lastModified, provider, contents['@odata.nextLink'], allvalues);
+          return this._getContents(type, lastModified, provider, contents['@odata.nextLink'], allvalues, select);
         } else {
           return of(allvalues);
         }
