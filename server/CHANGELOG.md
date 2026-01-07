@@ -1,3 +1,7 @@
+# 1.9.5 (2026-01-06)
+
+- Support content deletion in Sitefinity
+
 # 1.9.4 (2025-12-17)
 
 - Support web scraping for older versions of Sitefinity
