@@ -19,6 +19,7 @@ import {
 } from '@nuclia/core';
 import { Link } from '../../connector/domain/connector';
 import { LinkExtraParams } from './sync.entity';
+import { Readable } from 'node:stream';
 
 function sha256(message: string): string {
   return createHash('sha256').update(message).digest('hex');
@@ -103,31 +104,33 @@ export class NucliaCloud {
           }
           if (buffer) {
             try {
-              return resource
-                .upload('file', buffer, false, {
-                  contentType: data.mimeType || lookup(filename) || 'application/octet-stream',
-                  filename,
-                  processing: data.extract_strategy,
-                })
-                .pipe(
-                  catchError((error: any) => {
-                    console.error(`Problem uploading ${filename} to ${slug}, error: ${JSON.stringify(error)}`);
-                    return of({ success: false, message: error.body?.detail || JSON.stringify(error) });
+              return this.getMD5(buffer).pipe(
+                switchMap((md5) =>
+                  resource.upload('file', buffer, false, {
+                    contentType: data.mimeType || lookup(filename) || 'application/octet-stream',
+                    filename,
+                    processing: data.extract_strategy,
+                    md5,
                   }),
-                  switchMap((res) => {
-                    if (res && (res as UploadResponse).completed) {
-                      return of({ success: true });
-                    } else {
-                      return this.deleteResource(slug, resource).pipe(
-                        map(() =>
-                          (res as any).success === false
-                            ? (res as { success: boolean; message: string })
-                            : { success: false, message: 'Upload failed' },
-                        ),
-                      );
-                    }
-                  }),
-                );
+                ),
+                catchError((error: any) => {
+                  console.error(`Problem uploading ${filename} to ${slug}, error: ${JSON.stringify(error)}`);
+                  return of({ success: false, message: error.body?.detail || JSON.stringify(error) });
+                }),
+                switchMap((res) => {
+                  if (res && (res as UploadResponse).completed) {
+                    return of({ success: true });
+                  } else {
+                    return this.deleteResource(slug, resource).pipe(
+                      map(() =>
+                        (res as any).success === false
+                          ? (res as { success: boolean; message: string })
+                          : { success: false, message: 'Upload failed' },
+                      ),
+                    );
+                  }
+                }),
+              );
             } catch (error) {
               console.error(`Error uploading ${filename} to ${slug}, status ${error}`);
               return this.deleteResource(slug, resource).pipe(map(() => ({ success: false })));
@@ -296,5 +299,24 @@ export class NucliaCloud {
       resource.origin = { ...resource.origin, url: metadata.uri };
     }
     return resource;
+  }
+
+  private getMD5(buffer: ArrayBuffer): Observable<string> {
+    return new Observable((observer) => {
+      const output = createHash('md5');
+      const readable = new Readable();
+      readable._read = () => {}; // _read is required but you can noop it
+      readable.push(Buffer.from(buffer));
+      readable.push(null);
+      readable.on('error', (err) => {
+        console.error(err);
+        observer.error(err);
+      });
+      output.once('readable', () => {
+        observer.next(output.read().toString('hex'));
+        observer.complete();
+      });
+      readable.pipe(output);
+    });
   }
 }

@@ -1,3 +1,7 @@
+# 1.9.6 (2026-01-21)
+
+- Set MD5 when uploading a file
+
 # 1.9.5 (2026-01-06)
 
 - Support content deletion in Sitefinity
