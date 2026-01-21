@@ -19,7 +19,6 @@ import {
 } from '@nuclia/core';
 import { Link } from '../../connector/domain/connector';
 import { LinkExtraParams } from './sync.entity';
-import { createReadStream } from 'node:fs';
 import { Readable } from 'node:stream';
 
 function sha256(message: string): string {
