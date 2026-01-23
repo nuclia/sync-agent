@@ -1,3 +1,7 @@
+# 1.9.7 (2026-01-23)
+
+- Use md5 to compute slugs (and not sha256), so it is consistent with the dashboard.
+
 # 1.9.6 (2026-01-21)
 
 - Set MD5 when uploading a file
