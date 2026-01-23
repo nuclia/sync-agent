@@ -21,8 +21,8 @@ import { Link } from '../../connector/domain/connector';
 import { LinkExtraParams } from './sync.entity';
 import { Readable } from 'node:stream';
 
-function sha256(message: string): string {
-  return createHash('sha256').update(message).digest('hex');
+function generateSlug(message: string): string {
+  return createHash('md5').update(message).digest('hex');
 }
 
 const retryDelays = [1000, 5000, 20000];
@@ -64,7 +64,7 @@ export class NucliaCloud {
       preserveLabels?: boolean;
     },
   ): Observable<{ success: boolean; message?: string }> {
-    const slug = sha256(originalId);
+    const slug = generateSlug(originalId);
     const text = data.text;
     const buffer = data.buffer;
     const resourceData: Partial<ICreateResource> = { title: filename, ...this.setMetadata(data, data.metadata) };
@@ -181,7 +181,7 @@ export class NucliaCloud {
     metadata?: any,
     linkExtraParams?: LinkExtraParams,
   ): Observable<{ success: boolean; message: string }> {
-    const slug = sha256(originalId);
+    const slug = generateSlug(data.uri);
     let payload: ICreateResource = {
       slug,
       origin: { url: data.uri },
@@ -242,7 +242,7 @@ export class NucliaCloud {
   }
 
   delete(originalId: string): Observable<void> {
-    const slug = sha256(originalId);
+    const slug = generateSlug(originalId);
     return this.getKb().pipe(switchMap((kb) => kb.getResourceFromData({ id: '', slug }).delete()));
   }
 
