@@ -1,4 +1,4 @@
-import { catchError, forkJoin, from, map, Observable, of, switchMap, tap } from 'rxjs';
+import { catchError, forkJoin, from, map, Observable, of, switchMap } from 'rxjs';
 import { ConnectorParameters, FileStatus, IConnector, Link, SearchResults, SyncItem } from '../../domain/connector';
 import { SourceConnectorDefinition } from '../factory';
 
