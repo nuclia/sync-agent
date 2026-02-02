@@ -1,17 +1,18 @@
-import { catchError, forkJoin, from, map, Observable, of, switchMap } from 'rxjs';
+import { catchError, forkJoin, from, map, Observable, of, switchMap, tap } from 'rxjs';
 import { ConnectorParameters, FileStatus, IConnector, Link, SearchResults, SyncItem } from '../../domain/connector';
 import { SourceConnectorDefinition } from '../factory';
 
-interface SitefinityPage {
+interface SitefinityBase {
   Id: string;
   LastModified: string;
+}
+
+interface SitefinityPage extends SitefinityBase {
   Title: string;
   ViewUrl: string;
 }
 
-interface SitefinityContent {
-  Id: string;
-  LastModified: string;
+interface SitefinityContent extends SitefinityBase {
   Title: string;
   ViewUrl: string;
   PublicationDate: string;
@@ -87,12 +88,12 @@ class SitefinityImpl implements IConnector {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  private _getFiles(lastModified?: string): Observable<SearchResults> {
+  private _getFiles(): Observable<SearchResults> {
     const siteUrl = this.params['url'];
     return forkJoin([
-      this.params.extraContentTypesOnly ? of([]) : this._getContents<SitefinityPage>('pages', lastModified),
-      this.params.extraContentTypesOnly ? of([]) : this._getMediaAndDocs(lastModified),
-      ...this.getExtraContentTypes().map((ct) => this._getContents<SitefinityPage>(ct, lastModified)),
+      this.params.extraContentTypesOnly ? of([]) : this._getContents<SitefinityPage>('pages'),
+      this.params.extraContentTypesOnly ? of([]) : this._getMediaAndDocs(),
+      ...this.getExtraContentTypes().map((ct) => this._getContents<SitefinityPage>(ct)),
     ]).pipe(
       map(([pages, files, ...extra]) => {
         const extraContents: SyncItem[] = extra.reduce((all, curr) => {
@@ -226,7 +227,7 @@ class SitefinityImpl implements IConnector {
                   if (!typeId) {
                     return of('');
                   }
-                  return this._getContents<SitefinityContent>(typeId, undefined, provider).pipe(
+                  return this._getContents<SitefinityContent>(typeId, provider).pipe(
                     map((subContents) =>
                       subContents.map((subContent) => {
                         [
@@ -277,44 +278,20 @@ class SitefinityImpl implements IConnector {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getLastModified(since: string, folders?: SyncItem[], existings?: string[]): Observable<SearchResults> {
-    return this._getFiles(since).pipe(
-      switchMap((res) =>
-        this.getDeleted(existings).pipe(
-          map((deleted) => ({
-            ...res,
-            items: [
-              ...deleted.map((id) => ({ uuid: id, originalId: id, title: '', metadata: {}, deleted: true })),
-              ...res.items,
-            ],
-          })),
-        ),
-      ),
+    return this._getFiles().pipe(
+      map((res) => {
+        const existingOnSitefinity = res.items.map((r) => r.originalId);
+        const deleted = (existings || []).filter((id) => !existingOnSitefinity.includes(id));
+        const items = res.items.filter((r) => r.metadata.lastModified >= since);
+        return {
+          ...res,
+          items: [
+            ...deleted.map((id) => ({ uuid: id, originalId: id, title: '', metadata: {}, deleted: true })),
+            ...items,
+          ],
+        };
+      }),
     );
-  }
-
-  private getDeleted(existings?: string[]): Observable<string[]> {
-    if (!existings) {
-      return of([]);
-    } else {
-      return forkJoin([
-        this.params.extraContentTypesOnly
-          ? of([])
-          : this._getContents<SitefinityPage>('pages', undefined, undefined, undefined, undefined, 'Id'),
-        this.params.extraContentTypesOnly ? of([]) : this._getMediaAndDocs(),
-        ...this.getExtraContentTypes().map((ct) => this._getContents<SitefinityPage>(ct)),
-      ]).pipe(
-        map(([pages, files, ...extra]) => {
-          const existingOnSitefinity = [
-            ...pages.map((p) => p.Id),
-            ...files.map((p) => p.Id),
-            ...extra.reduce((all, curr) => {
-              return [...all, ...curr.map((p) => p.Id)];
-            }, [] as string[]),
-          ];
-          return existings.filter((id) => !existingOnSitefinity.includes(id));
-        }),
-      );
-    }
   }
 
   refreshAuthentication(): Observable<boolean> {
@@ -324,26 +301,22 @@ class SitefinityImpl implements IConnector {
     return of(true);
   }
 
-  private _getMediaAndDocs(lastModified?: string): Observable<SitefinityFile[]> {
+  private _getMediaAndDocs(): Observable<SitefinityFile[]> {
     return forkJoin([
-      this._getContents<SitefinityFile>('documents', lastModified),
-      this._getContents<SitefinityFile>('images', lastModified),
-      this._getContents<SitefinityFile>('videos', lastModified),
+      this._getContents<SitefinityFile>('documents'),
+      this._getContents<SitefinityFile>('images'),
+      this._getContents<SitefinityFile>('videos'),
     ]).pipe(map(([documents, images, videos]) => documents.concat(images).concat(videos)));
   }
 
   private _getContents<T>(
     type: string,
-    lastModified?: string,
     provider?: string,
     nextUrl?: string,
     values?: T[],
     select?: string,
   ): Observable<T[]> {
     let endpoint = `${this.params['url']}/api/default/${type}?sf_site=${this.params['siteId']}`;
-    if (lastModified) {
-      endpoint += `&$filter=LastModified gt ${lastModified}`;
-    }
     if (provider) {
       endpoint += `&$sf_provider=${provider}`;
     }
@@ -360,7 +333,7 @@ class SitefinityImpl implements IConnector {
       switchMap((contents) => {
         const allvalues = (values || []).concat(contents.value);
         if (contents['@odata.nextLink']) {
-          return this._getContents(type, lastModified, provider, contents['@odata.nextLink'], allvalues, select);
+          return this._getContents(type, provider, contents['@odata.nextLink'], allvalues, select);
         } else {
           return of(allvalues);
         }
