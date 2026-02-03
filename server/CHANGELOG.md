@@ -1,3 +1,7 @@
+# 1.9.8 (2026-02-02)
+
+- Fix lastModified on SiteFinity connector
+
 # 1.9.7 (2026-01-23)
 
 - Use md5 to compute slugs (and not sha256), so it is consistent with the dashboard.
