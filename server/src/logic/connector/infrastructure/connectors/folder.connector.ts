@@ -1,5 +1,6 @@
 import { Blob as FSBlob } from 'buffer';
 import * as fs from 'fs';
+import os from 'os';
 import path from 'path';
 import { forkJoin, from, map, Observable, of, switchMap, tap } from 'rxjs';
 import { ConnectorParameters, FileStatus, IConnector, Link, SearchResults, SyncItem } from '../../domain/connector';
@@ -154,11 +155,19 @@ class FolderImpl implements IConnector {
       originalId: file,
       mimeType: lookup(file) || 'application/octet-stream',
       metadata: {
-        path: file,
+        path: this.processPath(file),
       },
       status: FileStatus.PENDING,
       uid: '',
     }));
+  }
+
+  private processPath(path: string) {
+    if (os.platform() === 'win32') {
+      // Replace back slashes with forward slashes so that uploaded resources can be filtered by path
+      return path.replace(/\\/g, '/');
+    }
+    return path;
   }
 
   download(resource: SyncItem): Observable<Blob | undefined> {

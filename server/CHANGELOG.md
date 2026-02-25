@@ -1,3 +1,7 @@
+# 1.9.9 (2026-02-25)
+
+- Fix resource origin path on Windows for Folder connector
+
 # 1.9.8 (2026-02-02)
 
 - Fix lastModified on SiteFinity connector
