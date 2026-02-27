@@ -159,7 +159,7 @@ export class SharepointImpl extends OAuthBaseConnector implements IConnector {
           } else {
             const nextPage =
               res['@odata.nextLink'] && res['@odata.nextLink'].includes('&$skiptoken=')
-                ? res?.['@odata.nextLink'].split('&$skiptoken=')[1].split('&')[0]
+                ? res['@odata.nextLink'].split('&$skiptoken=')[1].split('&')[0]
                 : undefined;
             const items = (res.value || [])
               // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -67,12 +67,12 @@ export class ConfluenceImpl implements IConnector {
       });
     } else {
       const newFiles = forkJoin(
-        (folders || []).map((folder) => this._getFiles('', false, folder.originalId, since)),
+        (folders).map((folder) => this._getFiles('', false, folder.originalId, since)),
       ).pipe(
         map((results) => ({ items: results.reduce((acc, result) => acc.concat(result.items), [] as SyncItem[]) })),
       );
       const deletedFiles = forkJoin(
-        (folders || []).map((folder) => this._getFiles('', false, folder.originalId, since, true)),
+        (folders).map((folder) => this._getFiles('', false, folder.originalId, since, true)),
       ).pipe(
         map((results) => ({ items: results.reduce((acc, result) => acc.concat(result.items), [] as SyncItem[]) })),
       );
