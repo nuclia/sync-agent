@@ -58,7 +58,7 @@ export class NucliaCloud {
     data: {
       buffer?: ArrayBuffer;
       text?: TextField;
-      metadata?: any;
+      metadata?: { [key: string]: any };
       mimeType?: string;
       extract_strategy?: string;
       preserveLabels?: boolean;
@@ -178,7 +178,7 @@ export class NucliaCloud {
     filename: string,
     data: Link,
     mimeType: string,
-    metadata?: any,
+    metadata?: { [key: string]: any },
     linkExtraParams?: LinkExtraParams,
   ): Observable<{ success: boolean; message: string }> {
     const slug = generateSlug(data.uri);
@@ -275,11 +275,11 @@ export class NucliaCloud {
     };
   }
 
-  private setMetadata(resource: Partial<ICreateResource>, metadata: any): Partial<ICreateResource> {
-    if (metadata.labels) {
+  private setMetadata(resource: Partial<ICreateResource>, metadata?: { [key: string]: any }): Partial<ICreateResource> {
+    if (metadata?.labels) {
       resource.usermetadata = { classifications: metadata?.labels };
     }
-    if (metadata.path) {
+    if (metadata?.path) {
       let path = metadata.path;
       if (path && !path.startsWith('/')) {
         path = `/${path}`;

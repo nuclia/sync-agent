@@ -110,8 +110,8 @@ export class OneDriveImpl extends OAuthBaseConnector implements IConnector {
     );
   }
 
-  private _getItems(query = '', folder = '', foldersOnly = false, previous?: SearchResults): Observable<SearchResults> {
-    return this._getOneDriveItems(query, folder, foldersOnly, undefined, previous).pipe(
+  private _getItems(query = '', folder = '', foldersOnly = false): Observable<SearchResults> {
+    return this._getOneDriveItems(query, folder, foldersOnly).pipe(
       map((res) => {
         const items = (res.value || [])
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -170,7 +170,7 @@ export class OneDriveImpl extends OAuthBaseConnector implements IConnector {
               : undefined;
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const folders: string[] = (res.value || []).filter((item: any) => !!item.folder).map((item: any) => item.id);
-          const results = { ...res, value: [...(previous?.value || []), ...(res?.value || [])] };
+          const results = { ...res, value: [...(previous?.value || []), ...(res.value || [])] };
           const currentFolderResults = nextPage
             ? this._getOneDriveItems(query, folder, foldersOnly, nextPage, results)
             : of(results);
