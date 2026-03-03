@@ -166,7 +166,7 @@ export class OneDriveImpl extends OAuthBaseConnector implements IConnector {
         } else {
           const nextPage =
             res['@odata.nextLink'] && res['@odata.nextLink'].includes('&$skiptoken=')
-              ? res?.['@odata.nextLink'].split('&$skiptoken=')[1].split('&')[0]
+              ? res['@odata.nextLink'].split('&$skiptoken=')[1].split('&')[0]
               : undefined;
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const folders: string[] = (res.value || []).filter((item: any) => !!item.folder).map((item: any) => item.id);
