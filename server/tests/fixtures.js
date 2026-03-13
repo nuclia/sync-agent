@@ -1,24 +1,33 @@
 import request from 'supertest';
 import { expect, test } from 'vitest';
-import { deleteDirectory } from '../src/fileSystemFn';
+import { deleteDirectory, pathExists } from '../src/fileSystemFn';
 import { beforeStartServer } from '../src/fileSystemServerFn';
 import { AppFileSystemRoutes } from '../src/presentation/routes';
 import { Server } from '../src/server';
 import { initFileSystemSubscribers } from '../src/subscribers';
 
+function getUniquePath(prefix) {
+  return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+}
+
 export const serverTest = test.extend({
   // eslint-disable-next-line no-empty-pattern
   server: async ({}, use) => {
-    const appRoutes = new AppFileSystemRoutes('.nuclia');
-    const testServer = new Server({ port: 8000, routes: appRoutes.getRoutes() });
-    initFileSystemSubscribers('.nuclia');
-    await beforeStartServer('.nuclia');
+    const basePath = getUniquePath('.nuclia');
+    const appRoutes = new AppFileSystemRoutes(basePath);
+    const testServer = new Server({ port: 0, routes: appRoutes.getRoutes() });
+    initFileSystemSubscribers(basePath);
+    await beforeStartServer(basePath);
     await testServer.start();
 
-    await use(testServer);
-
-    await deleteDirectory('.nuclia');
-    await testServer.close();
+    try {
+      await use(testServer);
+    } finally {
+      await testServer.close();
+      if (await pathExists(basePath)) {
+        await deleteDirectory(basePath);
+      }
+    }
   },
   serverWithSync: async ({ server }, use) => {
     let response = await request(server.app)
@@ -85,11 +94,18 @@ export const serverTest = test.extend({
 export const serverTestWithoutFolder = test.extend({
   // eslint-disable-next-line no-empty-pattern
   server: async ({}, use) => {
-    const appRoutes = new AppFileSystemRoutes('.nuclia_not');
-    const testServer = new Server({ port: 8002, routes: appRoutes.getRoutes() });
-    initFileSystemSubscribers('.nuclia_not');
+    const basePath = getUniquePath('.nuclia_not');
+    const appRoutes = new AppFileSystemRoutes(basePath);
+    const testServer = new Server({ port: 0, routes: appRoutes.getRoutes() });
+    initFileSystemSubscribers(basePath);
     await testServer.start();
-    await use(testServer);
-    await testServer.close();
+    try {
+      await use(testServer);
+    } finally {
+      await testServer.close();
+      if (await pathExists(basePath)) {
+        await deleteDirectory(basePath);
+      }
+    }
   },
 });

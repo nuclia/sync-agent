@@ -18,7 +18,7 @@ export class FileSystemLogDatasource implements ILogDatasource {
   }
 
   private createLogsFiles = async () => {
-    if (await pathExists(this.basePath)) {
+    if (!(await pathExists(this.basePath))) {
       await createDirectory(this.basePath);
     }
 
@@ -45,6 +45,10 @@ export class FileSystemLogDatasource implements ILogDatasource {
   };
 
   async getLogs(sync?: string, since?: string): Promise<LogEntity[]> {
+    if (!(await pathExists(this.basePath))) {
+      return [];
+    }
+
     const files = await findFilesInDirectory(this.basePath, ['log']);
     const result = [];
     for (const file of files) {
@@ -59,6 +63,10 @@ export class FileSystemLogDatasource implements ILogDatasource {
   }
 
   async deleteLogs(): Promise<void> {
+    if (!(await pathExists(this.basePath))) {
+      return;
+    }
+
     const files = await findFilesInDirectory(this.basePath, ['log']);
     for (const file of files) {
       await deleteFile(file);
