@@ -17,7 +17,7 @@
   "scripts": {
     "compile": "tsc",
     "lint": "eslint .",
-    "test": "vitest run --threads=false",
+    "test": "vitest run",
     "test:watch": "vitest",
     "format:check": "prettier . --check",
     "format": "prettier . --write",
