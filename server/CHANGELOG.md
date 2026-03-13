@@ -1,3 +1,7 @@
+# 1.9.10 (2026-03-13)
+
+- Upgrade Nuclia SDK to 1.32.0
+
 # 1.9.9 (2026-02-25)
 
 - Fix resource origin path on Windows for Folder connector

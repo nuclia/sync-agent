@@ -22,7 +22,7 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@nuclia/core": "^1.31.1",
+    "@nuclia/core": "^1.32.0",
     "@types/node": "^22.18.10",
     "cheerio": "^1.0.0-rc.12",
     "commander": "^11.1.0",
@@ -30,7 +30,7 @@
     "cors": "^2.8.5",
     "electron-squirrel-startup": "^1.0.0",
     "express": "^4.22.1",
-    "kill-port-process": "^3.2.1",
+    "kill-port-process": "^4.0.2",
     "localstorage-polyfill": "^1.0.1",
     "mime-types": "^2.1.35",
     "rxjs": "^7.8.1",
@@ -42,7 +42,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@electron-forge/cli": "^7.11.1",
+    "@electron-forge/cli": "^7.6.1",
     "@electron-forge/maker-deb": "^7.11.1",
     "@electron-forge/maker-dmg": "^7.11.1",
     "@electron-forge/maker-rpm": "^7.11.1",

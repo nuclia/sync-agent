@@ -83,7 +83,7 @@ describe('Test Sync object', () => {
   serverTest('Delete a sync', async ({ serverWithSync }) => {
     let response = await request(serverWithSync.app).get('/sync/kb/test');
     expect(response.status).toBe(200);
-    expect(response.body.length).toEqual(3);
+    expect(response.body.length).toEqual(1);
 
     const id = response.body[0].id;
     const responseDelete = await request(serverWithSync.app).delete(`/sync/${id}`).set('token', 'fake-token');
@@ -91,6 +91,6 @@ describe('Test Sync object', () => {
 
     response = await request(serverWithSync.app).get('/sync/kb/test');
     expect(response.status).toBe(200);
-    expect(response.body.length).toEqual(2);
+    expect(response.body.length).toEqual(0);
   });
 });

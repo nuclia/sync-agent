@@ -17,7 +17,7 @@
   "scripts": {
     "compile": "tsc",
     "lint": "eslint .",
-    "test": "vitest run --threads=false",
+    "test": "vitest run",
     "test:watch": "vitest",
     "format:check": "prettier . --check",
     "format": "prettier . --write",
@@ -25,7 +25,7 @@
     "start-server": "npm run compile && node build/start-file-system-server.js"
   },
   "dependencies": {
-    "@nuclia/core": "^1.31.1",
+    "@nuclia/core": "^1.32.0",
     "@types/node": "^22.18.10",
     "cheerio": "^1.0.0-rc.12",
     "commander": "^11.1.0",
@@ -52,7 +52,7 @@
     "prettier": "3.1.0",
     "supertest": "^7.0.0",
     "vite-tsconfig-paths": "^4.2.1",
-    "vitest": "^0.34.6"
+    "vitest": "^4.1.0"
   },
   "engines": {
     "node": ">=20.0.0"
