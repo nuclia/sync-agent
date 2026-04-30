@@ -1,7 +1,7 @@
 {
   "name": "nuclia-sync-agent-app",
-  "version": "1.9.10",
-  "description": "This is a Nuclia Sync Agent App",
+  "version": "1.9.11",
+  "description": "This is a Progress Agentic RAG Sync Agent app",
   "main": "build/index.js",
   "scripts": {
     "copy-server-to-electron": "rm -rf electron-app/src/sync-agent && cp -r server/src electron-app/src/sync-agent",
@@ -14,6 +14,6 @@
     "electron",
     "node"
   ],
-  "author": "Nuclia",
+  "author": "Progress",
   "license": "Apache-2.0"
 }

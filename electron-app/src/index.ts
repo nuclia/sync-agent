@@ -78,11 +78,12 @@ const createWindow = async () => {
       click: () => dialog.showMessageBoxSync({ message: `Version: ${VERSION}` }),
     },
   ]);
-  tray.setToolTip('Nuclia sync');
+  tray.setToolTip('Progress Agentic RAG sync');
   tray.setContextMenu(contextMenu);
   server.start();
   dialog.showMessageBoxSync({
-    message: 'The Nuclia Sync Agent is running. You can manage your syncs from the online Nuclia Dashboard.',
+    message:
+      'The Progress Agentic RAG Sync Agent is running. You can manage your syncs from the online Progress Agentic RAG Dashboard.',
   });
 };
 

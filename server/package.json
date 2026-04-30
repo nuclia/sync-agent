@@ -8,7 +8,7 @@
     "/build"
   ],
   "keywords": [
-    "Nuclia"
+    "Nuclia", "Progress Agentic RAG"
   ],
   "license": "Apache-2.0",
   "bin": {
