@@ -38,7 +38,7 @@ export class SyncFileSystemRoutes {
 
     router.use('/', async (_req, res, next) => {
       if (!(await pathExists(`${this.basePath}/sync.json`))) {
-        res.status(404).send({ message: 'Nuclia folder not found' });
+        res.status(404).send({ message: 'Progress Agentic RAG folder not found' });
         return;
       }
       next();

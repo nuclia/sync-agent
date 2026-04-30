@@ -222,7 +222,7 @@ export class SyncEntity {
       );
       return req;
     } catch (err) {
-      return new CustomError('Error checking Nuclia auth', 500);
+      return new CustomError('Error checking Progress Agentic RAG auth', 500);
     }
   }
 }

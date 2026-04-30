@@ -2,14 +2,14 @@ module.exports = {
   packagerConfig: {
     asar: true,
     icon: 'public/logo.*',
-    name: 'Nuclia sync',
-    executableName: 'nuclia-sync-agent',
+    name: 'Progress Agentic RAG sync agent',
+    executableName: 'progress-sync-agent',
     osxSign: {
       entitlements: 'entitlements.plist',
       'entitlements-inherit': 'entitlements.plist',
       'gatekeeper-assess': false,
       hardenedRuntime: true,
-      identity: 'Developer ID Application: BOSUTECH XXI SL (DF2C2RHNCR)',
+      identity: 'Developer ID Application: Progress Software Corporation (42TZTUWV4Z)',
     },
     osxNotarize: {
       tool: 'notarytool',
@@ -25,7 +25,7 @@ module.exports = {
       config: {
         // An URL to an ICO file to use as the application icon (displayed in Control Panel > Programs and Features).
         iconUrl: 'https://storage.googleapis.com/iskra/logo.ico',
-        setupExe: 'Nuclia-Sync-Setup.exe',
+        setupExe: 'Progress-Sync-Setup.exe',
       },
     },
     {
@@ -37,7 +37,7 @@ module.exports = {
       config: {
         options: {
           icon: 'public/logo.png',
-          productName: 'Nuclia sync agent',
+          productName: 'Progress sync agent',
         },
       },
     },

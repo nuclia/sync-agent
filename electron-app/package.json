@@ -2,7 +2,7 @@
   "name": "nuclia-sync-agent",
   "productName": "nuclia-sync-agent",
   "version": "0.0.0",
-  "description": "This is a Nuclia Sync Agent App",
+  "description": "This is a Progress Agentic RAG Sync Agent App",
   "main": "build/index.js",
   "scripts": {
     "compile": "tsc",
@@ -17,8 +17,8 @@
   },
   "keywords": [],
   "author": {
-    "name": "Nuclia",
-    "email": "support@nuclia.com"
+    "name": "Progress",
+    "email": "Sales.AgenticRAG@progress.com"
   },
   "license": "Apache-2.0",
   "dependencies": {
