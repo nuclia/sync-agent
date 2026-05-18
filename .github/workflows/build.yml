@@ -8,10 +8,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@master
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
           node-version: 22
 
@@ -45,7 +45,7 @@ jobs:
         run: node utils/get-version.js >> $GITHUB_ENV
 
       - name: Tag if new version
-        uses: pkgdeps/git-tag-action@v2.0.5
+        uses: pkgdeps/git-tag-action@291b77f84cdb3f0a3e5491879cfdcd172d5777e0 # v2.0.5
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           github_repo: ${{ github.repository }}
@@ -62,11 +62,11 @@ jobs:
       release-tag: ${{ steps.release.outputs.release_tag }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
       - name: Release
-        uses: justincy/github-action-npm-release@2.0.2
+        uses: justincy/github-action-npm-release@f6afd60cbb595a76ecae037ad006671636d321f5 # 2.0.2
         id: release
 
   build_macos_linux:
@@ -78,14 +78,14 @@ jobs:
         os: [macos-latest, ubuntu-latest]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         if: startsWith(matrix.os, 'macos')
         with:
           python-version: '3.11'
-      - uses: actions/setup-node@master
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
           node-version: 22
 
@@ -129,7 +129,7 @@ jobs:
         run: npm run make
 
       - name: Release MacOSX installer
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v0.1.15
         if: startsWith(matrix.os, 'macos')
         with:
           tag_name: ${{ needs.pre-release.outputs.release-tag }}
@@ -137,7 +137,7 @@ jobs:
             electron-app/out/make/*.dmg
 
       - name: Release Linux installer
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v0.1.15
         if: startsWith(matrix.os, 'ubuntu')
         with:
           tag_name: ${{ needs.pre-release.outputs.release-tag }}
@@ -151,14 +151,14 @@ jobs:
     steps:
       - name: Generate a token
         id: app-token
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547 # v1.12.0
         with:
           app-id: ${{ secrets.GHAPP_ID_NUCLIABOT }}
           private-key: ${{ secrets.PK_GHAPP_NUCLIABOT_ORG }}
           owner: nuclia
 
       - name: Trigger Windows Release
-        uses: the-actions-org/workflow-dispatch@v4
+        uses: the-actions-org/workflow-dispatch@3133c5d135c7dbe4be4f9793872b6ef331b53bc7 # v4.0.0
         id: invoke-windows-release
         with:
           workflow: 'Sync Agent Windows Release'
