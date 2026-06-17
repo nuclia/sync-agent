@@ -8,7 +8,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 0
       - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
@@ -51,18 +51,18 @@ jobs:
           github_repo: ${{ github.repository }}
           version: ${{ env.PACKAGE_VERSION }}
           git_commit_sha: ${{ github.sha }}
-          git_tag_prefix: 'v'
+          git_tag_prefix: "v"
 
   pre-release:
-    name: 'Pre Release'
+    name: "Pre Release"
     needs: build
-    runs-on: 'ubuntu-latest'
+    runs-on: "ubuntu-latest"
     outputs:
       release-desktop: ${{ steps.release.outputs.released }}
       release-tag: ${{ steps.release.outputs.release_tag }}
 
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 0
       - name: Release
@@ -78,13 +78,13 @@ jobs:
         os: [macos-latest, ubuntu-latest]
 
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 0
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         if: startsWith(matrix.os, 'macos')
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
           node-version: 22
@@ -122,7 +122,7 @@ jobs:
       - name: make
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          APPLE_API_KEY: '~/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8'
+          APPLE_API_KEY: "~/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
           APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
           APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
           CI: false
@@ -161,7 +161,7 @@ jobs:
         uses: the-actions-org/workflow-dispatch@3133c5d135c7dbe4be4f9793872b6ef331b53bc7 # v4.0.0
         id: invoke-windows-release
         with:
-          workflow: 'Sync Agent Windows Release'
+          workflow: "Sync Agent Windows Release"
           repo: nuclia/core-apps
           ref: main
           token: ${{ steps.app-token.outputs.token }}
