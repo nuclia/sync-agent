@@ -130,7 +130,6 @@ jobs:
           APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
           CI: false
         run: npm run make
-        working-directory: electron-app
 
       - name: Release MacOSX installer
         uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v0.1.15
