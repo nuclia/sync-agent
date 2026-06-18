@@ -1,6 +1,6 @@
 {
-  "name": "nuclia-sync-agent",
-  "productName": "nuclia-sync-agent",
+  "name": "progress-sync-agent",
+  "productName": "progress-sync-agent",
   "version": "0.0.0",
   "description": "This is a Progress Agentic RAG Sync Agent App",
   "main": "build/index.js",
