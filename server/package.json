@@ -36,7 +36,7 @@
     "mime-types": "^2.1.35",
     "rxjs": "^7.8.1",
     "typescript": "^5.9.3",
-    "uuid": "^9.0.1",
+    "uuid": "^14.0.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
