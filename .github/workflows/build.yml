@@ -122,6 +122,10 @@ jobs:
         run: |-
           mkdir -p ~/private_keys/
           echo '${{ secrets.APPLE_API_SECRET_BASE_64 }}' | base64 --decode > ~/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8
+      - name: Verify notarization key
+        if: startsWith(matrix.os, 'macos')
+        run: ls -la /Users/runner/private_keys/ 
+
       - name: make
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
