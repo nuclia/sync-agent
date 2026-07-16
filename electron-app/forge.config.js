@@ -43,7 +43,9 @@ module.exports = {
     },
     {
       name: '@electron-forge/maker-dmg',
-      config: {},
+      config: {
+        name: 'Progress Sync Agent',
+      },
     },
     {
       name: '@electron-forge/maker-rpm',
