@@ -215,7 +215,7 @@ export class SyncEntity {
       const nuclia = new Nuclia({ ...this.kb, apiKey: '' });
       nuclia.auth.authenticate({ access_token: token, refresh_token: '' });
       const req = await firstValueFrom(
-        nuclia.rest.checkAuthorization(`/kb/${this.kb.knowledgeBox}/configure`).pipe(
+        nuclia.rest.checkAuthorization(`/api/authorizer/authorize/api/v1/kb/${this.kb.knowledgeBox}`).pipe(
           map((check) => check.allowed),
           catchError(() => of(false)),
         ),
