@@ -1,3 +1,12 @@
+# 1.9.14 (2026-07-31)
+
+- Fix authentication endpoint
+- Do not crash when log file is corrupted
+
+# from 1.9.11 to 1.9.13
+
+(Changing the publication and certification pipeline.)
+
 # 1.9.10 (2026-03-13)
 
 - Upgrade Nuclia SDK to 1.32.0

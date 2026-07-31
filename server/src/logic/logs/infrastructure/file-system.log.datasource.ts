@@ -39,9 +39,13 @@ export class FileSystemLogDatasource implements ILogDatasource {
   private getLogsFromFile = async (path: string): Promise<LogEntity[]> => {
     const content = await readFile(path);
     if (content === '') return [];
-
-    const logs = content.split('\n').filter(Boolean).map(LogEntity.fromJson);
-    return logs;
+    try {
+      const logs = content.split('\n').filter(Boolean).map(LogEntity.fromJson);
+      return logs;
+    } catch (error) {
+      console.error(`Could not parse ${path}`);
+      return [];
+    }
   };
 
   async getLogs(sync?: string, since?: string): Promise<LogEntity[]> {
