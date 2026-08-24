@@ -1,3 +1,7 @@
+# 1.9.15 (2026-08-24)
+
+- Fix call to checkAuthorization
+
 # 1.9.14 (2026-07-31)
 
 - Fix authentication endpoint
