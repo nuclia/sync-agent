@@ -1,6 +1,6 @@
 {
   "name": "nuclia-sync-agent-app",
-  "version": "1.9.14",
+  "version": "1.9.15",
   "description": "This is a Progress Agentic RAG Sync Agent app",
   "main": "build/index.js",
   "scripts": {
